@@ -39,14 +39,16 @@ const skills = [
 
 // services
 const services = [
-    'name', // string
+    'title', // string
+    'slug', // string
     'description', // text
     'price', // float
     'priceType', // Enum: Nagotiation, Fixed // string
-    'currency', // string
+    'currency', // Enum: AED, USD // string
+    'status', // Enum: requested, accepted, completed // string
     'level',  // Enum: Entry, Intermediate, Expert // string
     'deadline', // date time
-    'status', // Enum: requested, accepted, completed // string
+    'is_featured', // boolean
     'commission', // int
     'customer_id', // int
     'skills_id', // int
@@ -60,14 +62,17 @@ const services = [
 const fees = [
     'name', // string
     'description', // text
-    'price', // float
+    'amount', // float
     'currency', // enum: AED, USD
+    'status', // enum: Active, Inactive
 ]
 
 // category
 const category = [
     'name', // string
+    'slug', // string
     'description', // text
+    'status', // Enum: active, inactive // string
     'image_id', // int
 ]
 
@@ -89,18 +94,18 @@ const wishlists = [
 const bids = [
     'status', // Enum: pending, accepted, rejected // string
     'amount', // float
-    'additional', // text
+    'message', // text
     'customer_id', // int
-    'provider_id', // int
     'service_id', // int
 ]
 
 //bookings
 const bookings = [
+    'status', // Enum: accepted, rejected, completed  // string
     'customer_id', // int
     'provider_id', // int
+    'bid_id', // int
     'service_id', // int
-    'status', // Enum: accepted, rejected, completed  // string
 ]
 
 // reviews
@@ -108,16 +113,10 @@ const reviews = [
     'customer_id', // int
     'provider_id', // int
     'service_id', // int
-    'review', // text
+    'comment', // text
     'rating', // int (1-5)
 ]
 
-//payment methods
-const paymentMethods = [
-    'name', // string
-    'description', // text
-    'status', // Enum: active, inactive // string
-]
 
 // payments
 const payments = [
@@ -127,7 +126,7 @@ const payments = [
     'amount', // float
     'currency', // enum: AED, USD
     'status', // Enum: pending, completed // string
-    'method_id', // int
+    'method', // string
 ]
 
 
@@ -397,7 +396,7 @@ response = {
         'services': [
             {
                 'id': 1, // int
-                'name': 'name', // string
+                'title': 'title', // string
                 'description': 'description', // text or html
                 'images': [
                     {
