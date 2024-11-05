@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('method');
             $table->string('currency');
             $table->enum('status', ['pending', 'completed', 'failed'])->default('completed');
+            
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->nullable();
             $table->foreignId('service_id')->constrained('services')->onDelete('cascade')->nullable();
             $table->timestamps();

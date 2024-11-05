@@ -9,4 +9,26 @@ class Profile extends Model
 {
     /** @use HasFactory<\Database\Factories\ProfileFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'lastName', 
+        'country', 
+        'bio', 
+        'language'
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function image()
+    {
+        return $this->hasOne(Images::class);
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
 }

@@ -95,7 +95,7 @@ const bids = [
     'status', // Enum: pending, accepted, rejected // string
     'amount', // float
     'message', // text
-    'customer_id', // int
+    'provider_id', // int
     'service_id', // int
 ]
 

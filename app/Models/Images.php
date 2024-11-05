@@ -6,5 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Images extends Model
 {
-    //
+    protected $fullfillable = [
+        'name',
+        'path',
+    ];
 }
