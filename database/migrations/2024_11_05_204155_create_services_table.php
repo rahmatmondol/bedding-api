@@ -25,12 +25,12 @@ return new class extends Migration
             $table->float('commission')->default(0.0);
             $table->boolean('is_featured')->default(false);
 
-            $table->foreignId('skill_id')->constrained('skills')->onDelete('cascade')->nullable();
-            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade')->nullable();
-            $table->foreignId('sub_category_id')->constrained('sub_categories')->onDelete('cascade')->nullable();
-            $table->foreignId('image_id')->constrained('images')->onDelete('cascade')->nullable();
-            $table->foreignId('location_id')->constrained('locations')->onDelete('cascade')->nullable();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->nullable();
+            $table->foreignId('skill_id')->nullable()->constrained('skills')->onDelete('cascade');
+            $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('cascade');
+            $table->foreignId('sub_category_id')->nullable()->constrained('sub_categories')->onDelete('cascade');
+            $table->foreignId('image_id')->nullable()->constrained('images')->onDelete('cascade');
+            $table->foreignId('location_id')->nullable()->constrained('locations')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
 
             $table->timestamps();
         });

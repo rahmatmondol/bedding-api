@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('currency');
             $table->enum('status', ['pending', 'completed', 'failed'])->default('completed');
             
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->nullable();
-            $table->foreignId('service_id')->constrained('services')->onDelete('cascade')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->foreignId('service_id')->nullable()->constrained('services')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -16,8 +16,17 @@ class ProfileFactory extends Factory
      */
     public function definition(): array
     {
+        // 'lastName', // string
+        // 'country', // string
+        // 'bio', // text
+        // 'language', // enum: English, Arabic // string
+        // 'image_id', // int
+        // 'location_id', // int
         return [
-            //
+            'lastName' => $this->faker->lastName,
+            'country' => $this->faker->country,
+            'bio' => $this->faker->text,
+            'language' => $this->faker->randomElement(['English', 'Arabic']),
         ];
     }
 }

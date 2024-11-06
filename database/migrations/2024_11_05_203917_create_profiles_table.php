@@ -18,9 +18,9 @@ return new class extends Migration
             $table->text('bio')->nullable();
             $table->enum ('language', ['English', 'Arabic'])->default('English');
 
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->nullable();
-            $table->foreignId('location_id')->constrained('locations')->onDelete('cascade')->nullable();
-            $table->foreignId('image_id')->constrained('images')->onDelete('cascade')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->foreignId('location_id')->nullable()->constrained('locations')->onDelete('cascade');
+            $table->foreignId('image_id')->nullable()->constrained('images')->onDelete('cascade');
             $table->timestamps();
         });
     }

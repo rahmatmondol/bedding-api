@@ -16,8 +16,13 @@ class LocationsFactory extends Factory
      */
     public function definition(): array
     {
+        // 'name', // string
+        // 'latitude', // string
+        // 'longitude', // string
         return [
-            //
+            'name' => $this->faker->name(),
+            'latitude' => $this->faker->latitude(),
+            'longitude' => $this->faker->longitude(),
         ];
     }
 }

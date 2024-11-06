@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
             $table->enum ('status', ['cancelled', 'accepted', 'completed'])->default('accepted');
-            $table->foreignId('service_id')->constrained('services')->onDelete('cascade')->nullable();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->nullable();
-            $table->foreignId('bid_id')->constrained('bids')->onDelete('cascade')->nullable();
+            $table->foreignId('service_id')->nullable()->constrained('services')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->foreignId('bid_id')->nullable()->constrained('bids')->onDelete('cascade');
             $table->timestamps();
         });
     }
