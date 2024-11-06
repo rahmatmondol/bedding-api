@@ -20,7 +20,8 @@ class SubCategoriesFactory extends Factory
             'name' => $this->faker->name(),
             'slug' => $this->faker->slug(),
             'description' => $this->faker->sentence(),
-            'image' => $this->faker->imageUrl(),
+            'category_id' => $this->faker->numberBetween(1, 50),
+            'image_id' => $this->faker->numberBetween(1, 50),
             'status' => $this->faker->randomElement(['active', 'inactive']),
         ];
     }

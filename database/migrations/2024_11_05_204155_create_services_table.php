@@ -18,14 +18,13 @@ return new class extends Migration
             $table->text('description');
             $table->string('price');
             $table->enum ('priceType', ['Nagotiation', 'Fixed'])->default('Fixed');
-            $table->enum ('curency', ['AED', 'USD'])->default('USD');
+            $table->enum ('currency', ['AED', 'USD'])->default('USD');
             $table->enum ('status', ['Active', 'Inactive'])->default('Active');
-            $table->enum ('label', ['Entry', 'Intermediate', 'Expert'])->default('Entry');
+            $table->enum ('level', ['Entry', 'Intermediate', 'Expert'])->default('Entry');
             $table->date('deadline')->nullable();
             $table->float('commission')->default(0.0);
             $table->boolean('is_featured')->default(false);
 
-            $table->foreignId('skill_id')->nullable()->constrained('skills')->onDelete('cascade');
             $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('cascade');
             $table->foreignId('sub_category_id')->nullable()->constrained('sub_categories')->onDelete('cascade');
             $table->foreignId('image_id')->nullable()->constrained('images')->onDelete('cascade');

@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Services extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'title', 
         'slug',
@@ -57,7 +58,7 @@ class Services extends Model
 
     public function skills()
     {
-        return $this->hasMany(Skills::class);
+        return $this->belongsToMany(Skills::class , 'services_skills', 'service_id', 'skill_id');
     }
 
     public function bids()

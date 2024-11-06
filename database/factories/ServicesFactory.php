@@ -35,11 +35,15 @@ class ServicesFactory extends Factory
             'price' => $this->faker->randomFloat(),
             'priceType' => $this->faker->randomElement(['Nagotiation', 'Fixed']),
             'currency' => $this->faker->randomElement(['AED', 'USD']),
-            'status' => $this->faker->randomElement(['requested', 'accepted', 'completed']),
+            'status' => $this->faker->randomElement(['Active', 'Inactive']),
             'level' => $this->faker->randomElement(['Entry', 'Intermediate', 'Expert']),
             'deadline' => $this->faker->dateTime,
-            'is_featured' => true,
-            'commission' => $this->faker->randomNumber(),
+            'is_featured' => $this->faker->boolean,
+            'category_id' => $this->faker->numberBetween(1, 50),
+            'sub_category_id' => $this->faker->numberBetween(1, 50),
+            'image_id' => $this->faker->numberBetween(1, 50),
+            'location_id' => $this->faker->numberBetween(1, 50),
+            'user_id' => $this->faker->numberBetween(1, 3),
         ];
     }
 }

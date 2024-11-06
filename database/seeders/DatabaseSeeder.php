@@ -9,6 +9,12 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\Categories;
 use App\Models\SubCategories;
+use App\Models\Images;
+use App\Models\Services;
+use App\Models\Fees;
+use App\Models\Profile;
+use App\Models\Locations;
+use App\Models\Skills;
 
 class DatabaseSeeder extends Seeder
 {
@@ -58,17 +64,46 @@ class DatabaseSeeder extends Seeder
             Permission::create(['name' => 'create biddings']),
         ]);
 
-        $provider = \App\Models\User::factory(10)->create();
-        $customer = \App\Models\User::factory(10)->create();
+        // Create 50 images
+        Images::factory()->count(50)->create();
 
-        foreach ($provider as $key => $value) {
-            $value->assignRole('provider');
-        }
-        foreach ($customer as $key => $value) {
-            $value->assignRole('customer');
+        // Create 1 fees
+        Fees::factory()->count(1)->create();
+
+        // Create 20 locations
+        Locations::factory()->count(50)->create();
+
+        // Create 3 profiles
+        Profile::factory()->count(3)->create();
+        
+    
+        // Create 10 skills
+        $skills = array(
+            ['name' => 'Cooking', 'description' => 'Cooking services'],
+            ['name' => 'Cleaning', 'description' => 'Cleaning services'],
+            ['name' => 'Cooking', 'description' => 'Cooking services'],
+            ['name' => 'Cleaning', 'description' => 'Cleaning services'],
+            ['name' => 'Cooking', 'description' => 'Cooking services'],
+            ['name' => 'Cleaning', 'description' => 'Cleaning services'],
+            ['name' => 'Cooking', 'description' => 'Cooking services'],
+            ['name' => 'Cleaning', 'description' => 'Cleaning services'],
+            ['name' => 'Cooking', 'description' => 'Cooking services'],
+            ['name' => 'Cleaning', 'description' => 'Cleaning services'],
+        );
+        foreach ($skills as $skill) {
+            Skills::factory()->create([
+                    'name' => $skill['name'],
+                    'description' => $skill['description'],
+                ]);
         }
 
-        $categories = Categories::factory()->count(10)->create();
+        // Create 50 categories and 50 subcategories
+        Categories::factory()->count(50)->create();
+        SubCategories::factory()->count(50)->create();
+
+        // Create 50 services
+        Services::factory()->count(50)->create();
+
       
     }
 }

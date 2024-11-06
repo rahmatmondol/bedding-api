@@ -20,6 +20,7 @@ class CategoriesFactory extends Factory
             'name' => $this->faker->name(),
             'slug' => $this->faker->slug(),
             'description' => $this->faker->sentence(),
+            'image_id' => $this->faker->numberBetween(1, 50),
             'status' => $this->faker->randomElement(['active', 'inactive']),
         ];
     }
