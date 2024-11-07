@@ -26,7 +26,7 @@ class ProfileFactory extends Factory
             'last_name' => $this->faker->lastName,
             'country' => $this->faker->country,
             'bio' => $this->faker->text,
-            'image_id' => $this->faker->numberBetween(1, 50),
+            'image' => $this->faker->imageUrl(),
             'location_id' => $this->faker->numberBetween(1, 50),
             'language' => $this->faker->randomElement(['English', 'Arabic']),
         ];

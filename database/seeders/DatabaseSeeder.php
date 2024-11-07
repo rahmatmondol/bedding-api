@@ -64,9 +64,6 @@ class DatabaseSeeder extends Seeder
             Permission::create(['name' => 'create biddings']),
         ]);
 
-        // Create 50 images
-        Images::factory()->count(50)->create();
-
         // Create 1 fees
         Fees::factory()->count(1)->create();
 
@@ -98,11 +95,23 @@ class DatabaseSeeder extends Seeder
         }
 
         // Create 50 categories and 50 subcategories
-        Categories::factory()->count(50)->create();
-        SubCategories::factory()->count(50)->create();
+        Categories::factory()
+            ->count(10)
+            ->create()
+            ->each(
+                fn($category) => SubCategories::factory(10)->create(['category_id' => $category->id])
+            );
 
-        // Create 50 services
-        Services::factory()->count(50)->create();
+
+        // Create 10 services, each with 3 related images
+        Services::factory()
+            ->count(100)
+            ->create()
+            ->each(
+                fn($service) => 
+                    Images::factory(3)->create(['service_id' => $service->id])
+                    && $service->skills()->sync(Skills::all()->random(3)->pluck('id')->toArray())
+                );
 
       
     }

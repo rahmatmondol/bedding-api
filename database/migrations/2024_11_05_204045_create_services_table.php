@@ -27,7 +27,6 @@ return new class extends Migration
 
             $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('cascade');
             $table->foreignId('sub_category_id')->nullable()->constrained('sub_categories')->onDelete('cascade');
-            $table->foreignId('image_id')->nullable()->constrained('images')->onDelete('cascade');
             $table->foreignId('location_id')->nullable()->constrained('locations')->onDelete('cascade');
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
 

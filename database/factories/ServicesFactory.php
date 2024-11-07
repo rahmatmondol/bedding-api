@@ -39,9 +39,8 @@ class ServicesFactory extends Factory
             'level' => $this->faker->randomElement(['Entry', 'Intermediate', 'Expert']),
             'deadline' => $this->faker->dateTime,
             'is_featured' => $this->faker->boolean,
-            'category_id' => $this->faker->numberBetween(1, 50),
+            'category_id' => $this->faker->numberBetween(1, 10),
             'sub_category_id' => $this->faker->numberBetween(1, 50),
-            'image_id' => $this->faker->numberBetween(1, 50),
             'location_id' => $this->faker->numberBetween(1, 50),
             'user_id' => $this->faker->numberBetween(1, 3),
         ];

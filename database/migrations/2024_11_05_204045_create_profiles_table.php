@@ -17,10 +17,11 @@ return new class extends Migration
             $table->string('country')->nullable();
             $table->text('bio')->nullable();
             $table->enum ('language', ['English', 'Arabic'])->default('English');
+            $table->string('image')->nullable();
 
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('cascade');
             $table->foreignId('location_id')->nullable()->constrained('locations')->onDelete('cascade');
-            $table->foreignId('image_id')->nullable()->constrained('images')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -8,7 +8,7 @@ class Categories extends Model
 {
     use HasFactory;
 
-    protected $fullfillable = [
+    protected $fillable = [
         'name',
         'description',
         'slug',
@@ -24,4 +24,10 @@ class Categories extends Model
     {
         return $this->hasMany(Services::class);
     }
+
+    public function profiles()
+    {
+        return $this->hasMany(Profile::class);
+    }
+
 }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Bookings extends Model
 {
-    protected $fullfillable = [
+    protected $fillable = [
         'status',
     ];
 

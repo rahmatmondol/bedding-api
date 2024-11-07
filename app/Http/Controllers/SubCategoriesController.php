@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\SubCategories;
 use App\Http\Requests\StoreSubCategoriesRequest;
 use App\Http\Requests\UpdateSubCategoriesRequest;
+use App\Helpers\ResponseHelper;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use App\Models\Images;
 
 class SubCategoriesController extends Controller
 {
@@ -13,8 +17,23 @@ class SubCategoriesController extends Controller
      */
     public function index()
     {
-        //
+        
+
+        // send all sub categories to the api with
+        $categoryId = request()->query('category_id');
+        try {
+            $query = SubCategories::when($categoryId, function ($q) use ($categoryId) {
+                return $q->where('category_id', $categoryId);
+            });
+            $categories = $query->get();
+            return ResponseHelper::success('All SubCategories',$categories);
+        } catch (\Exception $e) {
+            return ResponseHelper::error($e->getMessage(), 500);
+        }
     }
+
+
+    
 
     /**
      * Show the form for creating a new resource.
@@ -35,9 +54,15 @@ class SubCategoriesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(SubCategories $subCategories)
+    public function show($id)
     {
-        //
+         // show category details
+         try {
+            $categories = SubCategories::findOrFail($id)->with(['image:id,path,name'])->first();
+            return ResponseHelper::success('SubCategories Details', $categories);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('SubCategories Not Found', 404);
+        }
     }
 
     /**

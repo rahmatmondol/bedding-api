@@ -29,6 +29,11 @@ class Profile extends Model
 
     public function location()
     {
-        return $this->belongsTo(Location::class);
+        return $this->belongsTo(Locations::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Categories::class, 'category_id');
     }
 }

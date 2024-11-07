@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
-
-class User extends Authenticatable
+use Tymon\JWTAuth\Contracts\JWTSubject; // Add this import
+class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -25,6 +25,21 @@ class User extends Authenticatable
         'mobile',
         'status',
     ];
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey(); // Typically the primary key (id)
+    }
+
+    /**
+     * Get the custom claims for the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
+    {
+        return []; // You can add custom claims if needed, like roles, permissions, etc.
+    }
 
     /**
      * The attributes that should be hidden for serialization.

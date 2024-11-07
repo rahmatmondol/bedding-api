@@ -11,6 +11,10 @@ class StoreCategoriesRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        // check user have role admin
+        if (auth()->user()->hasRole('admin')) {
+            return true;
+        }
         return false;
     }
 
@@ -22,7 +26,8 @@ class StoreCategoriesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            // 'name' => ['required', 'unique:categories', 'string', 'max:255'],
+            // 'image' => ['optional', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ];
     }
 }

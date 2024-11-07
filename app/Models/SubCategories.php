@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class SubCategories extends Model
 {
     use HasFactory;
-    protected $fullfillable = [
+    protected $fillable = [
         'name',
         'description',
         'slug',
@@ -23,4 +23,5 @@ class SubCategories extends Model
     {
         return $this->hasMany(Services::class);
     }
+
 }

@@ -161,31 +161,22 @@ const registration = {
     'password': 'password', // required, string, min 8, max 32,
     'mobile': 'mobile', // required, unique, string
     'country': 'country', // required, string
-    'accountType': 'accountType', // required, [customer, provider], string
-    'serviceCategory': 'serviceCategory', // optional, [category_id], int
+    'account_type': 'provider', // required, [customer, provider], string
+    'category_id': '1', // optional, [category_id], int
 }
 // response
 let response = {
-    'message': 'message', // string
-    'status': 'status', // 200 success, 401 unauthorized , 400 bad request, 500 internal server error
-    'success': 'success', // boolean
-    'error': 'error', // object if success = false
-    'data': {
-        'user_id': 'user_id', // int
-        'token': 'token', // string
-        'refreshToken': 'refreshToken', // string
-        'status': 'status', // Enum: active, inactive // string
-        'user': {
-            'name': 'name', // string
-            'email': 'email', // string
-            'mobile': 'mobile', // string
-            'image': {
-                'id': 'id', // int
-                'url': 'url', // string
-                'name': 'name', // string
-            }, // int
-        }
-    }, // object
+    "message": "User Created Successfully",
+    "status": 200,
+    "success": true,
+    "data": {
+        "name": "rahmat",
+        "email": "rahmat@gmail.com",
+        "mobile": "01713754417",
+        "updated_at": "2024-11-07T15:45:37.000000Z",
+        "created_at": "2024-11-07T15:45:37.000000Z",
+        "id": 13
+    }
 }
 
 
@@ -446,3 +437,125 @@ response = {
     }
 }
 
+
+// method = get
+// get categories 
+// /api/v1/get-categories
+// parameters
+// 'page': 1, // optional, int
+// 'page_size': 10, // optional, int
+
+// response
+response = {
+    "message": "All Categories",
+    "status": 200,
+    "success": true,
+    "data": [
+        {
+            "id": 1,
+            "name": "Patsy Harris Jr.",
+            "slug": "exercitationem-voluptatem-quos-inventore",
+            "description": "Quis explicabo qui qui omnis quo laudantium reprehenderit.",
+            "status": "Active",
+            "image_id": 24,
+            "created_at": "2024-11-06T19:16:45.000000Z",
+            "updated_at": "2024-11-06T19:16:45.000000Z",
+            "image": {
+                "id": 24,
+                "path": "https://via.placeholder.com/640x480.png/002299?text=eum",
+                "name": "Ruben Rolfson"
+            }
+        },
+        {
+            "id": 2,
+            "name": "Ferne Kozey II",
+            "slug": "occaecati-ipsum-saepe-ratione",
+            "description": "Iusto ea officia vitae nemo esse molestiae.",
+            "status": "Active",
+            "image_id": 33,
+            "created_at": "2024-11-06T19:16:45.000000Z",
+            "updated_at": "2024-11-06T19:16:45.000000Z",
+            "image": {
+                "id": 33,
+                "path": "https://via.placeholder.com/640x480.png/0055dd?text=non",
+                "name": "Zachary Konopelski"
+            }
+        },
+    ]
+}
+
+// method = get
+// get singe category
+// /api/v1/get-category/:id
+// parameters
+// 'id': 1, // int
+
+// response
+response = {
+    "message": "Category Details",
+    "status": 200,
+    "success": true,
+    "data": {
+        "id": 1,
+        "name": "Patsy Harris Jr.",
+        "slug": "exercitationem-voluptatem-quos-inventore",
+        "description": "Quis explicabo qui qui omnis quo laudantium reprehenderit.",
+        "status": "Active",
+        "image_id": 24,
+        "created_at": "2024-11-06T19:16:45.000000Z",
+        "updated_at": "2024-11-06T19:16:45.000000Z",
+        "image": {
+            "id": 24,
+            "path": "https://via.placeholder.com/640x480.png/002299?text=eum",
+            "name": "Ruben Rolfson"
+        }
+    }
+}
+
+
+// method = get
+// get all sub categories
+// /api/v1/get-sub-categories
+// parameters
+// 'category_id': 1, // optional, int
+
+// response
+response = {
+    "message": "All SubCategories",
+    "status": 200,
+    "success": true,
+    "data": [
+        {
+            "id": 1,
+            "name": "Kayley Baumbach",
+            "slug": "dolor-voluptas-debitis-eum-veritatis-aut",
+            "description": "Quos accusantium et sint consequatur maiores maiores perspiciatis.",
+            "status": "Active",
+            "image_id": 37,
+            "category_id": 20,
+            "created_at": "2024-11-07T06:15:49.000000Z",
+            "updated_at": "2024-11-07T06:15:49.000000Z",
+            "image": {
+                "id": 37,
+                "path": "https://via.placeholder.com/640x480.png/006655?text=et",
+                "name": "Arden Thiel Sr."
+            }
+        },
+        {
+            "id": 2,
+            "name": "Ardella Effertz PhD",
+            "slug": "voluptatem-qui-voluptas-aliquam-deleniti-veniam-cum-cumque",
+            "description": "Nesciunt reiciendis et voluptatum alias.",
+            "status": "Inactive",
+            "image_id": 6,
+            "category_id": 25,
+            "created_at": "2024-11-07T06:15:49.000000Z",
+            "updated_at": "2024-11-07T06:15:49.000000Z",
+            "image": {
+                "id": 6,
+                "path": "https://via.placeholder.com/640x480.png/00ccaa?text=et",
+                "name": "Mr. Laurel Prosacco IV"
+            }
+        },
+    ]
+}

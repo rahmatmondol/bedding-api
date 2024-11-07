@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Fees extends Model
 {
     use HasFactory;
-    protected $fullfillable = [
+    protected $fillable = [
         'name',
         'description',
         'amount',
