@@ -16,7 +16,10 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug');
             $table->text('description');
-            $table->string('price');
+            $table->float('price');
+            $table->string('location')->nullable();
+            $table->string('latitude')->nullable();
+            $table->string('longitude')->nullable();
             $table->enum ('priceType', ['Nagotiation', 'Fixed'])->default('Fixed');
             $table->enum ('currency', ['AED', 'USD'])->default('USD');
             $table->enum ('status', ['Active', 'Inactive'])->default('Active');
@@ -24,10 +27,10 @@ return new class extends Migration
             $table->date('deadline')->nullable();
             $table->float('commission')->default(0.0);
             $table->boolean('is_featured')->default(false);
+            
 
             $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('cascade');
             $table->foreignId('sub_category_id')->nullable()->constrained('sub_categories')->onDelete('cascade');
-            $table->foreignId('location_id')->nullable()->constrained('locations')->onDelete('cascade');
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
 
             $table->timestamps();

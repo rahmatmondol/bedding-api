@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\SubCategoriesController;
 use App\Http\Controllers\ServicesController;
-
+use App\Http\Controllers\BidsController;
 
 Route::group([
     'middleware' => 'api',
@@ -66,5 +66,13 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
 
     // create service routes
     Route::post('create-service', [ServicesController::class, 'store']);
+
+
+    // bidding routes
+    Route::get('get-biddings', [BidsController::class, 'getBiddings']);
+    Route::get('get-bidding/{id}', [BidsController::class, 'getBidding']);
+    Route::post('create-bidding', [BidsController::class, 'createBidding']);
+    Route::put('update-bidding/{id}', [BidsController::class, 'updateBidding']);
+    Route::delete('delete-bidding/{id}', [BidsController::class, 'deleteBidding']);
 
 });

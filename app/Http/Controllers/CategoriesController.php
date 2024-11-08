@@ -55,12 +55,9 @@ class CategoriesController extends Controller
                 $filename = time() . '_' . $originalName;
                 $file->move('uploads/categories/', $filename);
 
-                $image = Images::create([
-                    'name' => $filename,
-                    'path' => url('uploads/categories/' . $filename),
-                ]);
-
-                $category->image()->associate($image)->save();
+                $category->image = url('uploads/categories/' . $filename);
+                
+                $category->save();
             }
     
             $category = Categories::with(['image:id,path,name'])->findOrFail($category->id);

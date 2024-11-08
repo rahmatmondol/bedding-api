@@ -23,7 +23,7 @@ class Services extends Model
 
     public function customer()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function reviews()
@@ -38,12 +38,13 @@ class Services extends Model
 
     public function category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Categories::class);
     }
+
 
     public function subcategory()
     {
-        return $this->belongsTo(Subcategory::class);
+        return $this->belongsTo(Subcategories::class);
     }
 
     public function images()
@@ -53,7 +54,7 @@ class Services extends Model
 
     public function location()
     {
-        return $this->belongsTo(Location::class);
+        return $this->belongsTo(Locations::class);
     }
 
     public function skills()

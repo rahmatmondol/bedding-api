@@ -105,14 +105,18 @@ class DatabaseSeeder extends Seeder
 
         // Create 10 services, each with 3 related images
         Services::factory()
-            ->count(100)
-            ->create()
-            ->each(
-                fn($service) => 
-                    Images::factory(3)->create(['service_id' => $service->id])
-                    && $service->skills()->sync(Skills::all()->random(3)->pluck('id')->toArray())
-                );
+        ->count(50)
+        ->create()
+        ->each(function ($service) {
+            // Attach 3 random skills
+            $service->skills()->sync(Skills::all()->random(3)->pluck('id')->toArray());
+    
+            // Create and assign images directly if it is a hasMany relationship
+            Images::factory()->count(2)->create(['service_id' => $service->id]);
+        });
+    
 
       
     }
 }
+

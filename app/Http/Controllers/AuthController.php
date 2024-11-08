@@ -118,24 +118,12 @@ class AuthController extends Controller
         // DB::beginTransaction();
     
         try {
-
-            // check if location already exists
-            if ($profile->location) {
-                $location = $profile->location()->update([
-                    'name' => $request->name,
-                    'latitude' => $request->latitude,
-                    'longitude' => $request->longitude,
-                ]);
-            }else{
-                $location = Locations::create([
-                    'name' => $request->name,
-                    'latitude' => $request->latitude,
-                    'longitude' => $request->longitude,
-                ]);
-        
-                $profile->location()->associate($location);
-            }
-
+            // Update the profile with the new location
+            $profile->location = $request->name;
+            $profile->latitude = $request->latitude;
+            $profile->longitude = $request->longitude;
+            $profile->save();
+            
             // Update the user's profile
             // DB::commit();
             return ResponseHelper::success('Location set successfully', $profile);

@@ -27,7 +27,9 @@ class ProfileFactory extends Factory
             'country' => $this->faker->country,
             'bio' => $this->faker->text,
             'image' => $this->faker->imageUrl(),
-            'location_id' => $this->faker->numberBetween(1, 50),
+            'location' => $this->faker->city,
+            'latitude' => $this->faker->latitude,
+            'longitude' => $this->faker->longitude,
             'language' => $this->faker->randomElement(['English', 'Arabic']),
         ];
     }

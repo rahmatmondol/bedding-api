@@ -41,7 +41,9 @@ class ServicesFactory extends Factory
             'is_featured' => $this->faker->boolean,
             'category_id' => $this->faker->numberBetween(1, 10),
             'sub_category_id' => $this->faker->numberBetween(1, 50),
-            'location_id' => $this->faker->numberBetween(1, 50),
+            'location' => $this->faker->city,
+            'latitude' => $this->faker->latitude,
+            'longitude' => $this->faker->longitude,
             'user_id' => $this->faker->numberBetween(1, 3),
         ];
     }
