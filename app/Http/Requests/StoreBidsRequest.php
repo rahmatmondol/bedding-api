@@ -11,6 +11,9 @@ class StoreBidsRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        if (auth()->user()->hasRole('provider')) {
+            return true;
+        }
         return false;
     }
 
@@ -22,7 +25,11 @@ class StoreBidsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'service' => 'required|exists:services,id',
+            'amount' => 'required|numeric',
+            'message' => 'string',
+            'provider' => 'required|exists:users,id|unique:bids,provider_id',
+            'customer' => 'required|exists:users,id',
         ];
     }
 }

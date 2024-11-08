@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Bids;
 use App\Http\Requests\StoreBidsRequest;
 use App\Http\Requests\UpdateBidsRequest;
+use App\Helpers\ResponseHelper;
+use Illuminate\Support\Facades\DB;
 
 class BidsController extends Controller
 {
@@ -13,7 +15,31 @@ class BidsController extends Controller
      */
     public function index()
     {
-        //
+        // send all bids by service id
+        $providerId = request()->query('provider');
+        $serviceId = request()->query('service');
+        $customerId = request()->query('customer');
+        $status = request()->query('status');
+
+        if (!$providerId && !$customerId) {
+            return ResponseHelper::error('Bids', 'Please provide a provider id or customer id', 404);
+        }
+
+        if (!$providerId && !$serviceId && !$status) {
+            return ResponseHelper::error('Bids', 'Please provide a provider id, service id or status', 404);
+        }
+
+        try {
+            $query = Bids::when($providerId, fn($q) => $q->where('provider_id', $providerId))
+            ->when($serviceId, fn($q) => $q->where('service_id', $serviceId))
+            ->when($customerId, fn($q) => $q->where('customer_id', $customerId))
+            ->when($status, fn($q) => $q->where('status', $status));
+            $bids = $query->get();
+
+            return ResponseHelper::success('Bids', $bids);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Bids', $e->getMessage(), 404);
+        }
     }
 
     /**
@@ -29,7 +55,37 @@ class BidsController extends Controller
      */
     public function store(StoreBidsRequest $request)
     {
-        //
+        DB::beginTransaction();
+        // dd($request->all());
+        try {
+            // Create bid
+            $bid = new Bids;
+            $bid->amount = $request->amount;
+            $bid->message = $request->message ?? '';
+            $bid->save();
+
+            // attach to service
+            $bid->service()->associate($request->service);
+            $bid->save();
+
+            // attach to user
+            $bid->provider()->associate($request->provider);
+            $bid->save();
+
+            // attach to user
+            $bid->customer()->associate($request->customer);
+            $bid->save();
+
+            // If everything goes well, commit the transaction
+            DB::commit();
+
+            return ResponseHelper::success('Successfully bid placed', $bid);
+        } catch (\Exception $e) {
+            // If any error occurs, rollback the transaction
+            DB::rollBack();
+
+            return ResponseHelper::error('bid placed failed: ' . $e->getMessage(), 500);
+        }
     }
 
     /**

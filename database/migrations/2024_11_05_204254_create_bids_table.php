@@ -18,7 +18,8 @@ return new class extends Migration
             $table->enum ('status', ['pending', 'accepted', 'rejected'])->default('pending');
             
             $table->foreignId('service_id')->nullable()->constrained('services')->onDelete('cascade');
-            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->foreignId('provider_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->foreignId('customer_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

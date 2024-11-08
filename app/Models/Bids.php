@@ -19,7 +19,12 @@ class Bids extends Model
 
     public function service()
     {
-        return $this->belongsTo(Service::class);
+        return $this->belongsTo(Services::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(User::class);
     }
 }
 
