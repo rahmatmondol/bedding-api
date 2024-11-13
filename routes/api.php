@@ -36,7 +36,7 @@ Route::get('get-categories', [CategoriesController::class, 'index']);
 Route::get('get-category/{id}', [CategoriesController::class, 'show']);
 
 // get subcategory routes
-Route::get('get-subcategories', [SubCategoriesController::class, 'index']);
+Route::get('get-subcategories', [SubCategoriesController::class, 'index'])->name('get-subcategories');
 
 // get single subcategory routes
 Route::get('get-subcategory/{id}', [SubCategoriesController::class, 'show']);

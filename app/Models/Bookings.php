@@ -20,6 +20,11 @@ class Bookings extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function customer()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function bid()
     {
         return $this->belongsTo(bids::class);

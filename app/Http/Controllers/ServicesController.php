@@ -16,6 +16,7 @@ use App\Models\Locations;
 use Illuminate\Http\UploadedFile; // Import \Illuminate\Http\UploadedFile
 class ServicesController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      */
@@ -53,13 +54,27 @@ class ServicesController extends Controller
         }
 
     }
+
+    public function services()
+    {
+        $services = Services::where('user_id', auth()->user()->id)
+            ->with('images')
+            ->paginate(8)
+            ->toArray();
+
+        $categories = Categories::all();
+        return view('services.index', compact('services', 'categories'));
+    }
     
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-       
+        $categories = Categories::all();
+        $skills = Skills::all();
+        $locations = Locations::all();
+        return view('services.create', compact('categories', 'skills', 'locations'));
     }
 
     /**
@@ -79,11 +94,14 @@ class ServicesController extends Controller
             $service->price         = $request->price;
             $service->priceType     = $request->priceType;
             $service->currency      = $request->currency;
-            $service->level         = $request->level;
             $service->location      = $request->location_name;
             $service->latitude      = $request->latitude;
             $service->longitude     = $request->longitude;
-           
+            
+            if($request->level){
+                $service->level = $request->level;
+            }
+
             $service->save();
 
             // attach to user
@@ -118,17 +136,23 @@ class ServicesController extends Controller
             // attach image to service
             if ($request->hasFile('images')) {
                 //if have multiple images
-                if ($request->file('images') instanceof UploadedFile) {
-                    $originalName = $request->file('images')->getClientOriginalName();
-                    $filename = time() . '_' . $originalName;
-                    $request->file('images')->move('uploads/service/', $filename);
+                $images = $request->file('images');
 
-                    $image = new Images([
-                        'path' => url('uploads/service/' . $filename),
-                        'name' => $originalName,
-                    ]); 
+                // dd($images);
 
-                    $service->images()->save($image);
+                foreach ($images as $imageFile) {
+                    if ($imageFile instanceof UploadedFile) {
+                        $originalName = $imageFile->getClientOriginalName();
+                        $filename = time() . '_' . $originalName;
+                        $imageFile->move('uploads/service/', $filename);
+
+                        $image = new Images([
+                            'path' => url('uploads/service/' . $filename),
+                            'name' => $originalName,
+                        ]);
+
+                        $service->images()->save($image);
+                    }
                 }
                
             }
@@ -167,9 +191,12 @@ class ServicesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Services $services)
+    public function edit($id)
     {
-        //
+        $categories = Categories::all();
+        $skills = Skills::all();
+        $service = Services::with('images')->findOrFail($id);
+        return view('services.edit', compact('service', 'categories', 'skills'));
     }
 
     /**

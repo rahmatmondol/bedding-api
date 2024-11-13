@@ -16,9 +16,9 @@ class BidsController extends Controller
     public function index()
     {
         // send all bids by service id
-        $providerId = request()->query('provider');
-        $serviceId = request()->query('service');
-        $customerId = request()->query('customer');
+        $providerId = request()->query('provider_id');
+        $serviceId = request()->query('service_id');
+        $customerId = request()->query('customer_id');
         $status = request()->query('status');
 
         if (!$providerId && !$customerId) {

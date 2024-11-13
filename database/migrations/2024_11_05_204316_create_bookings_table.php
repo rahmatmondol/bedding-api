@@ -16,6 +16,7 @@ return new class extends Migration
             $table->enum ('status', ['cancelled', 'accepted', 'completed'])->default('accepted');
             $table->foreignId('service_id')->nullable()->constrained('services')->onDelete('cascade');
             $table->foreignId('provider_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->foreignId('customer_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->foreignId('bid_id')->nullable()->constrained('bids')->onDelete('cascade');
             $table->timestamps();
         });

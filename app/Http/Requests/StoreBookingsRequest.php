@@ -39,6 +39,7 @@ class StoreBookingsRequest extends FormRequest
         return [
             'service_id' => 'required|exists:services,id',
             'provider_id' => 'required|exists:users,id',
+            'customer_id' => 'required|exists:users,id',
             'bid_id' => 'required|exists:bids,id',
         ];
     }

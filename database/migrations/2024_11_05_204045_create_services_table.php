@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();
-            $table->enum ('priceType', ['Nagotiation', 'Fixed'])->default('Fixed');
+            $table->enum ('priceType', ['Negotiable', 'Fixed'])->default('Fixed');
             $table->enum ('currency', ['AED', 'USD'])->default('USD');
             $table->enum ('status', ['Active', 'Inactive'])->default('Active');
             $table->enum ('level', ['Entry', 'Intermediate', 'Expert'])->default('Entry');
