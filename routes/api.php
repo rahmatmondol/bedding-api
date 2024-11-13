@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\SubCategoriesController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\BidsController;
+use App\Http\Controllers\BookingsController;
 
 Route::group([
     'middleware' => 'api',

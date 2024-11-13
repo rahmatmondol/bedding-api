@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class StoreBookingsRequest extends FormRequest
 {
@@ -11,7 +12,21 @@ class StoreBookingsRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        if (auth()->user()->hasRole('customer') || auth()->user()->hasRole('admin')) {
+            return true;
+        }
+
         return false;
+    }
+
+    /**
+     * Handle a failed authorization attempt.
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    protected function failedAuthorization()
+    {
+        throw new AuthorizationException('You are not authorized to perform this action. Admin role is required.');
     }
 
     /**
@@ -22,7 +37,9 @@ class StoreBookingsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'service_id' => 'required|exists:services,id',
+            'provider_id' => 'required|exists:users,id',
+            'bid_id' => 'required|exists:bids,id',
         ];
     }
 }

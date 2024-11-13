@@ -12,7 +12,7 @@ class Bookings extends Model
 
     public function service()
     {
-        return $this->belongsTo(Service::class);
+        return $this->belongsTo(Services::class);
     }
 
     public function provider()
@@ -20,8 +20,8 @@ class Bookings extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function bids()
+    public function bid()
     {
-        return $this->hasMany(bids::class);
+        return $this->belongsTo(bids::class);
     }
 }
