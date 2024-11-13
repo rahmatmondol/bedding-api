@@ -42,6 +42,45 @@ class BidsController extends Controller
         }
     }
 
+        /**
+     * Display a listing of the resource.
+     */
+    public function info()
+    {
+        // Retrieve query parameters
+        $bidId = request()->query('bid');
+        $serviceId = request()->query('service');
+        $customerId = request()->query('customer');
+    
+        // Check if at least one parameter is provided
+        if (!$bidId && !$serviceId && !$customerId) {
+            return ResponseHelper::error('Invalid data', 'Please provide at least one of the following: customer id, service id, or bid id', 400);
+        }
+    
+        try {
+            // Build the query with conditions and eager load relationships
+            $query = Bids::when($bidId, fn($q) => $q->where('id', $bidId))
+                ->when($serviceId, fn($q) => $q->where('service_id', $serviceId))
+                ->when($customerId, fn($q) => $q->where('customer_id', $customerId))
+                ->with([
+                    'provider' => function ($query) {
+                        $query->with([
+                            'reviews',
+                            'profile',
+                        ]);
+                    },
+                    'service:id,price',
+                ]);
+                // ->select('id', 'amount', 'message');
+            $bids = $query->get();
+    
+            return ResponseHelper::success('Bids retrieved successfully', $bids);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Error retrieving bids', 'An error occurred while retrieving bids. Please try again later.', 500);
+        }
+    }
+    
+
     /**
      * Show the form for creating a new resource.
      */

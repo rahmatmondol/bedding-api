@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bookings;
+use App\Models\Services;
+use App\Models\Users;
+use App\Models\Bids;
 use App\Http\Requests\StoreBookingsRequest;
 use App\Http\Requests\UpdateBookingsRequest;
+use App\Helpers\ResponseHelper;
 
 class BookingsController extends Controller
 {
@@ -21,7 +25,7 @@ class BookingsController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**

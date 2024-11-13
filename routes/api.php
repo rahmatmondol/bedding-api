@@ -71,8 +71,16 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     // bidding routes
     Route::get('get-biddings', [BidsController::class, 'index']);
     Route::get('get-bidding/{id}', [BidsController::class, 'show']);
+    Route::get('get-bidding-info', [BidsController::class, 'info']);
     Route::post('create-bidding', [BidsController::class, 'store']);
     Route::put('update-bidding/{id}', [BidsController::class, 'update']);
     Route::delete('delete-bidding/{id}', [BidsController::class, 'destroy']);
+
+    //booking routes
+    Route::get('get-bookings', [BookingsController::class, 'index']);
+    Route::get('get-booking/{id}', [BookingsController::class, 'show']);
+    Route::post('create-booking', [BookingsController::class, 'store']);
+    Route::put('update-booking/{id}', [BookingsController::class, 'update']);
+    Route::delete('delete-booking/{id}', [BookingsController::class, 'destroy']);
 
 });
