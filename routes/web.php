@@ -33,9 +33,7 @@ route::get('/auth/singup', function () {
     return view('userAuth.singup');
 })->name('auth-signup');
 
-Route::get('service/{id}', function($id){
-    return view('pages.service.details', compact('id'));
-})->name('service.details');
+Route::get('service/{slug}', [ServicesController::class, 'show'])->name('service.details');
 
 
 

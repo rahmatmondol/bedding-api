@@ -19,9 +19,14 @@
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                         <h6>Sort by</h6>
+                                        <a href="?category=" class="dropdown-item">
+                                            <div class="sort-filter">
+                                                <span>All</span>
+                                                <span class="icon-tick"><span class="path2"></span></span>
+                                            </div>
+                                        </a>
                                         @foreach ($categories as $category)
-                                            <a href="#" wire:click="filter({{ $category->id }})"
-                                                class="dropdown-item">
+                                            <a href="?category={{ $category->id }}" class="dropdown-item">
                                                 <div class="sort-filter">
                                                     <span>{{ $category->name }}</span>
                                                     <span class="icon-tick"><span class="path2"></span></span>
@@ -43,18 +48,20 @@
                                     <div class="tf-card-box style-1">
                                         <div class="card-media">
                                             <a href="{{ route('service.details', $service['id']) }}">
-                                                <img src="{{ $service['images'][0]['path'] ?? '' }}" alt="" style="width: 100%;">
+                                                <img src="{{ $service['images'][0]['path'] ?? '' }}" alt=""
+                                                    style="width: 100%;">
                                             </a>
                                             <div class="button-place-bid">
-                                                <a href="{{ route('service.details', $service['id']) }}" wire:navigate
+                                                <a href="{{ route('service.details', $service['slug']) }}" wire:navigate
                                                     class="tf-button mb-2"><span>See Details</span></a>
                                                 <a href="{{ route('auth-service-edit', $service['id']) }}" wire:navigate
                                                     class="tf-button mb-2"><span>Edit</span></a>
                                             </div>
 
                                         </div>
-                                        <h5 class="name"><a href="{{ route('service.details', $service['id']) }}"
-                                                >{{ $service['title'] }}</a></h5>
+                                        <h5 class="name"><a
+                                                href="{{ route('service.details', $service['slug']) }}">{{ $service['title'] }}</a>
+                                        </h5>
 
                                         <div class="divider"></div>
                                         <div class="meta-info flex items-center justify-between">
@@ -95,5 +102,5 @@
                 </div>
             </div>
         </div>
-
+    </div>
 </x-app-layout>

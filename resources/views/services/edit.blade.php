@@ -133,13 +133,14 @@
                                     value="{{ $service->latitude }}">
                                 <input type="hidden" id="longitude" name="longitude"
                                     value="{{ $service->longitude }}">
-                                <input type="hidden" id="location-name" name="location_name" value="{{ $service->location }}">
+                                <input type="hidden" id="location-name" name="location_name"
+                                    value="{{ $service->location }}">
                                 <!-- Reset Button -->
                                 <button type="button" onclick="resetMap()" class="">Reset Location</button>
                             </div>
 
                             <div class="btn-submit flex gap30 justify-center">
-                                <a href="{{ route('service.details', $service->id) }}" wire:navigate
+                                <a href="{{ route('service.details', $service->slug) }}" wire:navigate
                                     class="tf-button style-1 h50 active">Preview<i
                                         class="icon-arrow-up-right2"></i></a>
                                 <button type="submit">Update<i class="icon-arrow-up-right2"></i></button>
@@ -151,14 +152,18 @@
                             style="border-radius: 0;padding: 10px 0;">
                             <div class="text-center">
                                 @foreach ($service->images as $image)
-                                    <img id="uploadedImagePreview" src="{{ $image->path }}"
+                                    <img class="old_images" src="{{ $image->path }}"
                                         alt="Uploaded Image Preview" style="height: auto;margin: 10px;">
                                 @endforeach
+                                <img id="uploadedImagePreviewList" src="" alt="Uploaded Image Preview"
+                                    style="height: auto;">
+
                                 <h5>Upload file</h5>
+
                                 <p class="text">Drag or choose your file to upload</p>
                                 <div class="text filename">PNG, GIF, WEBP, MP4 or MP3. Max 1Gb.</div>
-                                <input type="file" name="image" value=""
-                                    onchange="previewUploadedImage(event)">
+                                <input type="file" name="images[]" value=""
+                                    onchange="previewUploadedImage(event)" multiple>
                                 @error('image')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -356,13 +361,26 @@
     }
 
     function previewUploadedImage(event) {
-        const reader = new FileReader();
-        reader.onload = function() {
-            const imgElement = document.getElementById('uploadedImagePreview');
-            imgElement.src = reader.result;
-            imgElement.style.height = 'auto';
+
+       let old_images = document.querySelector('.old_images');
+
+        if (old_images) {
+            old_images.remove();
         }
-        reader.readAsDataURL(event.target.files[0]);
+        const files = event.target.files;
+        const imgElement = document.getElementById('uploadedImagePreview');
+        const previewList = document.getElementById('uploadedImagePreviewList');
+        previewList.innerHTML = '';
+        for (let i = 0; i < files.length; i++) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const img = document.createElement('img');
+                img.src = reader.result;
+                img.style.height = 'auto';
+                previewList.appendChild(img);
+            }
+            reader.readAsDataURL(files[i]);
+        }
     }
 
     var quill = new Quill('#editor', {

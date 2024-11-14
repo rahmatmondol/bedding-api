@@ -13,7 +13,9 @@ use App\Models\Subcategories;
 use App\Models\Images;
 use App\Models\Skills;
 use App\Models\Locations;
-use Illuminate\Http\UploadedFile; // Import \Illuminate\Http\UploadedFile
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+
 class ServicesController extends Controller
 {
 
@@ -57,10 +59,17 @@ class ServicesController extends Controller
 
     public function services()
     {
-        $services = Services::where('user_id', auth()->user()->id)
-            ->with('images')
-            ->paginate(8)
-            ->toArray();
+        $categoryId = request()->query('category');
+
+        $servicesQuery = Services::where('user_id', auth()->user()->id)
+            ->with('images');
+
+        if ($categoryId) {
+            $servicesQuery->where('category_id', $categoryId);
+        }
+
+        $services = $servicesQuery->paginate(8)->toArray();
+
 
         $categories = Categories::all();
         return view('services.index', compact('services', 'categories'));
@@ -183,9 +192,10 @@ class ServicesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Services $services)
+    public function show($slug)
     {
-        //
+        $service = Services::with('images', 'skills', 'category','customer')->where('slug', $slug)->firstOrFail();
+        return view('pages.service.details', compact('service'));
     }
 
     /**
@@ -204,7 +214,111 @@ class ServicesController extends Controller
      */
     public function update(UpdateServicesRequest $request, Services $services)
     {
-        //
+        $service = Services::where('id', $request->id)->where('user_id', auth()->user()->id)->firstOrFail();
+        if(!$service){
+            return ResponseHelper::error('Service Not Found', 404);
+        }
+
+        DB::beginTransaction();
+        // dd($request->all());
+        try {
+
+            // update service
+            $service->title         = $request->title;
+            $service->slug          = Str::slug($request->title);
+            $service->description   = $request->description;
+            $service->price         = $request->price;
+            $service->priceType     = $request->priceType;
+            $service->currency      = $request->currency;
+            $service->location      = $request->location_name;
+            $service->latitude      = $request->latitude;
+            $service->longitude     = $request->longitude;
+            
+            if($request->level){
+                $service->level = $request->level;
+            }
+
+            $service->save();
+
+
+            // attach category to service
+            if (isset($request->category_id) && $request->category_id > 0) {
+                $category = Categories::find($request->category_id);
+                if ($category) {
+                    $service->category()->associate($category->id);
+                    $service->save();
+                } else {
+                    DB::rollBack();
+                    return ResponseHelper::error('Category Not Found', 404);
+                }
+            }
+
+            // attach subcategory to service
+            if (isset($request->subCategory_id) && $request->subCategory_id > 0) {
+                $subcategory = Subcategories::find($request->subCategory_id);
+                if ($subcategory) {
+                    $service->sub_category_id = $subcategory->id;
+                    $service->save();
+                } else {
+                    DB::rollBack();
+                    return ResponseHelper::error('SubCategory Not Found', 404);
+                }
+            }
+
+            
+            // attach image to service
+
+            if ($request->hasFile('images')) {
+                 //delete old images
+                 foreach ($service->images as $image) {
+                    $relativePath = parse_url($image->path, PHP_URL_PATH);
+                    if (file_exists(public_path($relativePath))) {
+                        unlink(public_path($relativePath)); // Deletes the file
+                    }
+                    $image->delete(); // Removes the record from the database
+                }
+                
+                //if have multiple images
+                $images = $request->file('images');
+
+                foreach ($images as $imageFile) {
+                    if ($imageFile instanceof UploadedFile) {
+                        $originalName = $imageFile->getClientOriginalName();
+                        $filename = time() . '_' . $originalName;
+                        $imageFile->move('uploads/service/', $filename);
+
+                        $image = new Images([
+                            'path' => url('uploads/service/' . $filename),
+                            'name' => $originalName,
+                        ]);
+
+                        $service->images()->save($image);
+                    }
+                }
+               
+            }
+
+            // attach multiple skills to service
+            if (!empty($request->skills_ids)) {
+                if (!is_array($request->skills_ids)) {
+                    $request->skills_ids = explode(',', $request->skills_ids);
+                }
+               foreach ($request->skills_ids as $skill) {
+                   $service->skills()->attach($skill);
+               }
+            }
+
+            // If everything goes well, commit the transaction
+            DB::commit();
+
+            return ResponseHelper::success('Service Updated Successfully', $service);
+        } catch (\Exception $e) {
+            // If any error occurs, rollback the transaction
+            DB::rollBack();
+
+            return ResponseHelper::error('Service Updated failed: ' . $e->getMessage(), 500);
+        }
+        
     }
 
     /**

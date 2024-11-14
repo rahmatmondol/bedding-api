@@ -11,6 +11,9 @@ class UpdateServicesRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        if (auth()->user()->hasRole('customer') || auth()->user()->hasRole('admin')) {
+            return true;
+        }
         return false;
     }
 
@@ -22,7 +25,19 @@ class UpdateServicesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'price' => 'required|numeric',
+            'priceType' => 'required|in:Negotiable,Fixed',
+            'currency' => 'in:AED,USD',
+            // 'level' => 'required|in:Entry,Intermediate,Expert',
+            // 'skills_ids' => 'required',
+            'category_id' => 'required|integer',
+            'subCategory_id' => 'required|integer',
+            // 'images' => 'required',
+            'location_name' => 'required|string',
+            'latitude' => 'required',
+            'longitude' => 'required',
         ];
     }
 }
