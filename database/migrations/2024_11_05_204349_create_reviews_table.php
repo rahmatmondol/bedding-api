@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer('rating');
             $table->text('comment');
-            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->foreignId('customer_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->foreignId('provider_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->foreignId('service_id')->nullable()->constrained('services')->onDelete('cascade');
             $table->timestamps();
         });

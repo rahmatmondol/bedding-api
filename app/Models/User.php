@@ -86,9 +86,14 @@ class User extends Authenticatable implements JWTSubject
 
     public function reviews()
     {
-        return $this->hasMany(Reviews::class);
+        return $this->hasMany(Reviews::class, 'provider_id', 'id');
     }
 
+    /**
+     * The skills that belong to the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function skills()
     {
         return $this->hasMany(Skills::class);

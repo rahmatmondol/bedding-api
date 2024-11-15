@@ -11,6 +11,9 @@ class StoreReviewsRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        if (auth()->user()->hasRole('customer') || auth()->user()->hasRole('admin')) {
+            return true;
+        }
         return false;
     }
 
@@ -22,7 +25,9 @@ class StoreReviewsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'booking_id' => 'required|integer|exists:bookings,id',
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'required|string',
         ];
     }
 }

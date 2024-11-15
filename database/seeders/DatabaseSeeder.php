@@ -71,7 +71,7 @@ class DatabaseSeeder extends Seeder
         Locations::factory()->count(50)->create();
 
         // Create 3 profiles
-        Profile::factory()->count(3)->create();
+        // Profile::factory()->count(3)->create();
         
     
         // Create 10 skills

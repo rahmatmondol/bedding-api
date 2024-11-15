@@ -26,12 +26,12 @@ class Services extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function reviews()
+    public function review()
     {
         return $this->hasOne(Reviews::class);
     }
 
-    public function payments()
+    public function payment()
     {
         return $this->hasOne(Payments::class);
     }

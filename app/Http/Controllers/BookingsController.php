@@ -65,18 +65,21 @@ class BookingsController extends Controller
         DB::beginTransaction();
 
         try {
-
             // get provider info by bid id
-            $info = Bids::findOrFail($request->bid_id);
+            $bid = Bids::findOrFail($request->bid_id);
+
+            // update bid status
+            $bid->status = 'accepted';
+            $bid->save();
 
             // Create bokking
             $booking = new Bookings;
 
             // attach to service
-            $booking->service()->associate($info->service_id);
+            $booking->service()->associate($bid->service_id);
 
             // attach to user
-            $booking->provider()->associate($info->provider_id);
+            $booking->provider()->associate($bid->provider_id);
 
             // attach to user
             $booking->customer()->associate(auth()->user()->id);

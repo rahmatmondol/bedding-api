@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use App\Models\Categories;
 use App\Models\Locations;
+use App\Models\Profile;
 
 class AuthController extends Controller
 {
@@ -90,7 +91,7 @@ class AuthController extends Controller
             return response()->json(['error' => 'Could not create token'], 500);
         }
 
-        $user = auth()->user()->load('profile');
+        $user = auth()->user()->load(['profile']);
 
         return response()->json(compact('token', 'user'));
     }
@@ -120,22 +121,39 @@ class AuthController extends Controller
             if (!$user) {
                 return ResponseHelper::error('User not authenticated', 401);
             }
+
         
             // Get the user's profile
-            $profile = $user->profile;
-            if (!$profile) {
+            $user->load('profile');
+            if (!$user->profile) {
                 // Create a new profile for the user
-                $profile = $user->profile()->create([
-                    'user_id' => $user->id ?? null,
-                    'location' => $request->name ?? null,
-                    'latitude' => $request->latitude ?? null,
-                    'longitude' => $request->longitude ?? null,
-                    'country' => $request->country ?? null,
-                    'last_name' => $request->last_name ?? null,
-                    'bio' => $request->bio ?? null,
-                    'language' => $request->language ?? 'English',
-                ]);
+                $profile = new Profile;
+                $profile->location = $request->location ?? null;
+                $profile->latitude = $request->latitude ?? null;
+                $profile->longitude = $request->longitude ?? null;
+                $profile->country = $request->country ?? null;
+                $profile->last_name = $request->last_name ?? null;
+                $profile->bio = $request->bio ?? null;
+                $profile->language = $request->language ?? 'English';
+                $profile->save();
+
+                if ($request->hasFile('image')) {
+                    $image = $request->file('image');
+                    $originalName = $image->getClientOriginalName();
+                    $filename = time() . '_' . $originalName;
+    
+                    $image->move('uploads/profile/', $filename);
+                    $profile->image = url('uploads/profile/' . $filename);
+                    $profile->save();
+                }
+
+                // attach to user
+                $user->profile()->save($profile);
+                $user->save();
+                DB::commit();
+                return ResponseHelper::success('Profile created successfully', $user->load('profile'));
             }
+            
         
             $request->name ? $user->name = $request->name : null;
             $request->email ? $user->email = $request->email : null;
@@ -143,17 +161,20 @@ class AuthController extends Controller
             $user->save();
 
             // Update the profile with the new location
-            $profile->location = $request->name ?? null;
-            $profile->latitude = $request->latitude ?? null;
-            $profile->longitude = $request->longitude ?? null;
-            $profile->country = $request->country ?? null;
-            $profile->last_name = $request->last_name ?? null;
-            $profile->bio = $request->bio ?? null;
-            $profile->language = $request->language ?? 'English';
+            $request->location ? $user->profile->location = $request->location : null;
+            $request->latitude ? $user->profile->latitude = $request->latitude : null;
+            $request->longitude ? $user->profile->longitude = $request->longitude : null;
+            $request->country ? $user->profile->country = $request->country : null;
+            $request->last_name ? $user->profile->last_name = $request->last_name : null;
+            $request->bio ? $user->profile->bio = $request->bio : null;
+            $request->language ? $user->profile->language = $request->language : null;
+            $user->profile->save();
+    
     
             if ($request->hasFile('image')) {
                 // Delete the old image if it exists
-                $relativePath = parse_url($profile->image, PHP_URL_PATH);
+                $relativePath = parse_url($user->profile->image, PHP_URL_PATH);
+
                 if (file_exists(public_path($relativePath))) {
                     unlink(public_path($relativePath)); // Deletes the file
                 }
@@ -163,10 +184,9 @@ class AuthController extends Controller
                 $filename = time() . '_' . $originalName;
 
                 $image->move('uploads/profile/', $filename);
-                $profile->image = url('uploads/profile/' . $filename);
+                $user->profile->image = url('uploads/profile/' . $filename);
+                $user->profile->save();
             }
-            // Save the updated profile
-            $profile->save();
             
             // Update the user's profile
             DB::commit();

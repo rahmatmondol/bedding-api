@@ -48,17 +48,11 @@ class BidsController extends Controller
 
         try {
             //get provider info by bid id
-            $information = Bids::with(
-                [
-                    'provider' => function ($query) {
-                    $query->with(['reviews', 'profile']);
-                }, 
-                'service'
-            ])->findOrFail($bidId);
+            $information = Bids::with(['provider', 'provider.profile','provider.reviews', 'service'])->findOrFail($bidId);
     
             return ResponseHelper::success('Bid information', $information);
         } catch (\Exception $e) {
-            return ResponseHelper::error('Error retrieving bids', 'An error occurred while retrieving bids. Please try again later.', 500);
+            return ResponseHelper::error('Error retrieving bids', 'Internal server error', 500);
         }
     }
     

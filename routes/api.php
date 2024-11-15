@@ -9,6 +9,7 @@ use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\BidsController;
 use App\Http\Controllers\BookingsController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\ReviewsController;
 
 Route::group([
     'middleware' => 'api',
@@ -94,7 +95,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     Route::delete('delete-wishlist/{wishlist}', [WishlistController::class, 'destroy']);
 
     // review routes
-    Route::get('get-reviews', [BidsController::class, 'reviews']);
-    Route::post('create-review', [BidsController::class, 'storeReview']);
+    Route::get('get-reviews', [ReviewsController::class, 'index']);
+    Route::post('create-review', [ReviewsController::class, 'store']);
 
 });
