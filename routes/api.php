@@ -22,6 +22,7 @@ Route::group([
     Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
     Route::post('change-password', [AuthController::class, 'changePassword']);
+ 
 });
 
 // ===============================
@@ -53,8 +54,8 @@ Route::get('get-service/{id}', [ServicesController::class, 'show']);
 // ===============================
 Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
 
-    // set location
-    Route::post('set-location', [AuthController::class, 'setLocation']);
+   // set location
+   Route::post('set-location', [AuthController::class, 'setLocation'])->name('set-location');
 
     // create category routes
     Route::post('create-category', [CategoriesController::class, 'store']);
@@ -73,7 +74,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     Route::get('get-biddings', [BidsController::class, 'index']);
     Route::get('get-bidding/{id}', [BidsController::class, 'show']);
     Route::get('get-bidding-info', [BidsController::class, 'info']);
-    Route::post('create-bidding', [BidsController::class, 'store']);
+    Route::post('create-bidding', [BidsController::class, 'store'])->name('create-bidding');
     Route::put('update-bidding/{id}', [BidsController::class, 'update']);
     Route::delete('delete-bidding/{id}', [BidsController::class, 'destroy']);
 

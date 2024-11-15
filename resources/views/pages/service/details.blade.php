@@ -17,9 +17,9 @@
                         <div data-wow-delay="0s" class="wow fadeInLeft tf-card-box style-5">
                             <div class="card-media mb-0">
                                 @foreach ($service->images as $image)
-                                <a href="" >
-                                    <img class="pb-4" src="{{ $image->path }}" alt="{{ $image->name }}">
-                                </a>
+                                    <a href="">
+                                        <img class="pb-4" src="{{ $image->path }}" alt="{{ $image->name }}">
+                                    </a>
                                 @endforeach
                             </div>
                             <h6 class="price gem"><i class="icon-gem"></i></h6>
@@ -83,19 +83,72 @@
                         <div data-wow-delay="0s" class="wow fadeInRight product-item details">
                             <div id="map" style="height: 400px;width: 100%"></div>
                         </div>
-                        <livewire:service.show-bids :service_id="$service->id">
+                        <x-have-bids serviceId="{{ $service->id }}" />
                     </div>
 
                 </div>
             </div>
         </div>
 
-        <livewire:releted-services-slider :categoryId="$service->category_id" />
-        <livewire:service.bid-popup :service="$service" />
+        <x-releted-servce-slider categoryId="{{ $service->category->id }}" />
+        <x-bid-popup serviceId="{{ $service->id }}" />
 
     </div>
-   
+
 </x-guest-layout>
+
+<script>
+    $(document).ready(function() {
+        let amount = $('#amount').val();
+        let massage = $('#massage').val();
+
+        // ajax request
+        $('#submit').on('click', function(e) {
+
+            $.ajax({
+                url: "{{ route('create-bidding') }}",
+                method: "POST",
+                data: {
+                    amount: amount,
+                    massage: massage,
+                    provider: '{{ auth()->user()->id }}',
+                    service: '{{ $service->id }}',
+                    customer: '{{ $service->user_id }}',
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(data) {
+                    console.log(data);
+                    if (data.success) {
+                        $('.close').click();
+                        // show success message
+                        Swal.fire({
+                            icon: "success",
+                            title: "Success",
+                            text: data.message,
+                        }).then(() => {
+                            // Refresh the page after the success message is closed
+                            location.reload();
+                        });
+
+                    }
+                },
+                error: function({
+                    responseJSON
+                }) {
+                    $('.close').click();
+                    console.log(responseJSON);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: responseJSON.message,
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+
 <script>
     var map;
     var marker;

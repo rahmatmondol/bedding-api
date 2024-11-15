@@ -25,6 +25,10 @@ route::get('/', function () {
 
 // user login route
 route::get('/auth', function () {
+    // check if user is logged in redirect to dashboard
+    if(auth()->check()){
+        return redirect()->route('auth-dashboard');
+    }
     return view('auth.login');
 })->name('auth-login');
 
@@ -78,7 +82,11 @@ route::middleware('auth')->group(function () {
         return view('user.service.list');
     })->name('auth-service-list');
 
+    Route::post('create-bidding', [BidsController::class, 'localstore'])->name('create-bidding');
+
 });
+
+
 
 
 

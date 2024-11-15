@@ -63,7 +63,7 @@
     <script src="{{ asset('user/assets/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('user/assets/js/swiper-bundle.min.js') }}"></script>
     <script src="{{ asset('user/assets/js/swiper.js') }}"></script>
-    <script src="{{ asset('user/assets/js/countto.js') }}"></script>
+    {{-- <script src="{{ asset('user/assets/js/countto.js') }}"></script> --}}
     <script src="{{ asset('user/assets/js/count-down.js') }}"></script>
 
     <script src="{{ asset('user/assets/js/simpleParallax.min.js') }}"></script>
@@ -75,6 +75,8 @@
     <script src="{{ asset('user/assets/js/tsparticles.min.js') }}"></script>
     <script src="{{ asset('user/assets/js/tsparticles.js') }}"></script>
     <script src="{{ asset('user/assets/js/main.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </body>
 
 

@@ -27,14 +27,14 @@ class DatabaseSeeder extends Seeder
 
         $admin = \App\Models\User::factory()->create([
             'name' => 'admin',
-            'email' => 'admin@example.com',
-            'password' => bcrypt('12345'),
+            'email' => 'admin@admin.com',
+            'password' => bcrypt('12345678'),
         ]);
 
         $customer = \App\Models\User::factory()->create([
             'name' => 'customer',
-            'email' => 'customer@example.com',
-            'password' => bcrypt('12345'),
+            'email' => 'customer@customer.com',
+            'password' => bcrypt('12345678'),
         ]);
 
         $provider = \App\Models\User::factory()->create([
@@ -104,16 +104,16 @@ class DatabaseSeeder extends Seeder
 
 
         // Create 10 services, each with 3 related images
-        // Services::factory()
-        // ->count(50)
-        // ->create()
-        // ->each(function ($service) {
-        //     // Attach 3 random skills
-        //     $service->skills()->sync(Skills::all()->random(3)->pluck('id')->toArray());
+        Services::factory()
+        ->count(50)
+        ->create()
+        ->each(function ($service) {
+            // Attach 3 random skills
+            $service->skills()->sync(Skills::all()->random(3)->pluck('id')->toArray());
     
-        //     // Create and assign images directly if it is a hasMany relationship
-        //     Images::factory()->count(2)->create(['service_id' => $service->id]);
-        // });
+            // Create and assign images directly if it is a hasMany relationship
+            Images::factory()->count(2)->create(['service_id' => $service->id]);
+        });
     
 
       

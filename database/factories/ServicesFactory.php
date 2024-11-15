@@ -29,11 +29,11 @@ class ServicesFactory extends Factory
         // 'commission', // int
 
         return [
-            'title' => $this->faker->title,
+            'title' => $this->faker->sentence,
             'slug' => $this->faker->slug,
             'description' => $this->faker->text,
             'price' => $this->faker->randomFloat(),
-            'priceType' => $this->faker->randomElement(['Nagotiation', 'Fixed']),
+            'priceType' => $this->faker->randomElement(['Negotiable', 'Fixed']),
             'currency' => $this->faker->randomElement(['AED', 'USD']),
             'status' => $this->faker->randomElement(['Active', 'Inactive']),
             'level' => $this->faker->randomElement(['Entry', 'Intermediate', 'Expert']),

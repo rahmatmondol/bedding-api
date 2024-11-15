@@ -104,7 +104,7 @@ class AuthController extends Controller
     
         // Check if the user is authenticated
         $user = auth()->user();
-    
+
         if (!$user) {
             return ResponseHelper::error('User not authenticated', 401);
         }
@@ -112,10 +112,16 @@ class AuthController extends Controller
         // Get the user's profile
         $profile = $user->profile;
         if (!$profile) {
-            return ResponseHelper::error('Profile not found', 404);
+            // Create a new profile for the user
+            $profile = $user->profile()->create([
+                'user_id' => $user->id,
+                'location' => $request->name,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+            ]);
         }
     
-        // DB::beginTransaction();
+        DB::beginTransaction();
     
         try {
             // Update the profile with the new location
@@ -125,7 +131,7 @@ class AuthController extends Controller
             $profile->save();
             
             // Update the user's profile
-            // DB::commit();
+            DB::commit();
             return ResponseHelper::success('Location set successfully', $profile);
     
         } catch (\Exception $e) {

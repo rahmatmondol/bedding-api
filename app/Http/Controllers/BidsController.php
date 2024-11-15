@@ -127,6 +127,44 @@ class BidsController extends Controller
         }
     }
 
+       /**
+     * Store a newly created resource in storage.
+     */
+    public function localstore(StoreBidsRequest $request)
+    {
+        DB::beginTransaction();
+        // dd($request->all());
+        try {
+            // Create bid
+            $bid = new Bids;
+            $bid->amount = $request->amount;
+            $bid->message = $request->message ?? '';
+            $bid->save();
+
+            // attach to service
+            $bid->service()->associate($request->service);
+            $bid->save();
+
+            // attach to user
+            $bid->provider()->associate($request->provider);
+            $bid->save();
+
+            // attach to user
+            $bid->customer()->associate($request->customer);
+            $bid->save();
+
+            // If everything goes well, commit the transaction
+            DB::commit();
+
+            return ResponseHelper::success('Successfully bid placed', $bid);
+        } catch (\Exception $e) {
+            // If any error occurs, rollback the transaction
+            DB::rollBack();
+
+            return ResponseHelper::error('bid placed failed: ' . $e->getMessage(), 500);
+        }
+    }
+
     /**
      * Display the specified resource.
      */

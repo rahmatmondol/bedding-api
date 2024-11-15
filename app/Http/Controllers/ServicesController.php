@@ -24,8 +24,9 @@ class ServicesController extends Controller
      */
     public function index()
     {
-        $subCategoryId = request()->query('subcategory');
-        $categoryId = request()->query('category');
+        $customerId = request()->query('customer_id');
+        $subCategoryId = request()->query('subcategory_id');
+        $categoryId = request()->query('category_id');
         $location = request()->query('location');
         $latitude = request()->query('latitude');
         $longitude = request()->query('longitude');
@@ -34,10 +35,13 @@ class ServicesController extends Controller
         $status = request()->query('status');
         $level = request()->query('level');
         $featured = request()->query('featured');
+        $search = request()->query('search');
 
         try {
             // Build the query with optional filters
             $query = Services::with(['images', 'skills'])
+                ->when($customerId, fn($q) => $q->where('user_id', $customerId))
+                ->when($search, fn($q) => $q->where('title', 'LIKE', "%{$search}%"))
                 ->when($subCategoryId, fn($q) => $q->where('sub_category_id', $subCategoryId))
                 ->when($categoryId, fn($q) => $q->where('category_id', $categoryId))
                 ->when($priceType, fn($q) => $q->where('priceType', $priceType))
@@ -189,6 +193,8 @@ class ServicesController extends Controller
         
     }
 
+
+    
     /**
      * Display the specified resource.
      */

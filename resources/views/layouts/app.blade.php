@@ -74,7 +74,6 @@
     <script src="{{ asset('user/assets/js/tsparticles.min.js') }}"></script>
     <script src="{{ asset('user/assets/js/tsparticles.js') }}"></script>
     <script src="{{ asset('user/assets/js/main.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 </body>
