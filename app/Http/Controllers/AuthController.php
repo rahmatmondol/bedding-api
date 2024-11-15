@@ -90,53 +90,91 @@ class AuthController extends Controller
             return response()->json(['error' => 'Could not create token'], 500);
         }
 
-        return response()->json(compact('token'));
+        $user = auth()->user()->load('profile');
+
+        return response()->json(compact('token', 'user'));
     }
 
     // Set location
-    public function setLocation(Request $request)
+    public function updateProfile(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'latitude' => 'required|string|max:255',
-            'longitude' => 'required|string|max:255',
-        ]);
-    
-        // Check if the user is authenticated
-        $user = auth()->user();
 
-        if (!$user) {
-            return ResponseHelper::error('User not authenticated', 401);
-        }
-    
-        // Get the user's profile
-        $profile = $user->profile;
-        if (!$profile) {
-            // Create a new profile for the user
-            $profile = $user->profile()->create([
-                'user_id' => $user->id,
-                'location' => $request->name,
-                'latitude' => $request->latitude,
-                'longitude' => $request->longitude,
-            ]);
-        }
-    
         DB::beginTransaction();
     
         try {
+            $request->validate([
+                'name' => 'string|max:255',
+                'email' => 'email|unique:users,email,' . auth()->user()->id,
+                'mobile' => 'string|unique:users,mobile,' . auth()->user()->id,
+                'latitude' => 'string',
+                'longitude' => 'string',
+                'country' => 'string|max:255',
+                'last_name' => 'string|max:255',
+                'bio' => 'string',
+                'language' => 'string|max:255',
+            ]);
+    
+            // Check if the user is authenticated
+            $user = auth()->user();
+    
+            if (!$user) {
+                return ResponseHelper::error('User not authenticated', 401);
+            }
+        
+            // Get the user's profile
+            $profile = $user->profile;
+            if (!$profile) {
+                // Create a new profile for the user
+                $profile = $user->profile()->create([
+                    'user_id' => $user->id ?? null,
+                    'location' => $request->name ?? null,
+                    'latitude' => $request->latitude ?? null,
+                    'longitude' => $request->longitude ?? null,
+                    'country' => $request->country ?? null,
+                    'last_name' => $request->last_name ?? null,
+                    'bio' => $request->bio ?? null,
+                    'language' => $request->language ?? 'English',
+                ]);
+            }
+        
+            $request->name ? $user->name = $request->name : null;
+            $request->email ? $user->email = $request->email : null;
+            $request->mobile ? $user->mobile = $request->mobile : null;
+            $user->save();
+
             // Update the profile with the new location
-            $profile->location = $request->name;
-            $profile->latitude = $request->latitude;
-            $profile->longitude = $request->longitude;
+            $profile->location = $request->name ?? null;
+            $profile->latitude = $request->latitude ?? null;
+            $profile->longitude = $request->longitude ?? null;
+            $profile->country = $request->country ?? null;
+            $profile->last_name = $request->last_name ?? null;
+            $profile->bio = $request->bio ?? null;
+            $profile->language = $request->language ?? 'English';
+    
+            if ($request->hasFile('image')) {
+                // Delete the old image if it exists
+                $relativePath = parse_url($profile->image, PHP_URL_PATH);
+                if (file_exists(public_path($relativePath))) {
+                    unlink(public_path($relativePath)); // Deletes the file
+                }
+
+                $image = $request->file('image');
+                $originalName = $image->getClientOriginalName();
+                $filename = time() . '_' . $originalName;
+
+                $image->move('uploads/profile/', $filename);
+                $profile->image = url('uploads/profile/' . $filename);
+            }
+            // Save the updated profile
             $profile->save();
             
             // Update the user's profile
             DB::commit();
-            return ResponseHelper::success('Location set successfully', $profile);
+            return ResponseHelper::success('account updated successfully', $user);
     
         } catch (\Exception $e) {
             DB::rollBack();
-            return ResponseHelper::error('Failed to set location: ' . $e->getMessage(), 500);
+            return ResponseHelper::error('account update failed:' . $e->getMessage(), 500);
         }
     }
 
