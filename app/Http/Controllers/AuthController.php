@@ -212,14 +212,26 @@ class AuthController extends Controller
     // Change password
     public function changePassword(Request $request)
     {
-        $request->validate([
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+        try {
+            $request->validate([
+                'password' => 'required|string|min:8|confirmed|different:current_password',
+                'current_password' => 'required|string|',
+            ]);
+    
+            // Check if the current password is correct
+            if (!Hash::check($request->current_password, auth()->user()->password)) {
+                return ResponseHelper::error('Current password is incorrect', 401);
+            }
 
-        auth()->user()->update([
-            'password' => bcrypt($request->password),
-        ]);
+            auth()->user()->update([
+                'password' => bcrypt($request->password),
+            ]);
 
-        return response()->json(['message' => 'Password changed successfully']);
+            return ResponseHelper::success('Password changed successfully');
+        } catch (\Exception $e) {
+            // Provide a more descriptive error response if query fails
+            return ResponseHelper::error('Failed to change password: ' . $e->getMessage(), 500);
+        }
+ 
     }
 }

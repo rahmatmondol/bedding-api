@@ -21,7 +21,6 @@ Route::group([
     Route::post('register', [AuthController::class, 'register']);
     Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
-    Route::post('change-password', [AuthController::class, 'changePassword']);
 });
 
 // ===============================
@@ -55,6 +54,10 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
 
     // update profile routes
     Route::post('update-profile', [AuthController::class, 'updateProfile']);
+
+    // password update routes
+    Route::post('change-password', [AuthController::class, 'changePassword']);
+
 
     // create category routes
     Route::post('create-category', [CategoriesController::class, 'store']);
