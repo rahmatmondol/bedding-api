@@ -8,11 +8,11 @@ class Wishlist extends Model
 {
     public function service()
     {
-        return $this->hasOne(Service::class);
+        return $this->belongsTo(Services::class);
     }
 
     public function provider()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'provider_id');
     }
 }

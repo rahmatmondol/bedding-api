@@ -8,6 +8,7 @@ use App\Http\Controllers\SubCategoriesController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\BidsController;
 use App\Http\Controllers\BookingsController;
+use App\Http\Controllers\WishlistController;
 
 Route::group([
     'middleware' => 'api',
@@ -86,5 +87,14 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     Route::post('create-booking', [BookingsController::class, 'store']);
     Route::post('update-booking/{booking}', [BookingsController::class, 'update']);
     Route::delete('delete-booking/{id}', [BookingsController::class, 'destroy']);
+
+    // wishlist routes
+    Route::get('get-wishlists', [WishlistController::class, 'index']);
+    Route::post('create-wishlist', [WishlistController::class, 'store']);
+    Route::delete('delete-wishlist/{wishlist}', [WishlistController::class, 'destroy']);
+
+    // review routes
+    Route::get('get-reviews', [BidsController::class, 'reviews']);
+    Route::post('create-review', [BidsController::class, 'storeReview']);
 
 });

@@ -11,6 +11,9 @@ class StoreWishlistRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        if (auth()->user()->hasRole('provider') || auth()->user()->hasRole('admin')) {
+            return true;
+        }
         return false;
     }
 
@@ -22,7 +25,7 @@ class StoreWishlistRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'service_id' => 'required|exists:services,id|unique:wishlists',
         ];
     }
 }

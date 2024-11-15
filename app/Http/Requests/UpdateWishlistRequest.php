@@ -11,6 +11,9 @@ class UpdateWishlistRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        if (auth()->user()->hasRole('provider') || auth()->user()->hasRole('admin')) {
+            return true;
+        }
         return false;
     }
 
@@ -22,7 +25,7 @@ class UpdateWishlistRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'status' => 'required|in:active,inactive',
         ];
     }
 }

@@ -67,4 +67,9 @@ class Services extends Model
         return $this->hasMany(Bids::class);
     }
 
+    public function wishlist()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
 }
