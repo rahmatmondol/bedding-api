@@ -14,7 +14,7 @@ class Bids extends Model
 
     public function provider()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'provider_id');
     }
 
     public function service()
@@ -24,7 +24,7 @@ class Bids extends Model
 
     public function customer()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'customer_id');
     }
 }
 

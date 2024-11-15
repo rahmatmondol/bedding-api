@@ -10,6 +10,7 @@ use App\Http\Requests\StoreBookingsRequest;
 use App\Http\Requests\UpdateBookingsRequest;
 use App\Helpers\ResponseHelper;
 use Illuminate\Support\Facades\DB;
+use App\Models\Bids;
 
 class BookingsController extends Controller
 {
@@ -18,26 +19,33 @@ class BookingsController extends Controller
      */
     public function index()
     {
-       // send all booking by service id
-       $serviceId = request()->query('service_id');
-       $customerId = request()->query('customer_id');
-       $status = request()->query('status');
+        // send all booking by service id
+        $serviceId = request()->query('service_id');
+        $status = request()->query('status');
 
-       if (!$customerId && !$serviceId && !$status) {
-           return ResponseHelper::error('bookings', 'Please provide customer id, service id and status', 404);
-       }
+        $providerId = auth()->user()->hasRole('provider') ? auth()->user()->id : null;
+        $customerId = auth()->user()->hasRole('customer') ? auth()->user()->id : null;
 
-       try {
-           $query = Bookings::with(['service','bid:id,amount'])
-           ->when($customerId, fn($q) => $q->where('customer_id', $customerId))
-           ->when($serviceId, fn($q) => $q->where('service_id', $serviceId))
-           ->when($status, fn($q) => $q->where('status', $status));
-           $bookings = $query->get();
+        try {
+            $bookings = Bookings::with(['service', 'service.images', 'service.skills', 'bid:id,amount'])
+                ->when($customerId, function ($query) use ($customerId) {
+                    return $query->where('customer_id', $customerId);
+                })
+                ->when($providerId, function ($query) use ($providerId) {
+                    return $query->where('provider_id', $providerId);
+                })
+                ->when($serviceId, function ($query) use ($serviceId) {
+                    return $query->where('service_id', $serviceId);
+                })
+                ->when($status, function ($query) use ($status) {
+                    return $query->where('status', $status);
+                })
+                ->get();
 
-           return ResponseHelper::success('bookings', $bookings);
-       } catch (\Exception $e) {
-           return ResponseHelper::error('bookings', $e->getMessage(), 404);
-       }
+            return ResponseHelper::success('bookings', $bookings);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('bookings', $e->getMessage(), 404);
+        }
     }
 
     /**
@@ -57,17 +65,21 @@ class BookingsController extends Controller
         DB::beginTransaction();
 
         try {
+
+            // get provider info by bid id
+            $info = Bids::findOrFail($request->bid_id);
+
             // Create bokking
             $booking = new Bookings;
 
             // attach to service
-            $booking->service()->associate($request->service_id);
+            $booking->service()->associate($info->service_id);
 
             // attach to user
-            $booking->provider()->associate($request->provider_id);
+            $booking->provider()->associate($info->provider_id);
 
             // attach to user
-            $booking->customer()->associate($request->customer_id);
+            $booking->customer()->associate(auth()->user()->id);
 
             // attach to user
             $booking->bid()->associate($request->bid_id);
@@ -105,9 +117,19 @@ class BookingsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateBookingsRequest $request, Bookings $bookings)
+    public function update(UpdateBookingsRequest $request, Bookings $booking)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $booking->status = $request->status;
+            $booking->save();
+            DB::commit();
+            return ResponseHelper::success('Successfully booking placed', $booking);
+        } catch (\Exception $e) {
+            // If any error occurs, rollback the transaction
+            DB::rollBack();
+            return ResponseHelper::error('booking placed failed: ' . $e->getMessage(), 500);
+        }
     }
 
     /**

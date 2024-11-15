@@ -37,10 +37,7 @@ class StoreBookingsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'service_id' => 'required|exists:services,id',
-            'provider_id' => 'required|exists:users,id',
-            'customer_id' => 'required|exists:users,id',
-            'bid_id' => 'required|exists:bids,id',
+            'bid_id' => 'required|exists:bids,id|unique:bookings,bid_id',
         ];
     }
 }

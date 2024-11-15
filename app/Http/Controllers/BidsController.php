@@ -7,6 +7,8 @@ use App\Http\Requests\StoreBidsRequest;
 use App\Http\Requests\UpdateBidsRequest;
 use App\Helpers\ResponseHelper;
 use Illuminate\Support\Facades\DB;
+use App\Models\Services;
+
 
 class BidsController extends Controller
 {
@@ -16,23 +18,17 @@ class BidsController extends Controller
     public function index()
     {
         // send all bids by service id
-        $providerId = request()->query('provider_id');
         $serviceId = request()->query('service_id');
-        $customerId = request()->query('customer_id');
         $status = request()->query('status');
 
-        if (!$providerId && !$customerId) {
-            return ResponseHelper::error('Bids', 'Please provide a provider id or customer id', 404);
-        }
-
-        if (!$providerId && !$serviceId && !$status) {
-            return ResponseHelper::error('Bids', 'Please provide a provider id, service id or status', 404);
-        }
+        $providerId = auth()->user()->hasRole('provider') ? auth()->user()->id : null;
+        $customerId = auth()->user()->hasRole('customer') ? auth()->user()->id : null;
 
         try {
             $query = Bids::when($providerId, fn($q) => $q->where('provider_id', $providerId))
             ->when($serviceId, fn($q) => $q->where('service_id', $serviceId))
-            ->when($customerId, fn($q) => $q->where('customer_id', $customerId))
+            ->when($customerId, fn($q) => $q->where('customer_id', $customerId)
+            ->with(['provider', 'provider.profile']))
             ->when($status, fn($q) => $q->where('status', $status));
             $bids = $query->get();
 
@@ -48,33 +44,19 @@ class BidsController extends Controller
     public function info()
     {
         // Retrieve query parameters
-        $bidId = request()->query('bid');
-        $serviceId = request()->query('service');
-        $customerId = request()->query('customer');
-    
-        // Check if at least one parameter is provided
-        if (!$bidId && !$serviceId && !$customerId) {
-            return ResponseHelper::error('Invalid data', 'Please provide at least one of the following: customer id, service id, or bid id', 400);
-        }
-    
+        $bidId = request()->query('bid_id');
+
         try {
-            // Build the query with conditions and eager load relationships
-            $query = Bids::when($bidId, fn($q) => $q->where('id', $bidId))
-                ->when($serviceId, fn($q) => $q->where('service_id', $serviceId))
-                ->when($customerId, fn($q) => $q->where('customer_id', $customerId))
-                ->with([
+            //get provider info by bid id
+            $information = Bids::with(
+                [
                     'provider' => function ($query) {
-                        $query->with([
-                            'reviews',
-                            'profile',
-                        ]);
-                    },
-                    'service:id,price',
-                ]);
-                // ->select('id', 'amount', 'message');
-            $bids = $query->get();
+                    $query->with(['reviews', 'profile']);
+                }, 
+                'service'
+            ])->findOrFail($bidId);
     
-            return ResponseHelper::success('Bids retrieved successfully', $bids);
+            return ResponseHelper::success('Bid information', $information);
         } catch (\Exception $e) {
             return ResponseHelper::error('Error retrieving bids', 'An error occurred while retrieving bids. Please try again later.', 500);
         }
@@ -95,25 +77,30 @@ class BidsController extends Controller
     public function store(StoreBidsRequest $request)
     {
         DB::beginTransaction();
-        // dd($request->all());
         try {
+            // Check if the user already has a bid for the service
+            if (auth()->user()->providerBids()->where('service_id', $request->service_id)->exists()) {
+                return ResponseHelper::error('Error placing bid', 'You already have a bid for this service', 422);
+            }
+
             // Create bid
             $bid = new Bids;
             $bid->amount = $request->amount;
             $bid->message = $request->message ?? '';
             $bid->save();
 
+            $bid->provider()->associate(auth()->user()->id);
+            $bid->save();
+
+            // attach to customer
+            $service = Services::find($request->service_id);
+            $bid->customer()->associate($service->user_id);
+            $bid->save();
+
             // attach to service
-            $bid->service()->associate($request->service);
+            $bid->service()->associate($request->service_id);
             $bid->save();
-
-            // attach to user
-            $bid->provider()->associate($request->provider);
-            $bid->save();
-
-            // attach to user
-            $bid->customer()->associate($request->customer);
-            $bid->save();
+           
 
             // If everything goes well, commit the transaction
             DB::commit();
@@ -133,8 +120,12 @@ class BidsController extends Controller
     public function localstore(StoreBidsRequest $request)
     {
         DB::beginTransaction();
-        // dd($request->all());
+
         try {
+            if (auth()->user()->providerBids()->where('service_id', $request->service_id)->exists()) {
+                return ResponseHelper::error('Error placing bid', 'You already have a bid for this service', 422);
+            }
+
             // Create bid
             $bid = new Bids;
             $bid->amount = $request->amount;

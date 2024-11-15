@@ -193,8 +193,6 @@ class ServicesController extends Controller
         
     }
 
-
-    
     /**
      * Display the specified resource.
      */
@@ -202,6 +200,20 @@ class ServicesController extends Controller
     {
         $service = Services::with('images', 'skills', 'category','customer')->where('slug', $slug)->firstOrFail();
         return view('pages.service.details', compact('service'));
+    }
+
+     /**
+     * Display the specified resource.
+     */
+    public function showSingle($id)
+    {
+        try {
+            $service = Services::with('images', 'skills', 'category', 'customer')->findOrFail($id);
+            return ResponseHelper::success('Service Details', $service);
+        } catch (\Exception $e) {
+            // Provide a more descriptive error response if query fails
+            return ResponseHelper::error('Service Details not found: ' . $e->getMessage(), 500);
+        }
     }
 
     /**

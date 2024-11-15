@@ -25,11 +25,9 @@ class StoreBidsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'service' => 'required|exists:services,id',
+            'service_id' => 'required|exists:services,id',
             'amount' => 'required|numeric',
             'message' => 'string',
-            'provider' => 'required|exists:users,id|unique:bids,provider_id',
-            'customer' => 'required|exists:users,id',
         ];
     }
 }

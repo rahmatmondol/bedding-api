@@ -46,7 +46,7 @@ Route::get('get-subcategory/{id}', [SubCategoriesController::class, 'show']);
 Route::get('get-services', [ServicesController::class, 'index']);
 
 // get single service routes
-Route::get('get-service/{id}', [ServicesController::class, 'show']);
+Route::get('get-service/{id}', [ServicesController::class, 'showSingle']);
 
 
 // ===============================
@@ -82,7 +82,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     Route::get('get-bookings', [BookingsController::class, 'index']);
     Route::get('get-booking/{id}', [BookingsController::class, 'show']);
     Route::post('create-booking', [BookingsController::class, 'store']);
-    Route::put('update-booking/{id}', [BookingsController::class, 'update']);
+    Route::post('update-booking/{booking}', [BookingsController::class, 'update']);
     Route::delete('delete-booking/{id}', [BookingsController::class, 'destroy']);
 
 });

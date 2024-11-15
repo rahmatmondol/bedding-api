@@ -69,9 +69,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(Profile::class);
     }
 
-    public function bids()
+    public function providerBids()
     {
-        return $this->hasMany(Bids::class);
+        return $this->hasMany(Bids::class, 'provider_id');
+    }
+
+    public function customerBids()
+    {
+        return $this->hasMany(Bids::class, 'customer_id');
     }
 
     public function payments()
