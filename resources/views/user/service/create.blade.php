@@ -46,7 +46,7 @@
                                 <label>Skill and Expertice *</label>
                                 <textarea id="message" name="skills" rows="4"
                                     placeholder="Add Up to 10 keyword to help pepole discover your project..." tabindex="2" aria-required="true"
-                                    required="">{{ old('skills') }}</textarea>
+                                    >{{ old('skills') }}</textarea>
                                 @error('skills')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -167,8 +167,6 @@
             </form>
         </div>
     </div>
-
-
 </x-app-layout>
 
 <script>

@@ -1,77 +1,47 @@
 <x-guest-layout>
-    <div class="tf-section-2 pt-60 widget-box-icon">
-        <div class="themesflat-container w920">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="heading-section-1">
-                        <h2 class="tf-title pb-16">Hi, Welcome Back!</h2>
-                        <p class="pb-40">Sing in to your Account</p>
-                        @if (session()->has('message'))
-                            <div class="alert alert-warning" style="font-size: 16px;">
-                                {{ session('message') }}
-                            </div>
-                        @endif
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="widget-login">
-                        <form id="login_form" class="comment-form" method="POST" action="{{ route('login') }}">
-                            @csrf
-                            <fieldset class="email">
-                                <label>Email *</label>
-                                <input type="email" id="email" placeholder="mail@website.com" name="email"
-                                    tabindex="2" value="" aria-required="true">
-                                @error('email')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </fieldset>
+    <!-- Session Status -->
+    <x-auth-session-status class="mb-4" :status="session('status')" />
 
-                            <fieldset class="password">
-                                <label>Password *</label>
-                                <input class="password-input" type="password" id="password"
-                                    placeholder="Min. 8 character" name="password" tabindex="2" value=""
-                                    aria-required="true">
-                                <i class="icon-show password-addon" id="password-addon" onclick="showPassword()"></i>
-                                <div class="forget-password">
-                                    <a href="#">Forget password</a>
-                                </div>
-                            </fieldset>
-                            @error('password')
-                                <span class="text-danger" style="position: relative;top: -60px;">{{ $message }}</span>
-                            @enderror
+    <form method="POST" action="{{ route('login') }}">
+        @csrf
 
-                            <div class="btn-submit mb-30">
-                                <button type="submit" class="tf-button style-1 h50 w-100">
-                                    <span>Login<i class="icon-arrow-up-right"></i></span>
-                                </button>
-                            </div>
-                        </form>
-                        <div class="other">or continue</div>
-                        <div class="login-other">
-                            <a href="#" class="login-other-item">
-                                <img src="{{ asset('user') }}/assets/images/google.png" alt="">
-                                <span>Sign with google</span>
-                            </a>
-                        </div>
-                        <div class="no-account">Don't have an account? <a href="/auth/singup" wire:navigate
-                                class="tf-color">Sign
-                                up</a></div>
-                    </div>
-                </div>
-            </div>
+        <!-- Email Address -->
+        <div>
+            <x-input-label for="email" :value="__('Email')" />
+            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+            <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
-    </div>
 
+        <!-- Password -->
+        <div class="mt-4">
+            <x-input-label for="password" :value="__('Password')" />
+
+            <x-text-input id="password" class="block mt-1 w-full"
+                            type="password"
+                            name="password"
+                            required autocomplete="current-password" />
+
+            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        </div>
+
+        <!-- Remember Me -->
+        <div class="block mt-4">
+            <label for="remember_me" class="inline-flex items-center">
+                <input id="remember_me" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" name="remember">
+                <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
+            </label>
+        </div>
+
+        <div class="flex items-center justify-end mt-4">
+            @if (Route::has('password.request'))
+                <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
+                    {{ __('Forgot your password?') }}
+                </a>
+            @endif
+
+            <x-primary-button class="ml-3">
+                {{ __('Log in') }}
+            </x-primary-button>
+        </div>
+    </form>
 </x-guest-layout>
-
-<script>
-    // show password
-    function showPassword() {
-        var password = document.getElementById("password");
-        if (password.type === "password") {
-            password.type = "text";
-        } else {
-            password.type = "password";
-        }
-    }
-</script>

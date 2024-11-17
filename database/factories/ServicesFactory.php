@@ -44,7 +44,7 @@ class ServicesFactory extends Factory
             'location' => $this->faker->city,
             'latitude' => $this->faker->latitude,
             'longitude' => $this->faker->longitude,
-            'user_id' => $this->faker->numberBetween(1, 3),
+            'user_id' => 2,
         ];
     }
 }

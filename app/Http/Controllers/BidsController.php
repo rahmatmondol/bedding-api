@@ -38,6 +38,11 @@ class BidsController extends Controller
         }
     }
 
+    public function list()
+    {
+        return view('user.bid.list');
+    }
+
         /**
      * Display a listing of the resource.
      */
@@ -114,10 +119,10 @@ class BidsController extends Controller
     public function localstore(StoreBidsRequest $request)
     {
         DB::beginTransaction();
-
         try {
+            // Check if the user already has a bid for the service
             if (auth()->user()->providerBids()->where('service_id', $request->service_id)->exists()) {
-                return ResponseHelper::error('Error placing bid', 'You already have a bid for this service', 422);
+                return ResponseHelper::error('You already have a bid for this service', 422);
             }
 
             // Create bid
@@ -126,17 +131,18 @@ class BidsController extends Controller
             $bid->message = $request->message ?? '';
             $bid->save();
 
+            $bid->provider()->associate(auth()->user()->id);
+            $bid->save();
+
+            // attach to customer
+            $service = Services::find($request->service_id);
+            $bid->customer()->associate($service->user_id);
+            $bid->save();
+
             // attach to service
-            $bid->service()->associate($request->service);
+            $bid->service()->associate($request->service_id);
             $bid->save();
-
-            // attach to user
-            $bid->provider()->associate($request->provider);
-            $bid->save();
-
-            // attach to user
-            $bid->customer()->associate($request->customer);
-            $bid->save();
+           
 
             // If everything goes well, commit the transaction
             DB::commit();

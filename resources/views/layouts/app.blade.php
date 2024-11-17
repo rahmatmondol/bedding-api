@@ -17,12 +17,33 @@
     <!-- Favicon and Touch Icons  -->
     <link rel="shortcut icon" href="{{ asset('user/assets/icon/Favicon.png') }}">
     <link rel="apple-touch-icon-precomposed" href="{{ asset('user/assets/icon/Favicon.png') }}">
+    @livewireStyles
 </head>
 
 <body class="body counter-scroll sticky-scroll1">
     <!-- /#page -->
     <div id="wrapper">
         <div id="page" class="market-page">
+            <!-- SweetAlert Session Flash Messages -->
+            @if (session()->has('success'))
+                <script>
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: '{{ session('success') }}',
+                    });
+                </script>
+            @endif
+
+            @if (session()->has('error'))
+                <script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: '{{ session('error') }}',
+                    });
+                </script>
+            @endif
             @include('layouts.markerHeader')
 
             <div class="btn-canvas active">
@@ -45,7 +66,6 @@
     </div>
 
     </div>
-
     <!-- /#wrapper -->
 
     {{-- <div class="progress-wrap active-progress">
@@ -55,14 +75,17 @@
             </path>
         </svg>
     </div> --}}
+    @livewireScripts
     <!-- Javascript -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script src="{{ asset('user/assets/js/jquery.min.js') }}"></script>
     <script src="{{ asset('user/assets/js/popper.min.js') }}"></script>
     <script src="{{ asset('user/assets/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('user/assets/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('user/assets/js/swiper-bundle.min.js') }}"></script>
     <script src="{{ asset('user/assets/js/swiper.js') }}"></script>
-    {{-- <script src="{{ asset('user/assets/js/countto.js') }}"></script> --}}
+    <script src="{{ asset('user/assets/js/countto.js') }}"></script>
     <script src="{{ asset('user/assets/js/count-down.js') }}"></script>
 
     <script src="{{ asset('user/assets/js/simpleParallax.min.js') }}"></script>
@@ -74,6 +97,15 @@
     <script src="{{ asset('user/assets/js/tsparticles.min.js') }}"></script>
     <script src="{{ asset('user/assets/js/tsparticles.js') }}"></script>
     <script src="{{ asset('user/assets/js/main.js') }}"></script>
+    <script>
+        window.addEventListener('swal', event => {
+            Swal.fire({
+                icon: event.detail.icon,
+                title: event.detail.title,
+                text: event.detail.text,
+            });
+        });
+    </script>
 
 
 </body>

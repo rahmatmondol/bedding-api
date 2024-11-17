@@ -15,6 +15,7 @@ use App\Models\Skills;
 use App\Models\Locations;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Wishlist;
 
 class ServicesController extends Controller
 {
@@ -87,7 +88,7 @@ class ServicesController extends Controller
         $categories = Categories::all();
         $skills = Skills::all();
         $locations = Locations::all();
-        return view('services.create', compact('categories', 'skills', 'locations'));
+        return view('user.service.create', compact('categories', 'skills', 'locations'));
     }
 
     /**
@@ -198,8 +199,7 @@ class ServicesController extends Controller
      */
     public function show($slug)
     {
-        $service = Services::with('images', 'skills', 'category','customer')->where('slug', $slug)->firstOrFail();
-        return view('pages.service.details', compact('service'));
+        return view('pages.service.details');
     }
 
      /**

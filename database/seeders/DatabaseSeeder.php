@@ -42,6 +42,12 @@ class DatabaseSeeder extends Seeder
             'email' => 'provider@provider.com',
             'password' => bcrypt('12345678'),
         ]);
+
+        $profile = Profile::factory()->make();
+        $provider->profile()->save($profile);
+
+        $profile = Profile::factory()->make();
+        $customer->profile()->save($profile);
         
         $adminRole = Role::create(['name' => 'admin']);
         $providerRole = Role::create(['name' => 'provider']);
@@ -64,16 +70,6 @@ class DatabaseSeeder extends Seeder
             Permission::create(['name' => 'create biddings']),
         ]);
 
-        // Create 1 fees
-        Fees::factory()->count(1)->create();
-
-        // Create 20 locations
-        Locations::factory()->count(50)->create();
-
-        // Create 3 profiles
-        // Profile::factory()->count(3)->create();
-        
-    
         // Create 10 skills
         $skills = array(
             ['name' => 'Cooking', 'description' => 'Cooking services'],

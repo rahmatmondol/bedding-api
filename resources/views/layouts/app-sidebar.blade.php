@@ -37,7 +37,7 @@
             <h6>Services</h6>
             <ul class="menu-tab">
                 <li class="tablinks {{ request()->routeIs('auth-service-create') ? 'active' : '' }}" data-tabs="market">
-                    <a href="{{ route('auth-service-create') }}" wire:navigate>
+                    <a href="{{ route('auth-service-create') }}">
                         <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g opacity="0.2">
@@ -61,8 +61,8 @@
                         Create
                     </a>
                 </li>
-                <li class="tablinks {{ request()->routeIs('auth-services') ? 'active' : '' }}" data-tabs="market">
-                    <a href="{{ route('auth-services') }}" wire:navigate>
+                <li class="tablinks {{ request()->routeIs('auth-service-list') ? 'active' : '' }}" data-tabs="market">
+                    <a href="{{ route('auth-service-list') }}" wire:navigate>
                         <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g opacity="0.2">
@@ -92,8 +92,8 @@
         <div class="content">
             <h6>Booking</h6>
             <ul class="menu-tab">
-                <li class="tablinks {{ request()->routeIs('auth-service-create') ? 'active' : '' }}" data-tabs="market">
-                    <a href="{{ route('auth-service-create') }}" wire:navigate>
+                <li class="tablinks {{ request()->routeIs('auth-bid-list') ? 'active' : '' }}" data-tabs="market">
+                    <a href="{{ route('auth-bid-list') }}" wire:navigate>
                         <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g opacity="0.2">
@@ -117,8 +117,8 @@
                         willing to work
                     </a>
                 </li>
-                <li class="tablinks {{ request()->routeIs('auth-services') ? 'active' : '' }}" data-tabs="market">
-                    <a href="{{ route('auth-services') }}" wire:navigate>
+                <li class="tablinks {{ request()->routeIs('auth-service-list') ? 'active' : '' }}" data-tabs="market">
+                    <a href="{{ route('auth-service-list') }}" wire:navigate>
                         <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g opacity="0.2">
@@ -143,8 +143,8 @@
                        Accepted
                     </a>
                 </li>
-                <li class="tablinks {{ request()->routeIs('auth-services') ? 'active' : '' }}" data-tabs="market">
-                    <a href="{{ route('auth-services') }}" wire:navigate>
+                <li class="tablinks {{ request()->routeIs('auth-service-list') ? 'active' : '' }}" data-tabs="market">
+                    <a href="{{ route('auth-service-list') }}" wire:navigate>
                         <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g opacity="0.2">
@@ -205,8 +205,8 @@
                         All Service’s
                     </a>
                 </li>
-                <li class="tablinks {{ request()->routeIs('auth-services') ? 'active' : '' }}" data-tabs="market">
-                    <a href="{{ route('auth-services') }}" wire:navigate>
+                <li class="tablinks {{ request()->routeIs('auth-service-list') ? 'active' : '' }}" data-tabs="market">
+                    <a href="{{ route('auth-service-list') }}" wire:navigate>
                         <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g opacity="0.2">
@@ -231,8 +231,8 @@
                         Completed
                     </a>
                 </li>
-                <li class="tablinks {{ request()->routeIs('auth-services') ? 'active' : '' }}" data-tabs="market">
-                    <a href="{{ route('auth-services') }}" wire:navigate>
+                <li class="tablinks {{ request()->routeIs('auth-service-list') ? 'active' : '' }}" data-tabs="market">
+                    <a href="{{ route('auth-service-list') }}" wire:navigate>
                         <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g opacity="0.2">

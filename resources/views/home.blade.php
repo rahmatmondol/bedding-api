@@ -176,6 +176,7 @@
             </div>
         </div>
         
+        <livewire:service-slider item="10"/>
        
         <div class="tf-section-1 featured-item">
             <div class="themesflat-container">
