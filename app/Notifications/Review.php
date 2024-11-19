@@ -39,9 +39,8 @@ class Review extends Notification
     public function toDatabase($notifiable): array
     {
         return [
-            'review_id' => $this->review->id,
-            'customer_id' => $this->review->customer_id,
-            'service_id' => $this->review->service_id,
+            'route' => route('auth-account-notifications'),
+            'id' => $this->review->id,
             'message' => 'You have a new review',
             'created_at' => now(),
         ];
@@ -53,9 +52,8 @@ class Review extends Notification
     public function toBroadcast($notifiable): BroadcastMessage
     {
         return new BroadcastMessage([
-            'review_id' => $this->review->id,
-            'customer_id' => $this->review->customer_id,
-            'service_id' => $this->review->service_id,
+            'route' => route('auth-account-notifications'),
+            'id' => $this->review->id,
             'message' => 'You have a new review',
             'created_at' => now(),
         ]);
@@ -81,9 +79,8 @@ class Review extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'review_id' => $this->review->id,
-            'customer_id' => $this->review->customer_id,
-            'service_id' => $this->review->service_id,
+            'route' => route('auth-account-notifications'),
+            'id' => $this->review->id,
             'message' => 'You have a new review',
             'created_at' => now(),
         ];

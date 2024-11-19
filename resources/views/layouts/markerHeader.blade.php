@@ -20,15 +20,17 @@
                             stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                         <path d="M14.3888 21.8574C13.0247 23.3721 10.8967 23.3901 9.51947 21.8574" stroke="white"
                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        <circle cx="17" cy="5" r="4" fill="#DDF247" stroke="#1D1D1D"
-                            stroke-width="1.5" />
+                        @if (Auth::user()->unreadNotifications->count() > 0)
+                            <circle cx="17" cy="5" r="4" fill="#DDF247" stroke="#1D1D1D"
+                                stroke-width="1.5" />
+                        @endif
                     </svg>
                 </div>
                 <livewire:notifications />
             </div>
             <div class="popup-user relative">
                 <div class="user">
-                    <img src="{{ asset('user') }}/assets/images/avatar/avatar-small-09.png" alt="">
+                    <img src="{{ Auth::user()->profile->image }}" alt="">
                     <span>
                         {{ Auth::user()->name }}
                         <i class="icon-keyboard_arrow_down"></i></span>

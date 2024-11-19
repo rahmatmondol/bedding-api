@@ -93,7 +93,7 @@ class Bookings extends Component
 
             $review = new Reviews;
             $review->rating = $this->rating ?? 0;
-            $review->comment = $this->comment;
+            $review->comment = $this->comment ?? ' ';
             $review->customer_id = $booking->customer_id;
             $review->provider_id = $booking->provider_id;
             $review->service_id = $booking->service_id;
@@ -105,14 +105,14 @@ class Bookings extends Component
             DB::commit();
 
             // Flash success message and Livewire navigate
-            session()->flash('success', 'Booking Completed successfully.');
+            session()->flash('success', 'Review submitted successfully.');
             return $this->redirect('/auth/booking/list', navigate: true);
             
         } catch (\Exception $e) {
             // Rollback the transaction
             DB::rollBack();
             // Flash error message and Livewire navigate
-            session()->flash('error', 'Failed to accept booking: ' . $e->getMessage());
+            session()->flash('error', 'Failed to review: ' . $e->getMessage());
             return $this->redirect('/auth/booking/list', navigate: true);
         }
     }

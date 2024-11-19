@@ -71,10 +71,13 @@
                                         </div>
                                     </div>
                                     <span class="time">{{ $bid->updated_at->diffForHumans() }}</span>
-                                    <button data-toggle="modal" data-target="#popup_bid-{{ $bid->id }}"
-                                        class="btn btn-primary px-5 mx-4">Accept</button>
-                                    <button wire:click="rejectbid({{ $bid->id }})"
-                                        class="btn btn-danger px-5">Reject</button>
+
+                                    @if (auth()->user()->hasRole('customer'))
+                                        <button data-toggle="modal" data-target="#popup_bid-{{ $bid->id }}"
+                                            class="btn btn-primary px-5 mx-4">Accept</button>
+                                        <button wire:click="rejectbid({{ $bid->id }})"
+                                            class="btn btn-danger px-5">Reject</button>
+                                    @endif
                                 </div>
                             @empty
                                 <div class="widget-creators-item flex items-center">
@@ -153,7 +156,8 @@
                             </div>
                             <div class="col">
                                 <input type="text" class="style-1" id="Bid" placeholder="Bid"
-                                    name="Bid" tabindex="2" value="{{ $bid->service->price }}" aria-required="true" readonly>
+                                    name="Bid" tabindex="2" value="{{ $bid->service->price }}"
+                                    aria-required="true" readonly>
                             </div>
                         </div>
                         <div class="row mt-40">
@@ -168,8 +172,8 @@
                         <div class="row mt-40">
                             <div class="col">
                                 <label style="font-size: 15px;">Additional Massage *</label>
-                                <textarea  id="message" name="message" rows="4" placeholder="Type here..."
-                                    tabindex="2" aria-required="true" readonly style="background: #232323;margin-top: 9px;">{{ $bid->message }}</textarea>
+                                <textarea id="message" name="message" rows="4" placeholder="Type here..." tabindex="2"
+                                    aria-required="true" readonly style="background: #232323;margin-top: 9px;">{{ $bid->message }}</textarea>
                             </div>
                         </div>
                         <div class="row">
@@ -177,8 +181,8 @@
                                 <button class="tf-button btn-danger style-4 h50 w-100 mt-30">Cancel</i></button>
                             </div>
                             <div class="col">
-                                <button wire:click="acceptbid({{ $bid->id }})" class="tf-button style-1 h50 w-100 mt-30"
-                                    style="color: black">Accept</button>
+                                <button wire:click="acceptbid({{ $bid->id }})"
+                                    class="tf-button style-1 h50 w-100 mt-30" style="color: black">Accept</button>
                             </div>
                         </div>
                     </div>

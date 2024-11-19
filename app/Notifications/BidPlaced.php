@@ -34,11 +34,9 @@ class BidPlaced extends Notification
     public function toDatabase($notifiable): array
     {
         return [
-            'bid_id' => $this->bid->id,
-            'amount' => $this->bid->amount,
-            'service_id' => $this->bid->service_id,
-            'provider_id' => $this->bid->provider_id,
-            'message' => $this->bid->message,
+            'route' => route('auth-bid-list'),
+            'id' => $this->bid->id,
+            'message' => 'You have a new bid',
             'created_at' => now(),
         ];
     }
@@ -49,11 +47,9 @@ class BidPlaced extends Notification
     public function toBroadcast($notifiable): BroadcastMessage
     {
         return new BroadcastMessage([
-            'bid_id' => $this->bid->id,
-            'amount' => $this->bid->amount,
-            'service_id' => $this->bid->service_id,
-            'provider_id' => $this->bid->provider_id,
-            'message' => $this->bid->message,
+            'route' => route('auth-bid-list'),
+            'id' => $this->bid->id,
+            'message' => 'You have a new bid',
             'created_at' => now(),
         ]);
     }

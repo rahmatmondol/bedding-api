@@ -10,7 +10,7 @@
                         <span class="inner">All Bookings</span>
                     </li>
                     <li class="item-title">
-                        <span class="inner">Accepted</span>
+                        <span class="inner">Pending</span>
                     </li>
                     <li class="item-title">
                         <span class="inner">Completed</span>
@@ -62,13 +62,15 @@
                                                     </h6>
                                                 </div>
                                             </div>
-                                            @if ($booking->status == 'accepted')
-                                                <button class="btn btn-primary"
-                                                    wire:click="acceptbooking({{ $booking->id }})">Complete
-                                                    Service</button>
-                                            @elseif($booking->status == 'completed' && !$reviews->pluck('service_id')->contains($booking->service_id))
-                                                <button class="btn btn-success" data-toggle="modal"
-                                                    data-target="#popup_review">Review now</button>
+                                            @if (auth()->user()->hasRole('customer'))
+                                                @if ($booking->status == 'accepted')
+                                                    <button class="btn btn-primary"
+                                                        wire:click="acceptbooking({{ $booking->id }})">Make Completed</button>
+                                                @elseif($booking->status == 'completed' && !$reviews->pluck('service_id')->contains($booking->service_id))
+                                                    <button class="btn btn-success" data-toggle="modal"
+                                                        data-target="#popup_review-{{ $booking->id }}">Review
+                                                        now</button>
+                                                @endif
                                             @endif
                                         </div>
                                     </article>
@@ -128,13 +130,15 @@
                                                     </h6>
                                                 </div>
                                             </div>
-                                            @if ($booking->status == 'accepted')
-                                                <button class="btn btn-primary"
-                                                    wire:click="acceptbooking({{ $booking->id }})">Complete
-                                                    Service</button>
-                                            @elseif($booking->status == 'completed' && !$reviews->pluck('service_id')->contains($booking->service_id))
-                                                <button class="btn btn-success" data-toggle="modal"
-                                                    data-target="#popup_review">Review now</button>
+                                            @if (auth()->user()->hasRole('customer'))
+                                                @if ($booking->status == 'accepted')
+                                                    <button class="btn btn-primary"
+                                                        wire:click="acceptbooking({{ $booking->id }})">Make Completed</button>
+                                                @elseif($booking->status == 'completed' && !$reviews->pluck('service_id')->contains($booking->service_id))
+                                                    <button class="btn btn-success" data-toggle="modal"
+                                                        data-target="#popup_review-{{ $booking->id }}">Review
+                                                        now</button>
+                                                @endif
                                             @endif
                                         </div>
                                     </article>
@@ -193,13 +197,15 @@
                                                     </h6>
                                                 </div>
                                             </div>
-                                            @if ($booking->status == 'accepted')
-                                                <button class="btn btn-primary"
-                                                    wire:click="acceptbooking({{ $booking->id }})">Complete
-                                                    Service</button>
-                                            @elseif($booking->status == 'completed' && !$reviews->pluck('service_id')->contains($booking->service_id))
-                                                <button class="btn btn-success" data-toggle="modal"
-                                                    data-target="#popup_review">Review now</button>
+                                            @if (auth()->user()->hasRole('customer'))
+                                                @if ($booking->status == 'accepted')
+                                                    <button class="btn btn-primary"
+                                                        wire:click="acceptbooking({{ $booking->id }})">Make Completed</button>
+                                                @elseif($booking->status == 'completed' && !$reviews->pluck('service_id')->contains($booking->service_id))
+                                                    <button class="btn btn-success" data-toggle="modal"
+                                                        data-target="#popup_review-{{ $booking->id }}">Review now
+                                                    </button>
+                                                @endif
                                             @endif
                                         </div>
                                     </article>
@@ -218,47 +224,49 @@
         </div>
 
     </div>
-
-    <div class="modal fade popup" id="popup_review" tabindex="-1" role="dialog" aria-hidden="true"
-        wire:ignore.self>
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <div class="modal-body">
-                    <h4 class="text-center">Give Review</h4>
-                    <p class="text-center mt-4">How was your experience with this provider?</p>
-                    <div class="row mt-4">
-                        <div class="col">
-                            <select wire:model="rating" id="review_stars" class="form-control" tabindex="2"
-                                aria-required="true">
-                                <option value="1">1 star</option>
-                                <option value="2">2 stars</option>
-                                <option value="3">3 stars</option>
-                                <option value="4">4 stars</option>
-                                <option value="5">5 stars</option>
-                            </select>
+    @foreach ($completed as $booking)
+        <div class="modal fade popup" id="popup_review-{{ $booking->id }}" tabindex="-1" role="dialog"
+            aria-hidden="true" wire:ignore.self>
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <div class="modal-body">
+                        <h4 class="text-center">Give Review</h4>
+                        <p class="text-center mt-4">How was your experience with this provider?</p>
+                        <div class="row mt-4">
+                            <div class="col">
+                                <select wire:model="rating" id="review_stars" class="form-control" tabindex="2"
+                                    aria-required="true">
+                                    <option value="1">1 star</option>
+                                    <option value="2">2 stars</option>
+                                    <option value="3">3 stars</option>
+                                    <option value="4">4 stars</option>
+                                    <option value="5">5 stars</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mt-4">
-                        <div class="col">
-                            <textarea wire:model="comment" id="message" name="message" rows="4" placeholder="Type your review here..."
-                                tabindex="2" aria-required="true" class="form-control" style="background: #232323; color: #fff;"></textarea>
+                        <div class="row mt-4">
+                            <div class="col">
+                                <textarea wire:model="comment" id="message" name="message" rows="4" placeholder="Type your review here..."
+                                    tabindex="2" aria-required="true" class="form-control" style="background: #232323; color: #fff;"></textarea>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mt-4">
-                        <div class="col">
-                            <button type="button" class="btn btn-danger w-100" data-dismiss="modal">Cancel</button>
-                        </div>
-                        <div class="col">
-                            <button wire:click="makereview({{ $booking->id }})" type="button"
-                                class="btn btn-primary w-100">Submit</button>
+                        <div class="row mt-4">
+                            <div class="col">
+                                <button type="button" class="btn btn-danger w-100"
+                                    data-dismiss="modal">Cancel</button>
+                            </div>
+                            <div class="col">
+                                <button wire:click="makereview({{ $booking->id }})" type="button"
+                                    class="btn btn-primary w-100">Submit</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    @endforeach
 
 </div>

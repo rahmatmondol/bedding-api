@@ -34,10 +34,9 @@ class BidAccept extends Notification
     public function toDatabase($notifiable): array
     {
         return [
-            'booking_id' => $this->booking->id,
-            'customer_id' => $this->booking->customer_id,
-            'service_id' => $this->booking->service_id,
-            'message' => 'Bid accepted',
+            'route' => route('auth-bid-list'),
+            'id' => $this->booking->id,
+            'message' => 'Your bid accepted',
             'created_at' => now(),
         ];
     }
@@ -48,10 +47,9 @@ class BidAccept extends Notification
     public function toBroadcast($notifiable): BroadcastMessage
     {
         return new BroadcastMessage([
-            'booking_id' => $this->booking->id,
-            'customer_id' => $this->booking->customer_id,
-            'service_id' => $this->booking->service_id,
-            'message' => 'Bid accepted',
+            'route' => route('auth-bid-list'),
+            'id' => $this->booking->id,
+            'message' => 'Your bid accepted',
             'created_at' => now(),
         ]);
     }
@@ -63,7 +61,7 @@ class BidAccept extends Notification
     {
         return (new MailMessage)
             ->line('Your bid has been accepted.')
-            ->action('View Booking', url('/bookings/' . $this->booking->id))
+            ->action('View Booking', url('auth/bid/' . $this->booking->id))
             ->line('Thank you for using our application!');
     }
 }

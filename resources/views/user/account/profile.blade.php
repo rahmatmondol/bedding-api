@@ -146,7 +146,9 @@
                             icon: 'success',
                             title: 'Success',
                             text: response.message,
-                        });
+                        }).then(function() {
+                            window.location.reload();
+                        })
                     } else {
                         Swal.fire({
                             icon: 'error',

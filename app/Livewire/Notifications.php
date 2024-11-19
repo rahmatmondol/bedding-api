@@ -9,7 +9,7 @@ class Notifications extends Component
 {
     public function render()
     {
-        $notifications = auth()->user()->notifications;
+        $notifications = auth()->user()->unreadNotifications;
         return view('livewire.notifications', compact('notifications'));
     }
 }

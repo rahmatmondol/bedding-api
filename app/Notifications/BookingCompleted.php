@@ -38,10 +38,9 @@ class BookingCompleted extends Notification
     public function toDatabase($notifiable): array
     {
         return [
-            'booking_id' => $this->booking->id,
-            'customer_id' => $this->booking->customer_id,
-            'service_id' => $this->booking->service_id,
-            'message' => 'Booking completed',
+            'route' => route('auth-booking-list'),
+            'id' => $this->booking->id,
+            'message' => 'booking completed',
             'created_at' => now(),
         ];
     }
@@ -52,10 +51,9 @@ class BookingCompleted extends Notification
     public function toBroadcast($notifiable): BroadcastMessage
     {
         return new BroadcastMessage([
-            'booking_id' => $this->booking->id,
-            'customer_id' => $this->booking->customer_id,
-            'service_id' => $this->booking->service_id,
-            'message' => 'Booking completed',
+            'route' => route('auth-booking-list'),
+            'id' => $this->booking->id,
+            'message' => 'booking completed',
             'created_at' => now(),
         ]);
     }
@@ -79,10 +77,9 @@ class BookingCompleted extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'booking_id' => $this->booking->id,
-            'customer_id' => $this->booking->customer_id,
-            'service_id' => $this->booking->service_id,
-            'message' => 'Booking completed',
+            'route' => route('auth-booking-list'),
+            'id' => $this->booking->id,
+            'message' => 'booking completed',
             'created_at' => now(),
         ];
     }
