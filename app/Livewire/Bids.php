@@ -25,6 +25,7 @@ class Bids extends Component
         $bids = BidList::with(['provider','provider.profile', 'service:id,price'])
         ->when($providerId, fn($q) => $q->where('provider_id', $providerId))
         ->when($customerId, fn($q) => $q->where('customer_id', $customerId))
+        ->orderByDesc('created_at')
         ->get();
 
         $this->pending = $bids->where('status', 'pending')->values();

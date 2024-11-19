@@ -22,6 +22,7 @@ class ServiceList extends Component
                 $wishlist_ids = auth()->user()->wishlists->pluck('id')->toArray();
                 $this->services = Services::with(['images', 'customer'])
                     ->whereIn('id', $wishlist_ids)
+                    ->orderByDesc('created_at')
                     ->paginate(8)
                     ->toArray();
             } else {

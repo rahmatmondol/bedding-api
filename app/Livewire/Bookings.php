@@ -28,6 +28,7 @@ class Bookings extends Component
         $bookings = BookingList::with(['service','service.skills', 'service.images', 'provider', 'provider.profile', 'service.category', 'bid:id,amount'])
         ->when($providerId, fn($q) => $q->where('provider_id', $providerId))
         ->when($customerId, fn($q) => $q->where('customer_id', $customerId))
+        ->orderByDesc('created_at')
         ->get();
 
         $this->reviews = Reviews::where('customer_id', auth()->user()->id)->get();
