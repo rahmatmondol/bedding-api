@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\BidsController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 // ===========================
@@ -66,9 +67,10 @@ Route::middleware(['auth'])->group(function () {
 
     // accounts Routes
     Route::prefix('auth/account')->name('auth-account-')->group(function () {
-        Route::get('/profile', fn() => view('user.account.profile'))->name('profile');
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
         Route::get('/messages', fn() => view('user.account.messages'))->name('messages');
         Route::get('/notifications', fn() => view('user.account.notifications'))->name('notifications');
+        route::post('/update-profile', [AuthController::class, 'updateProfile'])->name('update');
     });
 
     

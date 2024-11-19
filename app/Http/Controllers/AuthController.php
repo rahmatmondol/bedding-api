@@ -96,6 +96,8 @@ class AuthController extends Controller
         return response()->json(compact('token', 'user'));
     }
 
+   
+
     // Set location
     public function updateProfile(Request $request)
     {
@@ -135,7 +137,10 @@ class AuthController extends Controller
                 $profile->last_name = $request->last_name ?? null;
                 $profile->bio = $request->bio ?? null;
                 $profile->language = $request->language ?? 'English';
+                $profile->category_id = $request->category_id ?? null;
                 $profile->save();
+
+                // asing category to profile
 
                 if ($request->hasFile('image')) {
                     $image = $request->file('image');
@@ -168,6 +173,7 @@ class AuthController extends Controller
             $request->last_name ? $user->profile->last_name = $request->last_name : null;
             $request->bio ? $user->profile->bio = $request->bio : null;
             $request->language ? $user->profile->language = $request->language : null;
+            $request->category_id ? $user->profile->category_id = $request->category_id : null;
             $user->profile->save();
     
     
