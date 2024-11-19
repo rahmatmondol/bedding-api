@@ -12,6 +12,10 @@ use App\Models\Services;
 
 class BidsController extends Controller
 {
+
+    public $review_rating;
+    public $comment;
+
     /**
      * Display a listing of the resource.
      */

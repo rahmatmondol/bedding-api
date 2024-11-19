@@ -37,24 +37,22 @@
             <div class="row mt-4">
                 <div class="col">
                     <div class="wrap-box-card">
-                        @foreach ($services['data'] as $service)
+                        @forelse ($services['data'] as $service)
                             <div class="col-item" wire:key="{{ $service['id'] }}">
                                 <div class="tf-card-box style-1">
                                     <div class="card-media">
                                         <a href="{{ route('service.details', $service['slug']) }}" wire:navigate.hover>
-                                            @if (!empty($service['images']))
-                                                <img src="{{ $service['images'][0]['path'] }}" alt="" style="width: 100%;">
-                                            @else
-                                                <img src="{{ asset('user/assets/images/default.png') }}" alt="Default Image" style="width: 100%;">
-                                            @endif
+                                            <img src="{{ $service['images'][0]['path'] ?? asset('user/assets/images/default.png') }}"
+                                                alt="Service Image" style="width: 100%;">
                                         </a>
                                         <div class="button-place-bid">
-                                            <a href="{{ route('service.details', $service['slug']) }}" wire:navigate.hover
-                                                class="tf-button mb-2"><span>See Details</span></a>
+                                            <a href="{{ route('service.details', $service['slug']) }}"
+                                                wire:navigate.hover class="tf-button mb-2"><span>See Details</span></a>
                                         </div>
 
                                     </div>
-                                    <h5 class="name"><a href="{{ route('service.details', $service['slug']) }}" wire:navigate.hover>{{ $service['title'] }}</a></h5>
+                                    <h5 class="name"><a href="{{ route('service.details', $service['slug']) }}"
+                                            wire:navigate.hover>{{ $service['title'] }}</a></h5>
                                     <div class="author flex items-center">
                                         <div class="info">
                                             <span>Created by:</span>
@@ -65,12 +63,18 @@
                                     <div class="meta-info flex items-center justify-between">
                                         <span class="text-bid">Current Bid</span>
                                         <h6 class="price gem">
-                                            {{ $service['currency'] == 'usd' ? '$' : $service['currency'] }}{{ $service['price'] }}
+                                            {{ $service['currency'] == 'usd' ? '$' : $service['currency'] }}{{ number_format($service['price'], 2) }}
                                         </h6>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+                        @empty
+                            <div class="col-item">
+                                <div class="tf-card-box style-1">
+                                    <h5 class="name">No service found</h5>
+                                </div>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
             </div>

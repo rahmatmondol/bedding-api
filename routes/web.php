@@ -22,6 +22,11 @@ Route::get('/auth/singup', function () {
     return view('userAuth.singup');
 })->name('auth-signup');
 
+Route::get('/terms-and-conditions', fn() => view('terms'))->name('terms');
+Route::get('/privacy-policy', fn() => view('privacy'))->name('privacy');
+Route::get('/provider-profile/{id}', fn() => view('privacy'))->name('provider-profile');
+
+
 // ===========================
 // Authenticated Routes
 // ===========================
@@ -46,16 +51,27 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/list', fn() => view('user.service.list'))->name('list');
         Route::get('/edit/{id}', [ServicesController::class, 'edit'])->name('edit');
         Route::post('/update/{id}', [ServicesController::class, 'update'])->name('update');
-       
+        Route::get('/wishlist', fn() => view('user.service.wishlist'))->name('wishlist');
     });
 
     // Bids Routes
     Route::prefix('auth/bid')->name('auth-bid-')->group(function () {
-        Route::get('/list', [BidsController::class, 'list'])->name('list');
+        Route::get('/list', fn() => view('user.bid.list'))->name('list');
     });
 
+    // booking Routes
+    Route::prefix('auth/booking')->name('auth-booking-')->group(function () {
+        Route::get('/list', fn() => view('user.booking.index'))->name('list');
+    });
 
+    // accounts Routes
+    Route::prefix('auth/account')->name('auth-account-')->group(function () {
+        Route::get('/profile', fn() => view('user.account.profile'))->name('profile');
+        Route::get('/messages', fn() => view('user.account.messages'))->name('messages');
+        Route::get('/notifications', fn() => view('user.account.notifications'))->name('notifications');
+    });
 
+    
     // Wishlist Routes
     Route::prefix('auth')->name('auth-')->group(function () {
         Route::post('/create-wishlist', [WishlistController::class, 'store'])->name('create-wishlist');
@@ -65,6 +81,7 @@ Route::middleware(['auth'])->group(function () {
     // Bidding Routes
     Route::post('/create-bidding', [BidsController::class, 'localstore'])->name('create-bidding');
 });
+
 
 // ===========================
 // Service Details Route

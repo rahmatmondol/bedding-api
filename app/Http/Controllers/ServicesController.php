@@ -33,7 +33,7 @@ class ServicesController extends Controller
         $longitude = request()->query('longitude');
         $priceType = request()->query('priceType');
         $currency = request()->query('currency');
-        $status = request()->query('status');
+        $status = request()->query('status') ?? 'active';
         $level = request()->query('level');
         $featured = request()->query('featured');
         $search = request()->query('search');
