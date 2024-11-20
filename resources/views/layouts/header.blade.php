@@ -26,9 +26,9 @@
                                     <i class="icon-search"></i>
                                 </a>
                                 <div class="top-search">
-                                    <form action="#" method="get" role="search" class="search-form relative">
-                                        <input type="search" id="search" class="search-field style-1"
-                                            placeholder="Search..." value="" name="s" title="Search for"
+                                    <form action="{{ route('services') }}" wire:navigate method="get" role="search" class="search-form relative">
+                                        <input type="search" class="search-field style-1"
+                                            placeholder="Search..." name="search" title="Search for"
                                             required="">
                                         <button class="search search-submit" type="submit" title="Search">
                                             <i class="icon-search"></i>
@@ -37,9 +37,9 @@
                                 </div>
                             </div>
                             <div class="widget-search">
-                                <form action="#" method="get" role="search" class="search-form relative">
-                                    <input type="search" id="search" class="search-field"
-                                        placeholder="Search By Keywork..." value="" name="s"
+                                <form action="{{ route('services') }}" method="get" role="search" class="search-form relative">
+                                    <input type="search" class="search-field"
+                                        placeholder="Search By Keywork..." name="search"
                                         title="Search for" required="">
                                     <button class="search search-submit" type="submit" title="Search">
                                         <i class="icon-search"></i>

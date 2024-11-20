@@ -34,8 +34,8 @@
             </ul>
         </nav>
         <div class="widget-search-1 mt-30">
-            <form action="#" method="get" role="search" class="search-form relative">
-                <input type="search" class="search-field style-1" placeholder="Search..." value="" name="s"
+            <form action="{{ route('services') }}" method="get" role="search" class="search-form relative">
+                <input type="search" class="search-field style-1" placeholder="Search..." name="search"
                     title="Search for" required="">
                 <button class="search search-submit" type="submit" title="Search">
                     <i class="icon-search"></i>

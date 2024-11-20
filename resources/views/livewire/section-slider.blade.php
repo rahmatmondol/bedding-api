@@ -4,7 +4,7 @@
             <div class="col-md-12">
                 <div class="heading-section pb-20">
                     <h2 class="tf-title ">{{ $name }}</h2>
-                    <a href="explore-3.html" class="">Discover more <i class="icon-arrow-right2"></i></a>
+                    <a href="{{ route('services') }}" class="">Discover more <i class="icon-arrow-right2"></i></a>
                 </div>
             </div>
             <div class="col-md-12">

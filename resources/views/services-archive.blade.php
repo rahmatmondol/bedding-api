@@ -261,10 +261,14 @@
         });
 
         let category = new URL(window.location.href).searchParams.get('category');
+        let search = new URL(window.location.href).searchParams.get('search');
         if (category) {
             $('#main-heading').text(`Category: ${category}`);
             getServices(`category_slug=${category}`);
-        }else{
+        }else if (search) {
+            $('#main-heading').text(`Search: ${search}`);
+            getServices(`search=${search}`);
+        }else {
             getServices();
         }
 
