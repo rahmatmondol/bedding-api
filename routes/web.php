@@ -23,6 +23,8 @@ Route::get('/auth/singup', function () {
     return view('userAuth.singup');
 })->name('auth-signup');
 
+Route::get('/services', [ServicesController::class, 'services_archive'])->name('services');
+Route::get('/get-all-services', [ServicesController::class, 'get_services'])->name('get-all-services');
 Route::get('/terms-and-conditions', fn() => view('terms'))->name('terms');
 Route::get('/privacy-policy', fn() => view('privacy'))->name('privacy');
 Route::get('/provider-profile/{id}', fn() => view('privacy'))->name('provider-profile');

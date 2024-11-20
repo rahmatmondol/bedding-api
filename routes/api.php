@@ -31,7 +31,7 @@ Route::group([
 
 
 // get all category routes
-Route::get('get-categories', [CategoriesController::class, 'index']);
+Route::get('get-categories', [CategoriesController::class, 'index'])->name('get-categories');
 
 // get single category routes
 Route::get('get-category/{id}', [CategoriesController::class, 'show']);
@@ -43,7 +43,7 @@ Route::get('get-subcategories', [SubCategoriesController::class, 'index'])->name
 Route::get('get-subcategory/{id}', [SubCategoriesController::class, 'show']);
 
 // get service routes
-Route::get('get-services', [ServicesController::class, 'index']);
+Route::get('get-services', [ServicesController::class, 'index'])->name('get-services');
 
 // get single service routes
 Route::get('get-service/{id}', [ServicesController::class, 'showSingle']);

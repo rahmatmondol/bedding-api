@@ -10,13 +10,21 @@ class SectionSlider extends Component
     public $item;
     public $name;
     public $services;
+    public $category;
 
     public function mount()
     {
         // get all services with images
-        $this->services = Services::with(['images', 'customer', 'customer.profile'])
-        ->orderBy('created_at', 'desc')
-        ->limit($this->item)->get();
+        if ($this->category) {
+            $this->services = Services::with(['images', 'customer', 'customer.profile'])
+                ->where('category_id', $this->category)
+                ->orderBy('created_at', 'desc')
+                ->limit($this->item)->get();
+        } else {
+            $this->services = Services::with(['images', 'customer', 'customer.profile'])
+                ->orderBy('created_at', 'desc')
+                ->limit($this->item)->get();
+        }
     }
 
     public function render()

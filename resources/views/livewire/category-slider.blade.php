@@ -43,7 +43,7 @@
                                     <div class="card-media">
                                         <img src="{{ $category->image }}"
                                             alt="">
-                                        <a href="/service/details/1"><i class="icon-arrow-up-right2"></i></a>
+                                        <a href="/services?category={{ $category->slug }}"><i class="icon-arrow-up-right2"></i></a>
                                     </div>
                                     <h6>{{ $category->name }}</h6>
                                 </div>

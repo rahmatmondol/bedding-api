@@ -11,5 +11,8 @@
                 <a href="{{ route('auth-login') }}" wire:navigate.hover>Login</a>
             @endguest
         </li>
+        <li class="menu-item">
+            <a href="/services" wire:navigate.hover>Services</a>
+        </li>
      </ul>
  </nav><!-- /#main-nav -->
