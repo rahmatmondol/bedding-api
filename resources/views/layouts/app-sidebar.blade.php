@@ -437,7 +437,6 @@
     @endif
 
     <div class="bottom">
-        <p>© 2023 OpeN9</p>
-        <p>Made By Themesflat</p>
+        <p>© 2024 Dirham365. All rights reserved.</p>
     </div>
 </div>

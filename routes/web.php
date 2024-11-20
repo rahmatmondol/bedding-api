@@ -6,6 +6,8 @@ use App\Http\Controllers\BidsController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Models\TermsAndConditions;
+use App\Models\PrivacyPolicy;
 
 // ===========================
 // Public Routes
@@ -25,8 +27,17 @@ Route::get('/auth/singup', function () {
 
 Route::get('/services', [ServicesController::class, 'services_archive'])->name('services');
 Route::get('/get-all-services', [ServicesController::class, 'get_services'])->name('get-all-services');
-Route::get('/terms-and-conditions', fn() => view('terms'))->name('terms');
-Route::get('/privacy-policy', fn() => view('privacy'))->name('privacy');
+
+Route::get('/terms-and-conditions', function(){
+    $content = TermsAndConditions::first();
+   return view('terms', compact('content'));
+})->name('terms-and-conditions');
+
+Route::get('/privacy-policy', function(){
+    $content = PrivacyPolicy::first();
+   return view('privacy', compact('content'));
+})->name('privacy-policy');
+
 Route::get('/provider-profile/{id}', fn() => view('privacy'))->name('provider-profile');
 
 

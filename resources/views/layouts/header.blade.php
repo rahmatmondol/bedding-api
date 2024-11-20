@@ -9,7 +9,7 @@
                             <div id="site-logo-inner">
                                 <a href="/" wire:navigate rel="home" class="main-logo">
                                     <img id="logo_header" src="{{asset('user/assets/images/logo/logo.png')}}"
-                                        data-retina="{{asset('user/assets/images/logo/logo.png')}}">
+                                        data-retina="{{asset('user/assets/images/logo/logo.png')}}" style="width: 160px;">
                                 </a>
                             </div>
                         </div><!-- logo -->
@@ -46,15 +46,6 @@
                                     </button>
                                 </form>
                             </div>
-                            <div class="" id="wallet-header">
-                                <a href="market-wallet.html" id="connectbtn" class="tf-button style-1">
-                                    <span>Wallet connect</span>
-                                    <i class="icon-wa"></i>
-                                </a>
-                            </div>
-                            <div class="canvas">
-                                <span></span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -62,6 +53,6 @@
         </div>
     </div>
 
-    @include('layouts.canvas')
+    {{-- @include('layouts.canvas') --}}
     @include('layouts.mobileNav')
 </header>

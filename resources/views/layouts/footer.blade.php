@@ -8,7 +8,7 @@
                         <div class="logo-footer" id="logo-footer">
                             <a href="index.html">
                                 <img id="logo_footer" src="{{ asset('user') }}/assets/images/logo/logo.png"
-                                    data-retina="{{ asset('user') }}/assets/images/logo/logo@2x.png">
+                                    data-retina="{{ asset('user') }}/assets/images/logo/logo.png" style="width: 160px;">
                             </a>
                         </div>
                     </div>
@@ -68,13 +68,13 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© 2023 OpeN9 - Made By Themesflat</p>
+            <p>© 2024 Dirham365. All rights reserved.</p>
             <ul class="flex">
                 <li>
-                    <a href="#">Privacy Policy</a>
+                    <a href="{{ route('privacy-policy') }}" wire:navigate>Privacy Policy</a>
                 </li>
                 <li>
-                    <a href="#">Terms of Service</a>
+                    <a href="{{ route('terms-and-conditions') }}" wire:navigate>Terms & Conditions</a>
                 </li>
             </ul>
         </div>

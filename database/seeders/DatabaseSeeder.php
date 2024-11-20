@@ -15,6 +15,8 @@ use App\Models\Fees;
 use App\Models\Profile;
 use App\Models\Locations;
 use App\Models\Skills;
+use App\Models\TermsAndConditions;
+use App\Models\PrivacyPolicy;
 
 class DatabaseSeeder extends Seeder
 {
@@ -111,7 +113,15 @@ class DatabaseSeeder extends Seeder
             Images::factory()->count(2)->create(['service_id' => $service->id]);
         });
     
+        // Create terms and conditions
+        TermsAndConditions::create([
+            'content' => '<h2>01 YOUR AGREMENTT</h2><p>This summary provides key points from our privacy notice, but you can find out more details about any of these topics by clicking the link following each key point or by using our table of contents below to find the section you are looking for. You can also click here to go directly to our table of contents.</p>'
+        ]);
 
+        // Create pryvacy policy
+        PrivacyPolicy::create([
+            'content' => '<h2>01 YOUR AGREMENTT</h2><p>This summary provides key points from our privacy notice, but you can find out more details about any of these topics by clicking the link following each key point or by using our table of contents below to find the section you are looking for. You can also click here to go directly to our table of contents.</p>'
+        ]);
       
     }
 }
