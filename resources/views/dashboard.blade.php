@@ -1,7 +1,5 @@
 <x-app-layout>
-    <h1>dashboard</h1>
-    <div id="notifications"></div> <!-- Placeholder for notifications -->
-
+    <livewire:service.service-list page="all"/>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize Echo
