@@ -9,7 +9,7 @@ use App\Helpers\ResponseHelper;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Models\Categories;
-use App\Models\Subcategories;
+use App\Models\SubCategories;
 use App\Models\Images;
 use App\Models\Skills;
 use App\Models\Locations;

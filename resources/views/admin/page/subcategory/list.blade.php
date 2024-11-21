@@ -24,7 +24,7 @@
                         <th>Image</th>
                         <th>Parent Category</th>
                         <th>Status</th>
-                        <th>Is Featured</th>
+                        {{-- <th>Is Featured</th> --}}
                         <th>Action</th>
                     </tr>
                     </thead>
@@ -34,12 +34,10 @@
                             <td>{{ $category->name }}</td>
 
                             <td><img src="{{ $category->image }}" class="product-img-2" alt="product img"></td>
-                            <td>{{ $category->parent_name }}</td>
-                            <td><span class="badge bg-{{ $category->is_active ? 'success' : 'danger' }}">
-                                {{ $category->is_active ? 'Active' : 'Deactivate' }}</span></td>
+                            <td>{{ $category->category->name }}</td>
+                            <td><span class="badge bg-{{ $category->status ? 'success' : 'danger' }}">
+                                {{ $category->status ? 'Active' : 'Deactivate' }}</span></td>
 
-                            <td><span class="badge bg-{{ $category->is_featured ? 'success' : 'danger' }}">
-                                {{ $category->is_featured ? 'Active' : 'Deactivate' }}</span></td>
                             <td>
                                 <div class="d-flex order-actions justify-content-center">
                                     <!-- Edit Button -->
