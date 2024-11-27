@@ -46,7 +46,7 @@
                                         <!-- Edit Button -->
                                         <div class="row row-cols-auto g-3">
                                             <div class="col">
-                                                <form method="GET" action="{{ route('category.edit', $category->id) }}">
+                                                <form method="GET" action="{{ route('admin.category.edit', $category->id) }}">
                                                     @csrf
                                                     <button type="submit" class="btn btn-outline-primary">
                                                         <i class='bx bxs-edit mr-0'></i>
@@ -55,7 +55,7 @@
                                             </div>
                                             <div class="col">
                                                 <form id="deleteForm{{ $category->id }}" method="POST"
-                                                    action="{{ route('categories.destroy', $category->id) }}">
+                                                    action="{{ route('admin.categories.destroy', $category->id) }}">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="button" class="btn btn-outline-danger"

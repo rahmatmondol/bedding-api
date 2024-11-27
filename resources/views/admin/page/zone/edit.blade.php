@@ -50,7 +50,7 @@
         <div class="col-xl-12 mx-auto">
             <div class="card">
                 <div class="card-body p-4">
-                    <form class="row g-3" id="zoneForm" method="post" action="{{ route('zones.update', $zone->id) }}">
+                    <form class="row g-3" id="zoneForm" method="post" action="{{ route('admin.zones.update', $zone->id) }}">
                         @csrf
                         @method('PUT')
 
@@ -70,7 +70,7 @@
                         <div class="col-md-12">
                             <div class="d-md-flex d-grid justify-content-end gap-3">
                                 <button type="button" class="btn btn-primary px-4" onclick="submitForm()">Update</button>
-                                <a href="{{ route('list.zone') }}" class="btn btn-light px-4">Cancel</a>                            </div>
+                                <a href="{{ route('admin.list.zone') }}" class="btn btn-light px-4">Cancel</a>                            </div>
                         </div>
                     </form>
                 </div>

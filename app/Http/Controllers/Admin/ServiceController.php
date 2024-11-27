@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
-use App\Models\Customer;
-use App\Models\Provider;
-use App\Models\Service;
+use App\Models\Categories as Category;
+use App\Models\SubCategories;
+use App\Models\user as Customer;
+use App\Models\user as Provider;
+use App\Models\Services as Service;
+use App\Models\Skills;
 use App\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,11 +20,16 @@ class ServiceController extends Controller
 {
     //
     public function serviceAdd(){
-        $categories = Category::where('parent_id',0)->get();
-        $providers = \App\Models\Provider::get();
+        $categories = Category::get();
+        $providers = Customer::role('customer')->get();
         $zones = Zone::get();
-        return view('admin.page.service.add',compact('categories','providers','zones'));
+        $skills = Skills::all();
+        
+        // return $customers;
+        return view('admin.page.service.add',compact('categories','providers','zones', 'skills'));
     }
+
+
     public function update(Request $request, $id)
     {
 
@@ -121,7 +128,6 @@ class ServiceController extends Controller
     {
 
         try {
-            // Validate the request data
             $validatedData = $request->validate([
                 'name' => 'required|string',
                 'category_id' => 'required',
@@ -133,7 +139,6 @@ class ServiceController extends Controller
                 'duration' => 'required|string',
                 'discount' => 'required|numeric',
                 'image' => 'required',
-//                'status'=> 'required',
                 'short_description' => 'required|string',
                 'long_description' => 'required|string',
                 'is_featured' => 'nullable',
@@ -212,9 +217,8 @@ class ServiceController extends Controller
 
     }
     public function list(){
-        $services = Service::with('category','customer',)->get();
-
-
+        $services = Service::with('category','customer','images')->get();
+        // return  $services;
         return view('admin.page.service.list',compact('services'));
     }
     public function destroy( $id)
@@ -223,30 +227,14 @@ class ServiceController extends Controller
             // Find the category by ID
             $service = Service::findOrFail($id);
 
-            $position = strpos($service->image, '/assets');
-
-            if ($position !== false) {
-                // Extract the part of the path after "/assets"
-                $imagePath = substr($service->image, $position);
-
-                // Construct the full path to the image file
-                $fullImagePath = public_path($imagePath);
-
-
-                // Check if the image file exists
-                if (file_exists($fullImagePath)) {
-                    // Delete the image file
-                    unlink($fullImagePath);
+            foreach ($service->images as $image) {
+                $relativePath = parse_url($image->path, PHP_URL_PATH);
+                if (file_exists(public_path($relativePath))) {
+                    unlink(public_path($relativePath)); // Deletes the file
                 }
+                $image->delete(); // Removes the record from the database
             }
-
-            // Delete the category and its subcategories (if any)
-            DB::transaction(function () use ($service) {
-                $service->delete();
-//                ExtraService::where('service_id', $service->id)->delete();
-
-            });
-
+            $service->delete();
             Session::flash('toaster', ['status' => 'success', 'message' => 'Service deleted successfully!']);
         } catch (\Exception $e) {
             // Handle any exceptions that occur during the deletion process
@@ -254,7 +242,7 @@ class ServiceController extends Controller
 
         }
 
-        return redirect()->route('list.service');
+        return redirect()->route('admin.list.service');
     }
 
     public function details($id){
@@ -272,11 +260,12 @@ class ServiceController extends Controller
     }
 
     public function serviceEidt($id){
-        $service = Service::findOrFail($id);
+        $service = Service::with('images')->findOrFail($id);
         $zones = Zone::all();
-        $categories = Category::whereIsActive('1');
-        $subcategories = Category::where('parent_id','!=',0)->get();
-        $providers =    Customer::whereStatus('active')->get();
+        $categories = Category::get();
+        $providers = Customer::role('customer')->get();
+        $subcategories = SubCategories::get();
+        // return $categories;
         return view('admin.page.service.edit',compact('service','zones','categories','subcategories','providers'));
     }
 

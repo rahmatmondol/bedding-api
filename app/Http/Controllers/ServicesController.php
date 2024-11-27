@@ -75,6 +75,7 @@ class ServicesController extends Controller
             'latitude' => request()->query('latitude'),
             'longitude' => request()->query('longitude'),
             'priceType' => request()->query('priceType'),
+            'priceType' => request()->query('priceType'),
             'currency' => request()->query('currency'),
             'status' => request()->query('status', 'active'),
             'level' => request()->query('level'),
@@ -82,7 +83,6 @@ class ServicesController extends Controller
             'search' => request()->query('search'),
             'skills' => request()->query('skills'),
             'category_slug' => request()->query('category_slug'),
-
         ];
 
         // Pagination parameters
@@ -162,6 +162,17 @@ class ServicesController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     */
+    public function create_auction()
+    {
+        $categories = Categories::all();
+        $skills = Skills::all();
+        $locations = Locations::all();
+        return view('user.service.create-auction', compact('categories', 'skills', 'locations'));
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreServicesRequest $request)
@@ -180,7 +191,10 @@ class ServicesController extends Controller
             $service->currency      = $request->currency;
             $service->location      = $request->location_name;
             $service->latitude      = $request->latitude;
+            $service->postType      = $request->postType ?? 'Service';
+            $service->skills        = $request->skills;
             $service->longitude     = $request->longitude;
+            $service->is_featured   = $request->is_featured ? true : false;
             
             if($request->level){
                 $service->level = $request->level;
@@ -188,8 +202,11 @@ class ServicesController extends Controller
 
             $service->save();
 
-            // attach to user
-            $service->customer()->associate($request->user());
+            if($request->customer_id){
+                $service->customer()->associate($request->customer_id);
+            }else{
+                $service->customer()->associate($request->user());
+            }
             $service->save();
 
             // attach category to service
@@ -241,15 +258,6 @@ class ServicesController extends Controller
                
             }
 
-            // attach multiple skills to service
-            if (!empty($request->skills_ids)) {
-                if (!is_array($request->skills_ids)) {
-                    $request->skills_ids = explode(',', $request->skills_ids);
-                }
-               foreach ($request->skills_ids as $skill) {
-                   $service->skills()->attach($skill);
-               }
-            }
 
             // If everything goes well, commit the transaction
             DB::commit();
@@ -292,9 +300,10 @@ class ServicesController extends Controller
     public function edit($id)
     {
         $categories = Categories::all();
+        $subcategories = SubCategories::all();
         $skills = Skills::all();
         $service = Services::with('images')->findOrFail($id);
-        return view('services.edit', compact('service', 'categories', 'skills'));
+        return view('user.service.edit', compact('service', 'categories', 'skills', 'subcategories'));
     }
 
     /**
@@ -302,7 +311,7 @@ class ServicesController extends Controller
      */
     public function update(UpdateServicesRequest $request, Services $services)
     {
-        $service = Services::where('id', $request->id)->where('user_id', auth()->user()->id)->firstOrFail();
+        $service = Services::where('id', $request->id)->firstOrFail();
         if(!$service){
             return ResponseHelper::error('Service Not Found', 404);
         }
@@ -318,6 +327,7 @@ class ServicesController extends Controller
             $service->price         = $request->price;
             $service->priceType     = $request->priceType;
             $service->currency      = $request->currency;
+            $service->skills        = $request->skills;
             $service->location      = $request->location_name;
             $service->latitude      = $request->latitude;
             $service->longitude     = $request->longitude;
@@ -414,7 +424,7 @@ class ServicesController extends Controller
      */
     public function destroy(Services $services)
     {
-        //
+        
     }
 }
 

@@ -72,26 +72,6 @@ class DatabaseSeeder extends Seeder
             Permission::create(['name' => 'create biddings']),
         ]);
 
-        // Create 10 skills
-        $skills = array(
-            ['name' => 'Cooking', 'description' => 'Cooking services'],
-            ['name' => 'Cleaning', 'description' => 'Cleaning services'],
-            ['name' => 'Cooking', 'description' => 'Cooking services'],
-            ['name' => 'Cleaning', 'description' => 'Cleaning services'],
-            ['name' => 'Cooking', 'description' => 'Cooking services'],
-            ['name' => 'Cleaning', 'description' => 'Cleaning services'],
-            ['name' => 'Cooking', 'description' => 'Cooking services'],
-            ['name' => 'Cleaning', 'description' => 'Cleaning services'],
-            ['name' => 'Cooking', 'description' => 'Cooking services'],
-            ['name' => 'Cleaning', 'description' => 'Cleaning services'],
-        );
-        foreach ($skills as $skill) {
-            Skills::factory()->create([
-                    'name' => $skill['name'],
-                    'description' => $skill['description'],
-                ]);
-        }
-
         // Create 50 categories and 50 subcategories
         Categories::factory()
             ->count(10)
@@ -103,13 +83,9 @@ class DatabaseSeeder extends Seeder
 
         // Create 10 services, each with 3 related images
         Services::factory()
-        ->count(50)
+        ->count(10)
         ->create()
         ->each(function ($service) {
-            // Attach 3 random skills
-            $service->skills()->sync(Skills::all()->random(3)->pluck('id')->toArray());
-    
-            // Create and assign images directly if it is a hasMany relationship
             Images::factory()->count(2)->create(['service_id' => $service->id]);
         });
     

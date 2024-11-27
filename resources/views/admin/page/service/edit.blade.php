@@ -6,6 +6,22 @@
     <!-- include summernote css/js -->
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+    <style>
+        #uploadedImagePreviewList img {
+            width: 25%;
+            padding: 5px;
+        }
+
+        #uploadedImagePreviewList {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        #map {
+            width: 100%;
+            height: 300px;
+        }
+    </style>
 @endsection
 @section('title')
     <title>Add Service Page</title>
@@ -21,21 +37,19 @@
         <div class="col-xl-12 mx-auto">
             <div class="card">
                 <div class="card-body p-4">
-                    <form class="row g-3" id="categoryForm" method="Post"
-                          action="{{ route('service.update', $service->id ) }}" enctype="multipart/form-data">
+                    <form class="row g-3" id="serviceForm" method="Post" action=""
+                        enctype="multipart/form-data">
                         @csrf
-                        @method('PUT')
                         <div class="col-md-4">
                             <label for="input1" class="form-label">Name</label>
-                            <input type="text" name="name" class="form-control" id="input1" placeholder="Name"
-                                   value="{{ $service->name }}">
+                            <input type="text" name="title" class="form-control" value="{{ $service->title }}"
+                                id="input1" placeholder="Title">
                         </div>
                         <div class="col-md-4">
                             <label for="zoneSelect" class="form-label">Select Zone</label>
                             <select name="zone_id" id="zoneSelect" class="form-select">
-                                <option disabled selected>Choose...</option>
-
-                                @foreach($zones as $item)
+                                <option disabled>Choose...</option>
+                                @foreach ($zones as $item)
                                     <option value="{{ $item->id }}">{{ $item->name }}</option>
                                 @endforeach
                             </select>
@@ -43,90 +57,117 @@
                         <div class="col-md-4">
                             <label for="categorySelect" class="form-label">Select Category</label>
                             <select name="category_id" id="categorySelect" class="form-select" required>
-
+                                @foreach ($categories as $item)
+                                    <option {{ $service->category_id == $item->id ? 'selected' : '' }}
+                                        value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endforeach
                             </select>
                         </div>
+
                         <div class="col-md-4">
                             <label for="subcategorySelect" class="form-label">Sub Category</label>
-                            <select name="subcategory_id" id="subcategorySelect" class="form-select" required>
-
+                            <select name="subCategory_id" id="subcategorySelect" class="form-select" required>
+                                <option disabled>Choose...</option>
+                                @foreach ($subcategories as $item)
+                                    <option {{ $service->sub_category_id == $item->id ? 'selected' : '' }}
+                                        {{ $service->subCategory_id == $item->id ? 'selected' : '' }}
+                                        value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endforeach
                             </select>
                         </div>
+
                         <div class="col-md-4">
                             <label for="input4" class="form-label">Assign Service To Customer</label>
                             <select id="input4" name="customer_id" class="form-select" required>
-
+                                @foreach ($providers as $item)
+                                    <option {{ $service->user_id == $item->id ? 'selected' : '' }}
+                                        value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endforeach
                             </select>
                         </div>
+
                         <div class="col-md-4">
                             <label for="input5" class="form-label">Price Type</label>
-                            <select id="input5" name="price_type" class="form-select">
-                                <option value="fixed" {{ $service->price_type === 'fixed' ? 'selected' : '' }}>Fixed
+                            <select id="input5" name="priceType" class="form-select" required>
+                                <option {{ $service->priceType == 'Fixed' ? 'selected' : '' }} value="Fixed">Fixed
                                 </option>
-                                <option value="negotiable" {{ $service->price_type === 'negotiable' ? 'selected' : '' }}>Negotiable
-                                </option>
+                                <option {{ $service->priceType == 'Negotiable' ? 'selected' : '' }} value="Negotiable">
+                                    Negotiable</option>
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label for="input1" class="form-label">Price</label>
-                            <input type="number" name="price" class="form-control" id="input1" placeholder="First Name"
-                                   value="{{ $service->price }}">
+                            <input type="number" value="{{ $service->price }}" name="price" class="form-control"
+                                id="input6" placeholder="100" step="0.01">
                         </div>
                         <div class="col-md-4">
                             <label for="input7" class="form-label">Level</label>
                             <select id="input7" name="level" class="form-select" required>
-                                <option selected value="entry" {{$service->level === 'entry' ? 'selected' : ''}}>Entry</option>
-                                <option value="intermediate" {{$service->level === 'Intermediate' ? 'selected' : ''}}>Intermediate</option>
-                                <option value="expert" {{$service->level === 'Intermediate' ? 'selected' : ''}}>Expert</option>
+                                <option {{ $service->level == 'Entry' ? 'selected' : '' }} value="Entry">Entry</option>
+                                <option {{ $service->level == 'Intermediate' ? 'selected' : '' }} value="Intermediate">
+                                    Intermediate</option>
+                                <option {{ $service->level == 'Expert' ? 'selected' : '' }} value="Expert">Expert</option>
                             </select>
                         </div>
-{{--                        <div class="col-md-4">--}}
-{{--                            <label for="input1" class="form-label">Duration (Hours:Minutes)</label>--}}
-{{--                            <input type="text" class="form-control" name="duration" id="duration" placeholder="1:00"--}}
-{{--                                   value="{{ $service->duration }}">--}}
-{{--                        </div>--}}
                         <div class="col-md-4">
                             <label for="input8" class="form-label">Currency</label>
                             <select id="input8" class="form-select" name="currency" required>
-                                <option value="usd" selected>USD</option>
-                                <option value="aed">AED</option>
+                                <option {{ $service->currency == 'USD' ? 'selected' : '' }} value="USD" selected>USD
+                                </option>
+                                <option {{ $service->currency == 'AED' ? 'selected' : '' }} value="AED">AED</option>
                             </select>
                         </div>
-                        <div class="col-md-6">
-                            <label for="input1" class="form-label">Skill</label>
-                            <input type="text" class="form-control" name="skill" value="{{$service->skill}}"  placeholder="PHP, Laravel">
+
+                        <div class="col-md-12">
+                            <label for="skill" class="form-label">Skill</label>
+                            <input type="text" class="form-control" id="skills"
+                                name="skill" value="{{ implode(',', json_decode($service->skills)) }}" placeholder="PHP, Laravel, JavaScript"
+                                data-role="tagsinput" />
                         </div>
-                        <div class="col-md-6">
-                            <label for="input1" class="form-label">Address</label>
-                            <input type="text" class="form-control" name="address" value="{{$service->address}}"  placeholder="Dhaka,Bangladesh">
-                        </div>
-{{--                        <div class="col-md-12">--}}
-{{--                            <label for="input11" class="form-label">Short description</label>--}}
-{{--                            <textarea class="form-control" name="short_description" id="input11"--}}
-{{--                                      placeholder="Address ..." rows="5">{{ $service->short_description }}</textarea>--}}
-{{--                        </div>--}}
+
+
                         <div class="col-md-12">
                             <label for="input11" class="form-label">Long description</label>
-                            <textarea class="form-control" name="description" id="editor" placeholder="Address ..."
-                                      rows="5">{{ $service->description }}</textarea>
+                            <div id="editor" style="height: 400px;">
+                                {!! $service->description !!}
+
+                            </div>
+
+                            <!-- Hidden input to store the editor's content in HTML -->
+                            <input type="hidden" name="description" value="{{ $service->description }}"
+                                id="messageContent" required />
                         </div>
                         <div class="mb-3">
-                            @if ($service->image)
-                                <label class="form-label">Existing Image</label>
-                                <div class="mb-3">
+                            <div id="uploadedImagePreviewList">
+                                @foreach ($service->images as $image)
+                                    <img src="{{ $image->path }}" alt=" " style="height: auto;">
+                                @endforeach
+                            </div>
 
-                                    <img id="existingImage" src="{{$service->image }}"
-                                         alt="Category Image" class="img-thumbnail"
-                                         style="width: 200px; height: 200px;">
-                                </div>
-                            @endif
                             <label for="formFile" class="form-label">Image</label>
-                            <input class="form-control" type="file" name="image" id="formFile">
+                            <input class="form-control" type="file" name="images[]" id="formFile"
+                                onchange="previewUploadedImage(event)" multiple>
                         </div>
+
+                        <div class="col-md-12">
+                            <label for="input1" class="form-label">Address</label>
+                            <input type="text" value="{{ $service->location }}" id="pac-input"
+                                class="form-control" name="location" placeholder="Dhaka,Bangladesh">
+                        </div>
+
+
+                        <div class="col-md-12">
+                            <div id="map"></div>
+                        </div>
+                        <input type="hidden" id="location-name" value="{{ $service->location }}"
+                            name="location_name">
+                        <input type="hidden" id="latitude" name="latitude" value="{{ $service->latitude }}">
+                        <input type="hidden" id="longitude" name="longitude" value="{{ $service->longitude }}">
+
                         <div class="col-md-12">
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="is_featured"
-                                       id="input12" {{ $service->is_featured ? 'checked' : '' }}>
+                                <input class="form-check-input" @if ($service->is_featured == 1) checked @endif
+                                    type="checkbox" name="is_featured" id="input12">
                                 <label class="form-check-label" for="input12">Set as featured</label>
                             </div>
                         </div>
@@ -134,7 +175,7 @@
                             <div class="d-md-flex d-grid justify-content-end gap-3">
 
                                 <button type="submit" class="btn btn-primary px-4">Submit</button>
-                                <button type="button" class="btn btn-light px-4" onclick="resetForm()">Reset</button>
+                                <button type="button" class="btn btn-light px-4" onclick="resetMap()">Reset</button>
                             </div>
                         </div>
                     </form>
@@ -144,161 +185,271 @@
     </div>
 @endsection
 
+
 @section('script')
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     <script>
-        ClassicEditor
-            .create(document.querySelector('#editor'))
-            .catch(error => {
-                console.error(error);
-            });
-    </script>
-    <script>
-        $(document).ready(function () {
-            $('#duration').on('input', function () {
-                var input = $(this).val();
-                var isValid = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/.test(input);
-                $(this).toggleClass('is-invalid', !isValid);
-            });
+        $(document).ready(function() {
 
-            // Set the base URL for your Laravel project here
-            const BASE_URL = "{{ url('/') }}";
-
-            // Function to fetch categories based on the selected zone using AJAX
-            function fetchCategoriesByZone() {
-                const zoneId = $('#zoneSelect').val();
-
-                if (!zoneId) {
-                    // If zoneId is null, clear the category select dropdown
-                    $('#categorySelect').empty().append('<option disabled selected>Choose...</option>');
-                    return;
-                }
-
-                $.ajax({
-                    url: `${BASE_URL}/api/zones/${zoneId}/categories`,
-                    type: 'GET',
-                    success: function (categories) {
-                        const categorySelect = $('#categorySelect');
-                        categorySelect.empty();
-                        categorySelect.append('<option disabled selected>Choose...</option>');
-
-                        $.each(categories, function (index, category) {
-                            categorySelect.append(`<option value="${category.id}">${category.name}</option>`);
-                        });
-                    },
-                    error: function (error) {
-                        console.error('Error:', error);
-                    }
-                });
-            }
-
-            // Function to fetch providers based on the selected zone using AJAX
-            function fetchProvidersByZone() {
-                const zoneId = $('#zoneSelect').val();
-
-                if (!zoneId) {
-                    // If zoneId is null, clear the provider select dropdown
-                    $('#input4').empty().append('<option selected>Choose...</option>');
-                    return;
-                }
-
-                $.ajax({
-                    url: `${BASE_URL}/api/zones/${zoneId}/providers`,
-                    type: 'GET',
-                    success: function (providers) {
-                        const providerSelect = $('#input4');
-                        providerSelect.empty();
-                        providerSelect.append('<option selected>Choose...</option>');
-
-                        $.each(providers, function (index, provider) {
-                            providerSelect.append(`<option value="${provider.id}">${provider.company_name}</option>`);
-                        });
-                    },
-                    error: function (error) {
-                        console.error('Error:', error);
-                    }
-                });
-            }
-
-            // Attach the event listener to the zone select dropdown
-            $('#zoneSelect').on('change', function () {
-                fetchCategoriesByZone();
-                fetchProvidersByZone();
-            });
-
-            // Trigger the initial fetch of categories and providers when the page loads
-            fetchCategoriesByZone();
-            fetchProvidersByZone();
-        });
-    </script>
-    <script>
-        // Function to update the subcategory options based on the selected category
-        function updateSubcategories() {
-            // Get the selected category ID
-            const categoryId = $('#categorySelect').val();
-
-            if (!categoryId) {
-                // If categoryId is null, clear the subcategory select dropdown
-                $('#subcategorySelect').empty().append('<option disabled selected>Open this select menu</option>');
-                return;
-            }
-
-            // Set the base URL for your Laravel project here
-            const BASE_URL = "{{ url('/') }}";
-
-            // Send an AJAX request to fetch the subcategories based on the selected category
-            $.ajax({
-                url: `${BASE_URL}/api/categories/${categoryId}/subcategories`,
-                type: 'GET',
-                success: function (subcategories) {
-                    const subcategorySelect = $('#subcategorySelect');
-                    subcategorySelect.empty();
-                    subcategorySelect.append('<option disabled selected>Open this select menu</option>');
-
-                    $.each(subcategories, function (index, subcategory) {
-                        subcategorySelect.append(`<option value="${subcategory.id}">${subcategory.name}</option>`);
+            // Get subcategories on category change
+            $('#categorySelect').on('change', function() {
+                var category = $(this).val();
+                if (category) {
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ route('get-subcategories') }}?category_id=" + category,
+                        success: function(res) {
+                            if (res.success) {
+                                $('#subcategorySelect').empty();
+                                res.data.forEach(function(subcategory) {
+                                    $('#subcategorySelect').append(
+                                        `<option value="${subcategory.id}">${subcategory.name}</option>`
+                                    );
+                                })
+                            }
+                        }
                     });
-                },
-                error: function (error) {
-                    console.error('Error:', error);
+                }
+            });
+
+            // submit form
+            $('#serviceForm').on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                var skills = $('#skills').val();
+                formData.append('skills', JSON.stringify(skills.split(',')));
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('auth-service-update', $service->id) }}",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(res) {
+                        console.log(res);
+                        if (res.success) {
+                            // show success message
+                            Swal.fire({
+                                icon: "success",
+                                title: "Success",
+                                text: res.message,
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: res.message,
+                            });
+
+
+                            // show error message
+                            $('.alert-danger').html(res.message).show();
+                        }
+                    },
+                    error: function({
+                        responseJSON
+                    }) {
+                        console.log(responseJSON);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: responseJSON.message,
+                        });
+                    }
+                });
+            })
+        });
+    </script>
+
+    <script>
+        var map;
+        var marker;
+        var markerSearchByName;
+        var initialCenter = {
+            lat: {{ $service->latitude }},
+            lng: {{ $service->longitude }}
+        };
+
+        function initAutocomplete() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: initialCenter,
+                zoom: 13,
+                mapTypeId: 'roadmap',
+                clickableIcons: false
+            });
+
+            var input = document.getElementById('pac-input');
+            var autocomplete = new google.maps.places.Autocomplete(input);
+            autocomplete.bindTo('bounds', map);
+
+            map.addListener('click', function(e) {
+                setMarker(e.latLng);
+                updateAddress(e.latLng);
+            });
+
+            autocomplete.addListener('place_changed', function() {
+                var place = autocomplete.getPlace();
+                if (!place.geometry) {
+                    alert("Autocomplete's place geometry is missing: " + place.name);
+                    return;
+                }
+                if (place.geometry.viewport) {
+                    map.fitBounds(place.geometry.viewport);
+                } else {
+                    map.setCenter(place.geometry.location);
+                    map.setZoom(17);
+                }
+                setMarker(place.geometry.location);
+                updateAddress(place.geometry.location);
+            });
+
+            // Set the initial marker
+            setMarker(initialCenter);
+        }
+
+        function setMarker(location) {
+            if (marker) {
+                marker.setPosition(location);
+            } else {
+                marker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    draggable: true
+                });
+                marker.addListener('dragend', function(event) {
+                    updateAddress(event.latLng);
+                });
+            }
+        }
+
+        function updateAddress(latLng) {
+            document.getElementById('latitude').value = latLng.lat();
+            document.getElementById('longitude').value = latLng.lng();
+            var geocoder = new google.maps.Geocoder();
+            geocoder.geocode({
+                'location': latLng
+            }, function(results, status) {
+                if (status === 'OK' && results[0]) {
+                    document.getElementById('location-name').value = results[0].formatted_address;
+                    document.getElementById('pac-input').value = results[0].formatted_address;
                 }
             });
         }
 
-        // Attach the event listener to the category select dropdown
-        $('#categorySelect').on('change', function () {
-            updateSubcategories();
+        function resetMap() {
+            map.setCenter(initialCenter);
+            map.setZoom(13);
+            document.getElementById('pac-input').value = '';
+            document.getElementById('latitude').value = '';
+            document.getElementById('longitude').value = '';
+            document.getElementById('location-name').value = '';
+            if (marker) {
+                marker.setMap(null);
+                marker = null;
+            }
+        }
+
+        function previewUploadedImage(event) {
+            const files = event.target.files;
+            const imgElement = document.getElementById('uploadedImagePreview');
+            const previewList = document.getElementById('uploadedImagePreviewList');
+            previewList.innerHTML = '';
+            for (let i = 0; i < files.length; i++) {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    const img = document.createElement('img');
+                    img.src = reader.result;
+                    img.style.height = 'auto';
+                    previewList.appendChild(img);
+                }
+                reader.readAsDataURL(files[i]);
+            }
+        }
+
+        var quill = new Quill('#editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{
+                        'header': [1, 2, false]
+                    }],
+                    ['bold', 'italic', 'underline'],
+                    [{
+                        'list': 'ordered'
+                    }, {
+                        'list': 'bullet'
+                    }],
+                    ['clean'] // Remove formatting button
+                ]
+            },
+            placeholder: 'Type here...'
         });
 
-        // Trigger the initial update of subcategories when the page loads
-        updateSubcategories();
+        // Listen for text changes and save content to hidden input
+        quill.on('text-change', function() {
+            document.getElementById('messageContent').value = quill.root.innerHTML;
+        });
     </script>
-    <script>
 
-        function submitForm() {
-            const BASE_URL = "{{ url('/') }}";
-            const form = document.getElementById('categoryForm');
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCc9NIB-ScnkTvQZzrB53TfaCwo1XUegHM&libraries=places,geometry&callback=initAutocomplete"
+        async defer></script>
 
-            // Perform AJAX form submission
-            $.ajax({
-                url: form.getAttribute('action'),
-                type: 'POST',
-                data: new FormData(form),
-                processData: false,
-                contentType: false,
-                {{--success: function(response) {--}}
-                        {{--    console.log('Form submitted successfully!', response);--}}
-                        {{--    --}}{{--// Optionally, you can redirect the user to another page after form submission--}}
-                        {{--    --}}{{--// window.location.href = "{{ route('success.page') }}";--}}
-                        {{--},--}}
-                error: function (error) {
-                    console.error('Error:', error);
-                }
-            });
+    <style>
+        .confirmation-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            opacity: 0;
+            /* Start with 0 opacity */
+            transition: opacity 0.3s ease;
+            /* Add a transition effect for opacity */
         }
 
-        function resetForm() {
-            document.getElementById("categoryForm").reset();
+        .confirmation-popup.show {
+            display: block;
+            /* Show the pop-up */
+            opacity: 1;
+            /* Make it fully opaque when visible */
         }
-    </script>
+
+        .confirmation-popup h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .confirmation-popup .btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .confirmation-popup .btn-container button {
+            margin: 0 10px;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .confirmation-popup .btn-confirm {
+            background-color: #5cb85c;
+            color: #ffffff;
+        }
+
+        .confirmation-popup .btn-cancel {
+            background-color: #d9534f;
+            color: #ffffff;
+        }
+    </style>
 @endsection

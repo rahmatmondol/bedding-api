@@ -26,9 +26,9 @@
                 <div class="menu-title">Zone</div>
             </a>
             <ul>
-                <li> <a href="{{route('add.zone')}}"><i class='bx bx-radio-circle'></i>Add New Zone</a>
+                <li> <a href="{{route('admin.add.zone')}}"><i class='bx bx-radio-circle'></i>Add New Zone</a>
                 </li>
-                <li> <a href="{{ route('list.zone') }}"><i class='bx bx-radio-circle'></i>Zone List</a>
+                <li> <a href="{{ route('admin.list.zone') }}"><i class='bx bx-radio-circle'></i>Zone List</a>
                 </li>
             </ul>
         </li>
@@ -39,9 +39,9 @@
                 <div class="menu-title">Category</div>
             </a>
             <ul>
-                <li> <a href="{{route('add.category')}}"><i class='bx bx-radio-circle'></i>Add New Category</a>
+                <li> <a href="{{route('admin.add.category')}}"><i class='bx bx-radio-circle'></i>Add New Category</a>
                 </li>
-                <li> <a href="{{ route('list.category')  }}"><i class='bx bx-radio-circle'></i>Category List</a>
+                <li> <a href="{{ route('admin.list.category')  }}"><i class='bx bx-radio-circle'></i>Category List</a>
                 </li>
             </ul>
         </li>
@@ -52,9 +52,9 @@
                 <div class="menu-title">SubCategory</div>
             </a>
             <ul>
-                <li> <a href="{{route('add.subcategory')}}"><i class='bx bx-dots-horizontal-rounded'></i>Add New SubCategory</a>
+                <li> <a href="{{route('admin.add.subcategory')}}"><i class='bx bx-dots-horizontal-rounded'></i>Add New SubCategory</a>
                 </li>
-                <li> <a href="{{ route('list.subcategory') }}"><i class='bx bx-radio-circle'></i>SubCategoryList</a>
+                <li> <a href="{{ route('admin.list.subcategory') }}"><i class='bx bx-radio-circle'></i>SubCategoryList</a>
                 </li>
             </ul>
         </li>
@@ -65,9 +65,9 @@
                 <div class="menu-title">Service</div>
             </a>
             <ul>
-                <li> <a href="{{route('add.service')}}"><i class='bx bx-radio-circle'></i>Add New Service</a>
+                <li> <a href="{{route('admin.add.service')}}"><i class='bx bx-radio-circle'></i>Add New Service</a>
                 </li>
-                <li> <a href="{{route('list.service')}}"><i class='bx bx-radio-circle'></i>Service List</a>
+                <li> <a href="{{route('admin.list.service')}}"><i class='bx bx-radio-circle'></i>Service List</a>
                 </li>
             </ul>
         </li>
@@ -78,11 +78,11 @@
                 <div class="menu-title">Campaign</div>
             </a>
             <ul>
-                <li> <a href="{{ route('new.campaign.add') }}"><i class='bx bx-radio-circle'></i>Add  Campaign</a>
+                <li> <a href="{{ route('admin.new.campaign.add') }}"><i class='bx bx-radio-circle'></i>Add  Campaign</a>
                 </li>
-{{--                <li> <a href="{{ route('service.campaign.add') }}"><i class='bx bx-radio-circle'></i>Add Service Campaign</a>--}}
+{{--                <li> <a href="{{ route('admin.service.campaign.add') }}"><i class='bx bx-radio-circle'></i>Add Service Campaign</a>--}}
                {{-- </li>--}}
-                <li> <a href="{{ route('campaign.list') }}"><i class='bx bx-radio-circle'></i>Campaign List</a>
+                <li> <a href="{{ route('admin.campaign.list') }}"><i class='bx bx-radio-circle'></i>Campaign List</a>
                 </li>
             </ul>
         </li>

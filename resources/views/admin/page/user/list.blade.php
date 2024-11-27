@@ -69,7 +69,7 @@
                                     </form>
                                 </div>
                                 <div class="col">
-                                    <form id="deleteForm{{ $user->id }}" method="POST" action="{{ route('zone.destroy', $user->id) }}">
+                                    <form id="deleteForm{{ $user->id }}" method="POST" action="{{ route('admin.zone.destroy', $user->id) }}">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button" class="btn btn-outline-danger" onclick="showConfirmationPopup('deleteForm{{ $user->id }}')"><i class='bx bxs-trash me-0'></i>
@@ -86,7 +86,7 @@
                                 {{--                                                                                                </a>--}}
 
                             {{--                                                                                                <!-- Delete Form with Confirmation -->--}}
-                            {{--                                                                                                <form id="deleteForm{{ $user->id }}" method="POST" action="{{ route('categories.destroy', $user->id) }}">--}}
+                            {{--                                                                                                <form id="deleteForm{{ $user->id }}" method="POST" action="{{ route('admin.categories.destroy', $user->id) }}">--}}
                                 {{--                                                                                                    @csrf--}}
                                 {{--                                                                                                    @method('DELETE')--}}
                                 {{--                                                                                                    <!-- Update the type to "button" -->--}}
@@ -121,7 +121,7 @@
                                         {{--                                            </form>--}}
                                     {{--                                        </div>--}}
                                 {{--                                        <div class="col">--}}
-                                    {{--                                            <form id="deleteForm{{ $user->id }}" method="POST" action="{{ route('zone.destroy', $user->id) }}">--}}
+                                    {{--                                            <form id="deleteForm{{ $user->id }}" method="POST" action="{{ route('admin.zone.destroy', $user->id) }}">--}}
                                         {{--                                                @csrf--}}
                                         {{--                                                @method('DELETE')--}}
                                         {{--                                                <button type="button" class="btn btn-outline-danger" onclick="showConfirmationPopup('deleteForm{{ $user->id }}')"><i class='bx bxs-trash me-0'></i>--}}
@@ -138,7 +138,7 @@
                                 {{--                                    --}}{{--                                    </a>--}}
 
                             {{--                                    --}}{{--                                    <!-- Delete Form with Confirmation -->--}}
-                            {{--                                    --}}{{--                                    <form id="deleteForm{{ $user->id }}" method="POST" action="{{ route('categories.destroy', $user->id) }}">--}}
+                            {{--                                    --}}{{--                                    <form id="deleteForm{{ $user->id }}" method="POST" action="{{ route('admin.categories.destroy', $user->id) }}">--}}
                                 {{--                                    --}}{{--                                        @csrf--}}
                                 {{--                                    --}}{{--                                        @method('DELETE')--}}
                                 {{--                                    --}}{{--                                        <!-- Update the type to "button" -->--}}

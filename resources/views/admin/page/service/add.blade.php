@@ -3,8 +3,18 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
     <style>
+        #uploadedImagePreviewList img {
+            width: 25%;
+            padding: 5px;
+        }
+
+        #uploadedImagePreviewList {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
         #map {
-            width: 50%;
+            width: 100%;
             height: 300px;
         }
 
@@ -52,17 +62,18 @@
         <div class="col-xl-12 mx-auto">
             <div class="card">
                 <div class="card-body p-4">
-                    <form class="row g-3" id="categoryForm" method="Post" action="{{ route('service.store') }}" enctype="multipart/form-data">
+                    <form class="row g-3" id="serviceForm" method="Post" action="{{ route('admin.service.store') }}"
+                        enctype="multipart/form-data">
                         @csrf
                         <div class="col-md-4">
                             <label for="input1" class="form-label">Name</label>
-                            <input type="text" name="name" class="form-control" id="input1" placeholder="Name">
+                            <input type="text" name="title" class="form-control" id="input1" placeholder="Title">
                         </div>
                         <div class="col-md-4">
                             <label for="zoneSelect" class="form-label">Select Zone</label>
-                            <select name="zone_id" id="zoneSelect" class="form-select" required>
-                                <option disabled  >Choose...</option>
-                                @foreach($zones as $item)
+                            <select name="zone_id" id="zoneSelect" class="form-select">
+                                <option disabled>Choose...</option>
+                                @foreach ($zones as $item)
                                     <option value="{{ $item->id }}">{{ $item->name }}</option>
                                 @endforeach
                             </select>
@@ -70,32 +81,34 @@
                         <div class="col-md-4">
                             <label for="categorySelect" class="form-label">Select Category</label>
                             <select name="category_id" id="categorySelect" class="form-select" required>
-
+                                <option disabled>Choose...</option>
+                                @foreach ($categories as $item)
+                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endforeach
                             </select>
                         </div>
-{{--                        <div class="confirmation-popup" id="locationPermissionPopup">--}}
-{{--                            <h3>Location Access Required</h3>--}}
-{{--                            <p>Please allow access to your location to use this feature.</p>--}}
-{{--                            <div class="btn-container">--}}
-{{--                                <button class="btn btn-confirm" id="allowLocationAccess">Allow</button>--}}
-{{--                                <button class="btn btn-cancel" id="cancelLocationAccess">Cancel</button>--}}
-{{--                            </div>--}}
-{{--                        </div>--}}
+
                         <div class="col-md-4">
                             <label for="subcategorySelect" class="form-label">Sub Category</label>
-                            <select name="subcategory_id" id="subcategorySelect" class="form-select" required></select>
+                            <select name="subCategory_id" id="subcategorySelect" class="form-select" required>
+                                <option selected>Select Category</option>
+                            </select>
                         </div>
+
                         <div class="col-md-4">
                             <label for="input4" class="form-label">Assign Service To Customer</label>
                             <select id="input4" name="customer_id" class="form-select" required>
-
+                                @foreach ($providers as $item)
+                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endforeach
                             </select>
                         </div>
+
                         <div class="col-md-4">
                             <label for="input5" class="form-label">Price Type</label>
-                            <select id="input5" name="price_type" class="form-select" required>
-                                <option selected value="fixed">Fixed</option>
-                                <option value="negotiable">Negotiable</option>
+                            <select id="input5" name="priceType" class="form-select" required>
+                                <option selected value="Fixed">Fixed</option>
+                                <option value="Negotiable">Negotiable</option>
                             </select>
                         </div>
                         <div class="col-md-4">
@@ -113,40 +126,52 @@
                         <div class="col-md-4">
                             <label for="input8" class="form-label">Currency</label>
                             <select id="input8" class="form-select" name="currency" required>
-                                <option value="usd" selected>USD</option>
-                                <option value="aed">AED</option>
+                                <option value="USD" selected>USD</option>
+                                <option value="AED">AED</option>
                             </select>
                         </div>
-{{--                        <div class="col-md-4">--}}
-{{--                            <label for="input1" class="form-label">Duration (Hours:Minutes)</label>--}}
-{{--                            <input type="text" class="form-control" name="duration" id="duration" placeholder="1:00">--}}
-{{--                        </div>--}}
-                        <div class="col-md-6">
-                            <label for="input1" class="form-label">Skill</label>
-                            <input type="text" class="form-control" name="skill"  placeholder="PHP, Laravel">
+
+                        <div class="col-md-12">
+                            <label for="skill" class="form-label">Skill</label>
+                            <input type="text" value="{{ old('skill') }}" class="form-control" id="skills" name="skill"
+                                placeholder="PHP, Laravel, JavaScript" data-role="tagsinput" />
                         </div>
-                        <div class="col-md-6">
-                            <label for="input1" class="form-label">Address</label>
-                            <input type="text" class="form-control" name="address"  placeholder="Dhaka,Bangladesh">
-                        </div>
+
                         <div class="col-md-12">
                             <label for="input11" class="form-label">Long description</label>
-                            <textarea class="form-control" name="description" id="editor" placeholder="Address ..." rows="5"></textarea>
+                            <div id="editor" style="height: 400px;">
+                                {!! old('description') !!}
+
+                            </div>
+
+                            <!-- Hidden input to store the editor's content in HTML -->
+                            <input type="hidden" name="description" value="{{ old('description') }}" id="messageContent"
+                                required />
                         </div>
                         <div class="mb-3">
+                            <div id="uploadedImagePreviewList">
+                                <img src="{{ old('images') ? asset('storage/' . old('images')) : asset('assets/img/upload.png') }}"
+                                    alt=" " style="height: auto;">
+                            </div>
+
                             <label for="formFile" class="form-label">Image</label>
-                            <input class="form-control" type="file" name="image" id="formFile">
+                            <input class="form-control" type="file" name="images[]" id="formFile"
+                                onchange="previewUploadedImage(event)" multiple>
                         </div>
+
                         <div class="col-md-12">
-                            <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+                            <label for="input1" class="form-label">Address</label>
+                            <input type="text" id="pac-input" class="form-control" name="location"
+                                placeholder="Dhaka,Bangladesh">
+                        </div>
+
+
+                        <div class="col-md-12">
                             <div id="map"></div>
                         </div>
-
-                        <!-- Hidden input fields to store latitude and longitude values -->
-{{--                        <input type="hidden" id="coordinates" name="coordinates">--}}
+                        <input type="hidden" id="location-name" name="location_name">
                         <input type="hidden" id="latitude" name="latitude">
                         <input type="hidden" id="longitude" name="longitude">
-
 
                         <div class="col-md-12">
                             <div class="form-check form-switch">
@@ -158,7 +183,7 @@
                             <div class="d-md-flex d-grid justify-content-end gap-3">
 
                                 <button type="submit" class="btn btn-primary px-4">Submit</button>
-                                <button type="button" class="btn btn-light px-4" onclick="resetForm()">Reset</button>
+                                <button type="button" class="btn btn-light px-4" onclick="resetMap()">Reset</button>
                             </div>
                         </div>
                     </form>
@@ -168,257 +193,217 @@
     </div>
 @endsection
 
+
 @section('script')
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-    <script>
-        ClassicEditor
-            .create( document.querySelector( '#editor' ) )
-            .catch( error => {
-                console.error( error );
-            } );
-    </script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#duration').on('input', function() {
-                var input = $(this).val();
-                var isValid = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/.test(input);
-                $(this).toggleClass('is-invalid', !isValid);
-            });
 
-            // Set the base URL for your Laravel project here
-            const BASE_URL = "{{ url('/') }}";
-
-            // Function to fetch categories based on the selected zone using AJAX
-            function fetchCategoriesByZone() {
-                const zoneId = $('#zoneSelect').val();
-
-                if (!zoneId) {
-                    // If zoneId is null, clear the category select dropdown
-                    $('#categorySelect').empty().append('<option disabled selected>Choose...</option>');
-                    return;
-                }
-
-                $.ajax({
-                    url: `${BASE_URL}/api/zones/${zoneId}/categories`,
-                    type: 'GET',
-                    success: function(categories) {
-                        const categorySelect = $('#categorySelect');
-                        categorySelect.empty();
-                        categorySelect.append('<option disabled selected>Choose...</option>');
-
-                        $.each(categories, function(index, category) {
-                            categorySelect.append(`<option value="${category.id}">${category.name}</option>`);
-                        });
-                    },
-                    error: function(error) {
-                        console.error('Error:', error);
-                    }
-                });
-            }
-
-            // Function to fetch providers based on the selected zone using AJAX
-            function fetchProvidersByZone() {
-                const zoneId = $('#zoneSelect').val();
-
-                if (!zoneId) {
-                    // If zoneId is null, clear the provider select dropdown
-                    $('#input4').empty().append('<option selected>Choose...</option>');
-                    return;
-                }
-
-                $.ajax({
-                    url: `${BASE_URL}/api/zones/${zoneId}/providers`,
-                    type: 'GET',
-                    success: function(providers) {
-                        const providerSelect = $('#input4');
-                        providerSelect.empty();
-                        providerSelect.append('<option selected>Choose...</option>');
-
-                        $.each(providers, function(index, provider) {
-                            providerSelect.append(`<option value="${provider.id}">${provider.name}</option>`);
-                        });
-                    },
-                    error: function(error) {
-                        console.error('Error:', error);
-                    }
-                });
-            }
-
-            // Attach the event listener to the zone select dropdown
-            $('#zoneSelect').on('change', function() {
-                fetchCategoriesByZone();
-                fetchProvidersByZone();
-            });
-
-            // Trigger the initial fetch of categories and providers when the page loads
-            fetchCategoriesByZone();
-            fetchProvidersByZone();
-        });
-    </script>
-    <script>
-        // Function to update the subcategory options based on the selected category
-        function updateSubcategories() {
-            // Get the selected category ID
-            const categoryId = $('#categorySelect').val();
-
-            if (!categoryId) {
-                // If categoryId is null, clear the subcategory select dropdown
-                $('#subcategorySelect').empty().append('<option disabled selected>Open this select menu</option>');
-                return;
-            }
-
-            // Set the base URL for your Laravel project here
-            const BASE_URL = "{{ url('/') }}";
-
-            // Send an AJAX request to fetch the subcategories based on the selected category
-            $.ajax({
-                url: `${BASE_URL}/api/categories/${categoryId}/subcategories`,
-                type: 'GET',
-                success: function(subcategories) {
-                    const subcategorySelect = $('#subcategorySelect');
-                    subcategorySelect.empty();
-                    subcategorySelect.append('<option disabled selected>Open this select menu</option>');
-
-                    $.each(subcategories, function(index, subcategory) {
-                        subcategorySelect.append(`<option value="${subcategory.id}">${subcategory.name}</option>`);
+            // Get subcategories on category change
+            $('#categorySelect').on('change', function() {
+                var category = $(this).val();
+                if (category) {
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ route('get-subcategories') }}?category_id=" + category,
+                        success: function(res) {
+                            if (res.success) {
+                                $('#subcategorySelect').empty();
+                                res.data.forEach(function(subcategory) {
+                                    $('#subcategorySelect').append(
+                                        `<option value="${subcategory.id}">${subcategory.name}</option>`
+                                    );
+                                })
+                            }
+                        }
                     });
-                },
-                error: function(error) {
-                    console.error('Error:', error);
                 }
             });
-        }
 
-        // Attach the event listener to the category select dropdown
-        $('#categorySelect').on('change', function() {
-            updateSubcategories();
+            // submit form
+            $('#serviceForm').on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                var skills = $('#skills').val();
+                formData.append('skills', JSON.stringify(skills.split(',')));
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('auth-service-store') }}",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(res) {
+                        console.log(res);
+                        if (res.success) {
+                            // reset form
+                            $('form')[0].reset();
+                            // reset map
+                            resetMap();
+                            // show success message
+                            Swal.fire({
+                                icon: "success",
+                                title: "Success",
+                                text: res.message,
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: res.message,
+                            });
+
+
+                            // show error message
+                            $('.alert-danger').html(res.message).show();
+                        }
+                    },
+                    error: function({
+                        responseJSON
+                    }) {
+                        console.log(responseJSON);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: responseJSON.message,
+                        });
+                    }
+                });
+            })
         });
-
-        // Trigger the initial update of subcategories when the page loads
-        updateSubcategories();
     </script>
+
     <script>
-
-        function submitForm() {
-            const BASE_URL = "{{ url('/') }}";
-            const form = document.getElementById('categoryForm');
-
-            // Perform AJAX form submission
-            $.ajax({
-                url: form.getAttribute('action'),
-                type: 'POST',
-                data: new FormData(form),
-                processData: false,
-                contentType: false,
-                error: function(error) {
-                    console.error('Error:', error);
-                }
-            });
-        }
-
-        function resetForm() {
-            document.getElementById("categoryForm").reset();
-        }
-    </script>
-    <script>
-
         var map;
         var marker;
+        var markerSearchByName;
+        var initialCenter = {
+            lat: 23.8103,
+            lng: 90.4125
+        };
 
-        function initialize() {
-            // Check if geolocation is available
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    var userLatlng = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
+        function initAutocomplete() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: initialCenter,
+                zoom: 13,
+                mapTypeId: 'roadmap',
+                clickableIcons: false
+            });
 
-                    var myOptions = {
-                        zoom: 13,
-                        center: userLatlng,
-                        mapTypeId: google.maps.MapTypeId.ROADMAP
-                    };
+            var input = document.getElementById('pac-input');
+            var autocomplete = new google.maps.places.Autocomplete(input);
+            autocomplete.bindTo('bounds', map);
 
-                    map = new google.maps.Map(document.getElementById("map"), myOptions);
+            map.addListener('click', function(e) {
+                setMarker(e.latLng);
+                updateAddress(e.latLng);
+            });
 
-                    // Create a marker for the user's current location
-                    marker = new google.maps.Marker({
-                        map: map,
-                        position: userLatlng,
-                        draggable: true // Allow marker to be moved
-                    });
+            autocomplete.addListener('place_changed', function() {
+                var place = autocomplete.getPlace();
+                if (!place.geometry) {
+                    alert("Autocomplete's place geometry is missing: " + place.name);
+                    return;
+                }
+                if (place.geometry.viewport) {
+                    map.fitBounds(place.geometry.viewport);
+                } else {
+                    map.setCenter(place.geometry.location);
+                    map.setZoom(17);
+                }
+                setMarker(place.geometry.location);
+                updateAddress(place.geometry.location);
+            });
+        }
 
-                    // Create a search box for location search
-                    const input = document.getElementById("pac-input");
-                    const searchBox = new google.maps.places.SearchBox(input);
-                    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-                    // Listen for the place selected event
-                    searchBox.addListener("places_changed", function() {
-                        const places = searchBox.getPlaces();
-
-                        if (places.length == 0) {
-                            return;
-                        }
-
-                        // Get the first place and set the marker position
-                        const place = places[0];
-                        marker.setPosition(place.geometry.location);
-
-                        // Get the latitude and longitude
-                        const latitude = place.geometry.location.lat();
-                        const longitude = place.geometry.location.lng();
-
-                        // Update hidden input fields with latitude and longitude
-                        document.getElementById("latitude").value = latitude;
-                        document.getElementById("longitude").value = longitude;
-
-                        // Center the map on the selected location
-                        map.setCenter(place.geometry.location);
-                    });
-
-                    // Listen for marker dragend event
-                    marker.addListener("dragend", function(event) {
-                        const latitude = event.latLng.lat();
-                        const longitude = event.latLng.lng();
-
-                        // Update hidden input fields with latitude and longitude
-                        document.getElementById("latitude").value = latitude;
-                        document.getElementById("longitude").value = longitude;
-                    });
-                }, function(error) {
-                    // Handle geolocation error, ask for permission here
-                    if (error.code === 1) {
-                        alert("Please allow access to your location to use this feature.");
-                    }
-                });
+        function setMarker(location) {
+            if (marker) {
+                marker.setPosition(location);
             } else {
-                // Geolocation is not available, set a default location
-                var defaultLatlng = { lat: 23.8103, lng: 90.4125 }; // Replace with your desired default coordinates
-
-                var myOptions = {
-                    zoom: 13,
-                    center: defaultLatlng,
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
-                };
-
-                map = new google.maps.Map(document.getElementById("map"), myOptions);
+                marker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    draggable: true
+                });
+                marker.addListener('dragend', function(event) {
+                    updateAddress(event.latLng);
+                });
             }
         }
 
-        // Load the Google Maps API with your API key and callback
-        function loadMapScript() {
-            const script = document.createElement("script");
-            script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCc9NIB-ScnkTvQZzrB53TfaCwo1XUegHM&callback=initialize&libraries=places";
-            script.defer = true;
-            document.head.appendChild(script);
+        function updateAddress(latLng) {
+            document.getElementById('latitude').value = latLng.lat();
+            document.getElementById('longitude').value = latLng.lng();
+            var geocoder = new google.maps.Geocoder();
+            geocoder.geocode({
+                'location': latLng
+            }, function(results, status) {
+                if (status === 'OK' && results[0]) {
+                    document.getElementById('location-name').value = results[0].formatted_address;
+                    document.getElementById('pac-input').value = results[0].formatted_address;
+                }
+            });
         }
 
-        // Call the loadMapScript function to load the map
-        loadMapScript();
+        function resetMap() {
+            map.setCenter(initialCenter);
+            map.setZoom(13);
+            document.getElementById('pac-input').value = '';
+            document.getElementById('latitude').value = '';
+            document.getElementById('longitude').value = '';
+            document.getElementById('location-name').value = '';
+            if (marker) {
+                marker.setMap(null);
+                marker = null;
+            }
+        }
+
+        function previewUploadedImage(event) {
+            const files = event.target.files;
+            const imgElement = document.getElementById('uploadedImagePreview');
+            const previewList = document.getElementById('uploadedImagePreviewList');
+            previewList.innerHTML = '';
+            for (let i = 0; i < files.length; i++) {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    const img = document.createElement('img');
+                    img.src = reader.result;
+                    img.style.height = 'auto';
+                    previewList.appendChild(img);
+                }
+                reader.readAsDataURL(files[i]);
+            }
+        }
+
+        var quill = new Quill('#editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{
+                        'header': [1, 2, false]
+                    }],
+                    ['bold', 'italic', 'underline'],
+                    [{
+                        'list': 'ordered'
+                    }, {
+                        'list': 'bullet'
+                    }],
+                    ['clean'] // Remove formatting button
+                ]
+            },
+            placeholder: 'Type here...'
+        });
+
+        // Listen for text changes and save content to hidden input
+        quill.on('text-change', function() {
+            document.getElementById('messageContent').value = quill.root.innerHTML;
+        });
     </script>
 
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCc9NIB-ScnkTvQZzrB53TfaCwo1XUegHM&libraries=places,geometry&callback=initAutocomplete"
+        async defer></script>
 
     <style>
         .confirmation-popup {
@@ -432,13 +417,17 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             border-radius: 8px;
             padding: 20px;
-            opacity: 0; /* Start with 0 opacity */
-            transition: opacity 0.3s ease; /* Add a transition effect for opacity */
+            opacity: 0;
+            /* Start with 0 opacity */
+            transition: opacity 0.3s ease;
+            /* Add a transition effect for opacity */
         }
 
         .confirmation-popup.show {
-            display: block; /* Show the pop-up */
-            opacity: 1; /* Make it fully opaque when visible */
+            display: block;
+            /* Show the pop-up */
+            opacity: 1;
+            /* Make it fully opaque when visible */
         }
 
         .confirmation-popup h3 {
@@ -472,6 +461,4 @@
             color: #ffffff;
         }
     </style>
-
-
 @endsection

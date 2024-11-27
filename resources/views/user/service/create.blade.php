@@ -14,7 +14,7 @@
                     </div>
                 @endif
                 <div class="alert alert-danger" role="alert" style="display: none">
-                    
+
                 </div>
             </div>
             <form action="{{ route('auth-service-store') }}" method="post" enctype="multipart/form-data">
@@ -22,13 +22,15 @@
                     @csrf
                     <div class="wrap-content w-full">
                         <div id="commentform" class="comment-form" novalidate="novalidate">
+
                             <fieldset class="title">
                                 <label>Service Name *</label>
+                                <input type="hidden" name="postType" value="Service">
                                 <input type="text" id="title" placeholder="Service Name" name="title"
                                     tabindex="2" value="{{ old('title') }}" aria-required="true" required="">
-                                  
-                            </fieldset>
 
+                            </fieldset>
+                           
                             <fieldset class="message">
                                 <label>Service Description *</label>
                                 <!-- Editor container -->
@@ -39,14 +41,13 @@
                                 <!-- Hidden input to store the editor's content in HTML -->
                                 <input type="hidden" name="description" value="{{ old('description') }}"
                                     id="messageContent" required>
-                              
+
                             </fieldset>
 
                             <fieldset class="message">
                                 <label>Skill and Expertice *</label>
-                                <textarea id="message" name="skills" rows="4"
-                                    placeholder="Add Up to 10 keyword to help pepole discover your project..." tabindex="2" aria-required="true"
-                                    >{{ old('skills') }}</textarea>
+                                <input type="text" id="skills" name="skill"
+                                    placeholder="PHP, Laravel, JavaScript" data-role="tagsinput">
                                 @error('skills')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -105,14 +106,31 @@
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </fieldset>
-
+                            </div>
+                            <div class="flex gap30">
                                 <fieldset class="price">
                                     <label>Price</label>
                                     <input type="number" id="price" placeholder="Price" name="price"
                                         tabindex="2" value="{{ old('price') }}" aria-required="true" required=""
                                         step="0.01">
                                 </fieldset>
+
+
+                                <fieldset class="Pricetyoe">
+                                    <label for="input7" class="form-label">Level</label>
+                                    <select id="input7" name="level" class="form-select" required>
+                                        <option selected value="entry">Entry</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="expert">Expert</option>
+                                    </select>
+                                    @error('price_type')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </fieldset>
+
+
                             </div>
+
                             <div class="mb-4">
                                 <fieldset class="location_name">
                                     <label>Location</label>
@@ -198,6 +216,8 @@
         $('form').on('submit', function(e) {
             e.preventDefault();
             var formData = new FormData(this);
+            var skills = $('#skills').val();
+            formData.append('skills', JSON.stringify(skills.split(',')));
             $.ajax({
                 type: "POST",
                 url: "{{ route('auth-service-store') }}",
@@ -217,19 +237,21 @@
                             title: "Success",
                             text: res.message,
                         });
-                    }else {
+                    } else {
                         Swal.fire({
                             icon: "error",
                             title: "Error",
                             text: res.message,
                         });
 
-                       
+
                         // show error message
                         $('.alert-danger').html(res.message).show();
                     }
                 },
-                error: function({responseJSON}) {
+                error: function({
+                    responseJSON
+                }) {
                     console.log(responseJSON);
                     Swal.fire({
                         icon: "error",

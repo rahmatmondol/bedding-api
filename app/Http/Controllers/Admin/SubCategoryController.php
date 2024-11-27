@@ -58,7 +58,7 @@ class SubCategoryController extends Controller
             }
 
             // Redirect to a success page or return a response
-            return redirect()->route('list.subcategory')
+            return redirect()->route('admin.list.subcategory')
                 ->with('toaster', ['status' => 'success', 'message' => 'Category added successfully']);
 
         }catch (\Illuminate\Validation\ValidationException $e) {
@@ -94,7 +94,7 @@ class SubCategoryController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return redirect()->route('subcategory.edit', $id)
+                return redirect()->route('admin.subcategory.edit', $id)
                     ->with('toaster', [
                         'status' => 'error',
                         'message' => 'Image must be in jpeg,png,jpg,gif,svg',
@@ -130,7 +130,7 @@ class SubCategoryController extends Controller
             // Save the category
             $category->save();
 
-            return redirect()->route('list.subcategory')->with('toaster', [
+            return redirect()->route('admin.list.subcategory')->with('toaster', [
                 'status' => 'success',
                 'message' => 'Sub Category updated successfully!',
             ]);
@@ -164,6 +164,6 @@ class SubCategoryController extends Controller
             Session::flash('toaster', ['status' => 'error', 'message' => 'Failed to delete category!']);
         }
 
-        return redirect()->route('list.subcategory');
+        return redirect()->route('admin.list.subcategory');
     }
 }

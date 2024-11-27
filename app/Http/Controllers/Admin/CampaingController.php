@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
-use App\Models\Category;
+use App\Models\Categories as Category;
+use App\Models\Services as Service;
 use App\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -17,8 +18,9 @@ class CampaingController extends Controller
     //
     public function add(){
 
-         $zones =Zone::all();
-        return view('admin.page.campain.add',compact('zones'));
+        $zones = Zone::all();
+        $categories = Category::all();
+        return view('admin.page.campain.add',compact('zones','categories'));
     }
     public function store(Request $request)
     {
@@ -49,33 +51,20 @@ class CampaingController extends Controller
 
             // Create the campaign
             $campaign = Campaign::create($validatedData);
+          
+             // attach image to service
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                $destinationPath = public_path('assets/images/campaign/');
-                $postImage = "campaign_$campaign->id.png";
-                $fullPath = $destinationPath . $postImage;
-
-                // Check if the directory exists, if not create it
-                if (!file_exists($destinationPath)) {
-                    if (!mkdir($destinationPath, 0777, true) && !is_dir($destinationPath)) {
-                        throw new \RuntimeException(sprintf('Directory "%s" was not created', $destinationPath));
-                    }
-                }
-
-                // Save the image to the specified path
-                Image::make($image)->resize(200, 200)->save($fullPath);
-                $campaign->image =  '/assets/images/campaign/'.$postImage ;
+                $originalName = $image->getClientOriginalName();
+                $filename = time() . '_' . $originalName;
+                $image->move('uploads/campaign/', $filename);
+                $campaign->image =url('uploads/campaign/' . $filename);
                 $campaign->save();
             }
 
-
-            // Associate the campaign with categories
-//            $campaign->categories()->attach($request->category);
-
             Session::flash('toaster', ['status' => 'success', 'message' => 'Campaign created successfully!']);
 
-
-            return redirect()->route('campaign.list');
+            return redirect()->route('admin.campaign.list');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()
@@ -88,74 +77,8 @@ class CampaingController extends Controller
                 ]);
         }
 
-
-
     }
-    public function serviceStore(Request $request){
-        try {
 
-            // Data validation
-            $validator = Validator::make($request->all(), [
-                'name' => 'required',
-                'zone_id' => 'required|integer',
-                'service_id' => 'required',
-                'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                'discount' => 'required|integer',
-                'start' => 'required|date',
-                'end' => 'required|date|after:start_date',
-
-            ]);
-
-            if ($validator->fails()) {
-                throw new ValidationException($validator);
-            }
-
-            $campaignData = $request->all();
-            $campaignData['type'] = 'service';
-            $campaign = Campaign::create($campaignData);
-
-            // If an image file is provided, store it and get the path
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $destinationPath = public_path('assets/images/campaign/');
-                $postImage = "campaign_$campaign->id.png";
-                $fullPath = $destinationPath . $postImage;
-
-                // Check if the directory exists, if not create it
-                if (!file_exists($destinationPath)) {
-                    if (!mkdir($destinationPath, 0777, true) && !is_dir($destinationPath)) {
-                        throw new \RuntimeException(sprintf('Directory "%s" was not created', $destinationPath));
-                    }
-                }
-
-                // Save the image to the specified path
-                Image::make($image)->resize(200, 200)->save($fullPath);
-                $campaign->image =  '/assets/images/campaign/'.$postImage ;
-                $campaign->save();
-            }
-
-            // Convert category_ids and service_id arrays to JSON string
-//            $campaignData['service_id'] = $campaignData['service_id'];
-
-            // Create the campaign
-
-
-            Session::flash('toaster', ['status' => 'success', 'message' => 'Campaign created successfully!']);
-
-
-            return redirect()->route('campaign.list');
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return redirect()->back()
-                ->withErrors($e->validator)
-                ->withInput()
-                ->with('toaster', [
-                    'status' => 'error',
-                    'message' => 'There were some validation errors.',
-                    'errors' => $e->errors()
-                ]);
-        }
-    }
     public function serviceCampaignAdd(Request $request){
         $zones = Zone::all();
         return view('admin.page.campain.service-add',compact('zones'));
@@ -199,11 +122,7 @@ class CampaingController extends Controller
 
     public function campaignlist()
     {
-        $campaigns = Campaign::with('zone','service')->get()->map(function ($campaign) {
-            $campaign->categories =  Category::where('id', $campaign->category_id)->get();
-            return $campaign;
-        });
-
+        $campaigns = Campaign::with('zone')->get();
         return view('admin.page.campain.list',compact('campaigns'));
     }
 }

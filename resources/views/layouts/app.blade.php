@@ -17,6 +17,37 @@
     <!-- Favicon and Touch Icons  -->
     <link rel="shortcut icon" href="{{ asset('user/assets/icon/Favicon.png') }}">
     <link rel="apple-touch-icon-precomposed" href="{{ asset('user/assets/icon/Favicon.png') }}">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css">
+    <style>
+        .bootstrap-tagsinput {
+            width: 100%;
+            padding: 0px;
+            line-height: 1.5;
+            border-radius: 10px;
+            display: inline-block;
+            background-color: #161616;
+            border: none;
+            height: 50px;
+        }
+
+        .bootstrap-tagsinput input {
+            width: auto;
+            display: inline-block;
+            padding: 15px;
+            background-color: transparent;
+            color: #fff;
+        }
+
+        .tag.label.label-info {
+            color: #fff;
+            padding: 5px 7px;
+            border-radius: 2px;
+            background: #1a9175;
+        }
+
+    
+    </style>
     @livewireStyles
 </head>
 
@@ -78,7 +109,7 @@
     @livewireScripts
     <!-- Javascript -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <!-- Bootstrap TagsInput JavaScript -->
     <script src="{{ asset('user/assets/js/jquery.min.js') }}"></script>
     <script src="{{ asset('user/assets/js/popper.min.js') }}"></script>
     <script src="{{ asset('user/assets/js/bootstrap.bundle.min.js') }}"></script>
@@ -87,6 +118,7 @@
     <script src="{{ asset('user/assets/js/swiper.js') }}"></script>
     <script src="{{ asset('user/assets/js/countto.js') }}"></script>
     <script src="{{ asset('user/assets/js/count-down.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
 
     <script src="{{ asset('user/assets/js/simpleParallax.min.js') }}"></script>
     <script src="{{ asset('user/assets/js/gsap.js') }}"></script>

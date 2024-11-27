@@ -45,7 +45,7 @@
                                     <!-- Edit Button -->
                                     <div class="row row-cols-auto g-3">
                                         <div class="col">
-                                            <form method="GET" action="{{ route('coupon-edit', $coupon->id) }}">
+                                            <form method="GET" action="{{ route('admin.coupon-edit', $coupon->id) }}">
                                                 @csrf
                                                 <button type="submit" class="btn btn-outline-primary">
                                                     <i class='bx bxs-edit mr-0'></i>
@@ -53,7 +53,7 @@
                                             </form>
                                         </div>
                                         <div class="col">
-                                            <form id="deleteForm{{ $coupon->id }}" method="POST" action="{{ route('delete-coupon', $coupon->id) }}">
+                                            <form id="deleteForm{{ $coupon->id }}" method="POST" action="{{ route('admin.delete-coupon', $coupon->id) }}">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="btn btn-outline-danger" onclick="showConfirmationPopup('deleteForm{{ $coupon->id }}')"><i class='bx bxs-trash me-0'></i>

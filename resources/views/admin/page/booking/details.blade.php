@@ -23,7 +23,7 @@
                            <p>Booking Placed : {{$details->created_at}}</p>
                        </div>
                        <div class="col-md-2 ">
-                           <a href="{{ route('invoice',$details->id) }}" class="btn btn-primary px-5">Invoice</a>
+                           <a href="{{ route('admin.invoice',$details->id) }}" class="btn btn-primary px-5">Invoice</a>
                        </div>
                    </div>
 

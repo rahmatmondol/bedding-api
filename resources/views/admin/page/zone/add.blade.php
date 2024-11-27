@@ -51,7 +51,7 @@
         <div class="col-xl-12 mx-auto">
             <div class="card">
                 <div class="card-body p-4">
-                    <form class="row g-3" id="zoneForm" method="post" action="{{ route('zone.store') }}">
+                    <form class="row g-3" id="zoneForm" method="post" action="{{ route('admin.zone.store') }}">
                         @csrf
                         <div class="col-md-12">
                             <label for="input1" class="form-label">Zone Name</label>

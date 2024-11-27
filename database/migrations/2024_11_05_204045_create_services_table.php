@@ -24,7 +24,9 @@ return new class extends Migration
             $table->enum ('currency', ['AED', 'USD'])->default('USD');
             $table->enum ('status', ['Active', 'Inactive'])->default('Active');
             $table->enum ('level', ['Entry', 'Intermediate', 'Expert'])->default('Entry');
+            $table->enum ('postType', ['Service', 'Auction'])->default('Service');
             $table->date('deadline')->nullable();
+            $table->json('skills')->nullable();
             $table->float('commission')->default(0.0);
             $table->boolean('is_featured')->default(false);
             

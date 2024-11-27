@@ -21,7 +21,7 @@
                 <div class="card-body">
                     <div class="tab-content py-3">
                         <div class="tab-pane fade show active" id="successhome" role="tabpanel">
-                            <form class="row g-3" id="Form2" method="POST" action="{{ route('coupon-update', $coupon->id) }}" enctype="multipart/form-data">
+                            <form class="row g-3" id="Form2" method="POST" action="{{ route('admin.coupon-update', $coupon->id) }}" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
                                 <div class="col-md-12">

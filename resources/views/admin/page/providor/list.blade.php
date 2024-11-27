@@ -16,7 +16,7 @@
 @section('content')
     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4">
         <div class="col">
-            <a href="{{route('provider.list')}}" class="card-link">
+            <a href="{{route('admin.provider.list')}}" class="card-link">
             <div  class="card radius-10">
 
                 <div class="card-body">
@@ -33,7 +33,7 @@
             </a>
         </div>
         <div class="col">
-            <a href="{{route('provider.list', 'onboarding')}}" class="card-link">
+            <a href="{{route('admin.provider.list', 'onboarding')}}" class="card-link">
                 <div class="card radius-10">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -50,7 +50,7 @@
             </a>
         </div>
         <div class="col">
-            <a href="{{route('provider.list', 'inactive')}}" class="card-link">
+            <a href="{{route('admin.provider.list', 'inactive')}}" class="card-link">
             <div class="card radius-10">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -67,7 +67,7 @@
             </a>
         </div>
         <div class="col">
-            <a href="{{route('provider.list','active')}}" class="card-link">
+            <a href="{{route('admin.provider.list','active')}}" class="card-link">
                 <div class="card radius-10">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -131,7 +131,7 @@
                                             </form>
                                         </div>
                                         <div class="col">
-                                            <form id="deleteForm{{ $provider->id }}" method="POST" action="{{ route('provider.delete', $provider->id) }}">
+                                            <form id="deleteForm{{ $provider->id }}" method="POST" action="{{ route('admin.provider.delete', $provider->id) }}">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="btn btn-outline-danger" onclick="showConfirmationPopup('deleteForm{{ $provider->id }}')"><i class='bx bxs-trash me-0'></i>
@@ -145,7 +145,7 @@
 {{--                                                                                                </a>--}}
 
 {{--                                                                                                <!-- Delete Form with Confirmation -->--}}
-{{--                                    <form id="deleteForm{{ $provider->id }}" method="POST" action="{{ route('categories.destroy', $provider->id) }}">--}}
+{{--                                    <form id="deleteForm{{ $provider->id }}" method="POST" action="{{ route('admin.categories.destroy', $provider->id) }}">--}}
 {{--                                                                                                    @csrf--}}
 {{--                                                                                                    @method('DELETE')--}}
 {{--                                                                                                    <!-- Update the type to "button" -->--}}

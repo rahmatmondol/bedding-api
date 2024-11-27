@@ -19,86 +19,58 @@
             <div class="table-responsive">
                 <table id="example" class="table table-striped table-bordered" style="width:100%">
                     <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Image</th>
-                        <th>Zone</th>
-                        <th>Categories</th>
-                        <th>Service</th>
-                        <th>Discount</th>
-                        <th>Action</th>
-                    </tr>
+                        <tr>
+                            <th>Name</th>
+                            <th>Image</th>
+                            <th>Zone</th>
+                            <th>Categories</th>
+                            <th>Service</th>
+                            <th>Discount</th>
+                            <th>Action</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    @foreach($campaigns as $category)
-                        <tr>
-                            <td>{{ $category->name }}</td>
-                            <td><img src="{{ $category->image }}" class="product-img-2" alt="product img"></td>
-                            <td>{{ $category->zone->name ?? null }}</td>
-                            <td>
-                                @if(count($category->categories) > 0)
-                                    {{ implode(', ', $category->categories->pluck('name')->toArray()) }}
-                                @else
-                                    {{ 'No Categories' }}
-                                @endif
-                            </td>
+                        @foreach ($campaigns as $category)
+                            <tr>
+                                <td>{{ $category->name }}</td>
+                                <td><img src="{{ $category->image }}" class="product-img-2" alt="product img"></td>
+                                <td>{{ $category->zone->name ?? null }}</td>
+                                <td>
+                                    {{-- @if (count($category->categories) > 0)
+                                        {{ implode(', ', $category->categories->pluck('name')->toArray()) }}
+                                    @else
+                                        {{ 'No Categories' }}
+                                    @endif --}}
+                                </td>
+                                <td>No Service</td>
+                                <td>{{ $category->discount }}</td>
+                                <td>
+                                    <div class="d-flex order-actions justify-content-center">
+                                        <!-- Edit Button -->
+                                        <div class="row row-cols-auto g-3">
 
+                                            <div class="col">
+                                                <form id="deleteForm{{ $category->id }}" method="POST"
+                                                    action="{{ route('admin.campaign.destroy', $category->id) }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button" class="btn btn-outline-danger"
+                                                        onclick="showConfirmationPopup('deleteForm{{ $category->id }}')"><i
+                                                            class='bx bxs-trash me-0'></i>
+                                                    </button>
+                                                </form>
+                                            </div>
 
-                            <td>{{ $category->service->name ?? 'No Service' }}</td>
-                            <td>{{$category->discount}}</td>
-{{--                            <td><span class="badge bg-{{ $category->is_active ? 'success' : 'danger' }}">--}}
-{{--                                {{ $category->is_active ? 'Active' : 'Deactivate' }}</span></td>--}}
-
-{{--                            <td><span class="badge bg-{{ $category->is_featured ? 'success' : 'danger' }}">--}}
-{{--                                {{ $category->is_featured ? 'Active' : 'Deactivate' }}</span></td>--}}
-                            <td>
-                                <div class="d-flex order-actions justify-content-center">
-                                    <!-- Edit Button -->
-                                    <div class="row row-cols-auto g-3">
-{{--                                        <div class="col">--}}
-{{--                                            <form method="GET" action="{{ route('category.edit', $category->id) }}">--}}
-{{--                                                @csrf--}}
-{{--                                                <button type="submit" class="btn btn-outline-primary">--}}
-{{--                                                    <i class='bx bxs-edit mr-0'></i>--}}
-{{--                                                </button>--}}
-{{--                                            </form>--}}
-{{--                                        </div>--}}
-                                        <div class="col">
-                                            <form id="deleteForm{{ $category->id }}" method="POST" action="{{ route('campaign.destroy', $category->id) }}">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="btn btn-outline-danger" onclick="showConfirmationPopup('deleteForm{{ $category->id }}')"><i class='bx bxs-trash me-0'></i>
-                                                </button>
-                                            </form>
                                         </div>
-                                        {{--                                        <div class="col">--}}
-                                        {{--                                            <button type="button" class="btn btn-outline-success"><i class='bx bx-home-alt me-0'></i>--}}
-                                        {{--                                            </button>--}}
-                                        {{--                                        </div>--}}
                                     </div>
-                                    {{--                                    <a href="" class="btn btn-outline-primary" role="button">--}}
-                                    {{--                                        <i class='bx bxs-edit mr-0'></i> Edit--}}
-                                    {{--                                    </a>--}}
-
-                                    {{--                                    <!-- Delete Form with Confirmation -->--}}
-                                    {{--                                    <form id="deleteForm{{ $category->id }}" method="POST" action="{{ route('categories.destroy', $category->id) }}">--}}
-                                    {{--                                        @csrf--}}
-                                    {{--                                        @method('DELETE')--}}
-                                    {{--                                        <!-- Update the type to "button" -->--}}
-                                    {{--                                        <button type="button" class="ms-3 delete-icon btn btn-danger" onclick="showConfirmationPopup('deleteForm{{ $category->id }}')">--}}
-                                    {{--                                            <i class="bx bxs-trash"></i> Delete--}}
-                                    {{--                                        </button>--}}
-                                    {{--                                    </form>--}}
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-
 @endsection
 
 @section('script')
@@ -114,13 +86,17 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             border-radius: 8px;
             padding: 20px;
-            opacity: 0; /* Start with 0 opacity */
-            transition: opacity 0.3s ease; /* Add a transition effect for opacity */
+            opacity: 0;
+            /* Start with 0 opacity */
+            transition: opacity 0.3s ease;
+            /* Add a transition effect for opacity */
         }
 
         .confirmation-popup.show {
-            display: block; /* Show the pop-up */
-            opacity: 1; /* Make it fully opaque when visible */
+            display: block;
+            /* Show the pop-up */
+            opacity: 1;
+            /* Make it fully opaque when visible */
         }
 
         .confirmation-popup h3 {

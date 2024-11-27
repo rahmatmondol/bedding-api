@@ -5,8 +5,8 @@
 @endsection
 
 @section('breadcrumb-items')
-    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="bx bx-home-alt"></i></a></li>
-    <li class="breadcrumb-item"><a href="{{ route('list-extra') }}">Extra Services</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="bx bx-home-alt"></i></a></li>
+    <li class="breadcrumb-item"><a href="{{ route('admin.list-extra') }}">Extra Services</a></li>
     <li class="breadcrumb-item active" aria-current="page">Edit Extra Service</li>
 @endsection
 
@@ -15,7 +15,7 @@
         <div class="col-xl-12 mx-auto">
             <div class="card">
                 <div class="card-body p-4">
-                    <form class="row g-3" method="POST" action="{{ route('update-extra', $extraService->id) }}">
+                    <form class="row g-3" method="POST" action="{{ route('admin.update-extra', $extraService->id) }}">
                         @csrf
                         @method('PUT')
                         <div class="col-md-12">
@@ -37,7 +37,7 @@
                         <div class="col-md-12">
                             <div class="d-md-flex d-grid justify-content-end gap-3">
                                 <button type="submit" class="btn btn-primary px-4">Update</button>
-                                <a href="{{ route('list-extra') }}" class="btn btn-light px-4">Cancel</a>
+                                <a href="{{ route('admin.list-extra') }}" class="btn btn-light px-4">Cancel</a>
                             </div>
                         </div>
                     </form>

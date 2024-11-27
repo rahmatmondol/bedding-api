@@ -70,6 +70,7 @@ class ZoneController extends Controller
                 return back();
             }
 
+
             // Save the polygon in the database or perform any other action as needed
             // For example, if you have a 'Zone' model, you can do this:
             $zone = new Zone();
@@ -78,7 +79,7 @@ class ZoneController extends Controller
             $zone->save();
 
             Session::flash('toaster', ['status' => 'success', 'message' => 'Zone added successfully']);
-            return redirect()->route('list.zone');
+            return redirect()->route('admin.list.zone');
 
         }catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()
@@ -142,7 +143,6 @@ class ZoneController extends Controller
 
         $zone->coordinates_json = $coordinatesString;
 
-
         return view('admin.page.zone.edit', compact('zone'));
 
     }
@@ -199,7 +199,7 @@ class ZoneController extends Controller
 
             $zone->save();
             Session::flash('toaster', ['status' => 'success', 'message' => 'Zone update successfully.']);
-            return redirect()->route('list.zone');
+            return redirect()->route('admin.list.zone');
 
         }catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()
@@ -238,7 +238,7 @@ class ZoneController extends Controller
             Session::flash('toaster', ['status' => 'error', 'message' => 'Failed to delete zone!']);
         }
 
-        return redirect()->route('list.zone');
+        return redirect()->route('admin.list.zone');
     }
 
 }

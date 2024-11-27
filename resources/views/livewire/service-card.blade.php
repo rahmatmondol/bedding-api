@@ -2,7 +2,7 @@
     <div class="tf-card-box style-1">
         <div class="card-media">
             <a href="{{ route('service.details', $service->slug) }}">
-                <img src="{{ $service->images()->first()->path }}" alt="">
+                <img src="{{ $service->images()->first()->path ?? '' }}" alt="">
             </a>
            
             <div class="button-place-bid">

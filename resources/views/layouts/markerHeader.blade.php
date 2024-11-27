@@ -30,7 +30,7 @@
             </div>
             <div class="popup-user relative">
                 <div class="user">
-                    <img src="{{ Auth::user()->profile->image }}" alt="">
+                    <img src="{{ Auth::user()->profile?->image }}" alt="">
                     <span>
                         {{ Auth::user()->name }}
                         <i class="icon-keyboard_arrow_down"></i></span>

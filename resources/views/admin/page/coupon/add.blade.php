@@ -20,7 +20,7 @@
 
                     <div class="tab-content py-3">
                         <div class="tab-pane fade show active" id="successhome" role="tabpanel">
-                            <form class="row g-3" id="Form2" method="POST" action="{{ route('store-coupon') }}" enctype="multipart/form-data">
+                            <form class="row g-3" id="Form2" method="POST" action="{{ route('admin.store-coupon') }}" enctype="multipart/form-data">
                                 @csrf
                                 <div class="col-md-12">
                                     <label for="input1" class="form-label"> Name</label>

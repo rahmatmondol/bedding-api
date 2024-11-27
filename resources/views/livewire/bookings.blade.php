@@ -41,10 +41,10 @@
                                         </div>
                                         <div class="widget-tag widget-tag mt-4"
                                             style="display: flex;justify-content: flex-start;align-items: baseline;gap: 10px;">
-                                            <span class="text-bid">Skills:</span>
+                                            <span class="text-bid">Skills: </span>
                                             <ul class="flex flex-wrap gap4 items-center">
-                                                @foreach ($booking->service->skills as $skill)
-                                                    <li><a class="tag px-2 py-1" href="">{{ $skill->name }}</a>
+                                                @foreach (json_decode($booking->service->skills) as $skill)
+                                                    <li><a class="tag px-2 py-1" href="">{{ $skill }}</a>
                                                     </li>
                                                 @endforeach
                                             </ul>
@@ -111,8 +111,8 @@
                                             style="display: flex;justify-content: flex-start;align-items: baseline;gap: 10px;">
                                             <span class="text-bid">Skills:</span>
                                             <ul class="flex flex-wrap gap4 items-center">
-                                                @foreach ($booking->service->skills as $skill)
-                                                    <li><a class="tag px-2 py-1" href="">{{ $skill->name }}</a>
+                                                @foreach (json_decode($booking->service->skills) as $skill)
+                                                    <li><a class="tag px-2 py-1" href="">{{ $skill }}</a>
                                                     </li>
                                                 @endforeach
                                             </ul>
@@ -178,8 +178,8 @@
                                             style="display: flex;justify-content: flex-start;align-items: baseline;gap: 10px;">
                                             <span class="text-bid">Skills:</span>
                                             <ul class="flex flex-wrap gap4 items-center">
-                                                @foreach ($booking->service->skills as $skill)
-                                                    <li><a class="tag px-2 py-1" href="">{{ $skill->name }}</a>
+                                                @foreach (json_decode($booking->service->skills) as $skill)
+                                                    <li><a class="tag px-2 py-1" href="">{{ $skill }}</a>
                                                     </li>
                                                 @endforeach
                                             </ul>

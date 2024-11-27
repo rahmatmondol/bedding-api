@@ -16,7 +16,7 @@
 @section('content')
     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4">
         <div class="col">
-            <a href="{{route('booking.list','completed')}}" class="card-link">
+            <a href="{{route('admin.booking.list','completed')}}" class="card-link">
                 <div  class="card radius-10">
 
                     <div class="card-body">
@@ -33,7 +33,7 @@
             </a>
         </div>
         <div class="col">
-            <a href="{{route('booking.list','pending')}}" class="card-link">
+            <a href="{{route('admin.booking.list','pending')}}" class="card-link">
                 <div class="card radius-10">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -50,7 +50,7 @@
             </a>
         </div>
         <div class="col">
-            <a href="{{route('booking.list', 'canceled')}}" class="card-link">
+            <a href="{{route('admin.booking.list', 'canceled')}}" class="card-link">
                 <div class="card radius-10">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -67,7 +67,7 @@
             </a>
         </div>
         <div class="col">
-            <a href="{{route('booking.list','progressing')}}" class="card-link">
+            <a href="{{route('admin.booking.list','progressing')}}" class="card-link">
                 <div class="card radius-10">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -132,7 +132,7 @@
                             </td>
                             <td>{{$booking->schedule}}</td>
                             <td>{{$booking->created_at}}</td>
-                            <td><a href="{{route('booking.details',$booking->id)}}" class="btn btn-outline-secondary px-5">Details</a></td>
+                            <td><a href="{{route('admin.booking.details',$booking->id)}}" class="btn btn-outline-secondary px-5">Details</a></td>
                         </tr>
                     @endforeach
 

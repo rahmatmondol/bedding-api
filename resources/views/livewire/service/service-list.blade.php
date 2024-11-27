@@ -45,10 +45,18 @@
                                             <img src="{{ $service['images'][0]['path'] ?? asset('user/assets/images/default.png') }}"
                                                 alt="Service Image" style="width: 100%;">
                                         </a>
-                                        <div class="button-place-bid">
-                                            <a href="{{ route('service.details', $service['slug']) }}"
-                                                wire:navigate.hover class="tf-button mb-2"><span>See Details</span></a>
-                                        </div>
+                                        @if ($service['customer']['id'] == auth()->user()->id)
+                                            <div class="button-place-bid">
+                                                <a href="{{ route('auth-service-edit', $service['id']) }}"
+                                                    class="tf-button mb-2"><span>Edit</span></a>
+                                            </div>
+                                        @else
+                                            <div class="button-place-bid">
+                                                <a href="{{ route('service.details', $service['slug']) }}"
+                                                    wire:navigate.hover class="tf-button mb-2"><span>See
+                                                        Details</span></a>
+                                            </div>
+                                        @endif
 
                                     </div>
                                     <h5 class="name"><a href="{{ route('service.details', $service['slug']) }}"

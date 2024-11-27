@@ -20,7 +20,7 @@
 
                     <div class="tab-content py-3">
                         <div class="tab-pane fade show active" id="successhome" role="tabpanel">
-                            <form class="row g-3" id="Form2" method="POST" action="{{ route('campaign.store') }}" enctype="multipart/form-data">
+                            <form class="row g-3" id="Form2" method="POST" action="{{ route('admin.campaign.store') }}" enctype="multipart/form-data">
                                 @csrf
                                 <div class="col-md-12">
                                     <label for="input1" class="form-label"> Name</label>
@@ -38,7 +38,10 @@
                                 <div class="mb-4">
                                     <label for="multiple-select-field" class="form-label">Category select</label>
                                     <select class="form-select" id="categorySelect" name="category_id" data-placeholder="Choose anything" >
-                                        <!-- Options will be loaded dynamically -->
+                                        <option disabled selected>Choose...</option>
+                                        @foreach($categories as $item)
+                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
 
@@ -107,37 +110,5 @@
             imagePreview.innerHTML = '';
             document.getElementById("categoryForm").reset();
         }
-        $(document).ready(function() {
-            const BASE_URL = "{{ url('/') }}";
-
-            function fetchCategoriesByZone() {
-                const zoneId = $('#zoneSelect').val();
-
-                if (!zoneId) {
-                    $('#categorySelect').empty().append('<option disabled selected>Choose...</option>');
-                    return;
-                }
-
-                $.ajax({
-                    url: `${BASE_URL}/api/zones/${zoneId}/categories`,
-                    type: 'GET',
-                    success: function(categories) {
-                        const categorySelect = $('#categorySelect');
-                        categorySelect.empty();
-                        categorySelect.append('<option disabled selected>Choose...</option>');
-
-                        $.each(categories, function(index, category) {
-                            categorySelect.append(`<option value="${category.id}">${category.name}</option>`);
-                        });
-                    },
-                    error: function(error) {
-                        console.error('Error:', error);
-                    }
-                });
-            }
-
-            $('#zoneSelect').on('change', fetchCategoriesByZone);
-            fetchCategoriesByZone();
-        });
     </script>
 @endsection

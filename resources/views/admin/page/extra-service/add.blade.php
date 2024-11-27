@@ -13,7 +13,7 @@
         <div class="col-xl-12 mx-auto">
             <div class="card">
                 <div class="card-body p-4">
-                    <form class="row g-3" id="categoryForm" method="POST" action="{{route('store-extra')}}" enctype="multipart/form-data">
+                    <form class="row g-3" id="categoryForm" method="POST" action="{{route('admin.store-extra')}}" enctype="multipart/form-data">
                         @csrf
                         <div class="col-md-12">
                             <label for="input1" class="form-label"> Name</label>

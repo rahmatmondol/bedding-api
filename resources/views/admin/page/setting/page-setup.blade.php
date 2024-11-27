@@ -18,7 +18,7 @@
 @section('content')
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('page-settings.store') }}" method="post">
+            <form action="{{ route('admin.page-settings.store') }}" method="post">
                 @csrf
 
                 <textarea id="editor" class="mt-5" name="{{$slug}}" required>{!! $data->{$slug} ?? '' !!}</textarea>

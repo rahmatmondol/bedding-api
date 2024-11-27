@@ -14,7 +14,7 @@
         <div class="col-xl-8 mx-auto">
             <div class="card">
                 <div class="card-body p-4">
-                    <form class="row g-3" id="categoryForm" method="POST" action="{{ route('profile-update') }}" enctype="multipart/form-data">
+                    <form class="row g-3" id="categoryForm" method="POST" action="{{ route('admin.profile-update') }}" enctype="multipart/form-data">
                         @csrf
                          <!-- Use the PUT method for updating -->
 

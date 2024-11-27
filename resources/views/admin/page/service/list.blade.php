@@ -20,7 +20,7 @@
                 <table id="example" class="table table-striped table-bordered" style="width:100%">
                     <thead>
                     <tr>
-                        <th>Name</th>
+                        <th>title</th>
                         <th>Image</th>
                         <th>Provider</th>
                         <th>Category</th>
@@ -33,8 +33,8 @@
                     <tbody>
                     @foreach($services as $item)
                         <tr>
-                            <td>{{ $item->name }}</td>
-                            <td><img src="{{ $item->image }}" class="product-img-2" alt="product img"></td>
+                            <td>{{ $item->title }}</td>
+                            <td><img src="{{ $item->images->first()->path ?? '' }}" class="product-img-2" alt="product img"></td>
                             <td>{{ $item->customer->name }}</td>
                             <td>{{ $item->category->name ?? 'removed' }}</td>
                             <td>{{ $item->price }}-{{ $item->price_type }}</td>
@@ -47,7 +47,7 @@
                                     <!-- Edit Button -->
                                     <div class="row row-cols-auto g-3">
                                         <div class="col">
-                                            <form id="" method="GET" action="{{ route('service.details', $item->id) }}">
+                                            <form id="" method="GET" action="{{ route('admin.service.details', $item->id) }}">
                                                 @csrf
                                             <button type="submit" class="btn btn-outline-success"><i class='bx bx-home-alt me-0'></i>
                                             </button>
@@ -55,14 +55,14 @@
                                         </div>
 
                                          <div class="col">
-                                             <form id="" method="GET" action="{{ route('service.edit', $item->id) }}">
+                                             <form id="" method="GET" action="{{ route('admin.service.edit', $item->id) }}">
                                                     @csrf
                                                     <button type="submit" class="btn btn-outline-primary"><i class='bx bx-edit-alt me-0'></i>
                                                     </button>
                                                 </form>
                                             </div>
                                         <div class="col">
-                                            <form id="deleteForm{{ $item->id }}" method="POST" action="{{ route('service.destroy', $item->id) }}">
+                                            <form id="deleteForm{{ $item->id }}" method="POST" action="{{ route('admin.service.destroy', $item->id) }}">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="btn btn-outline-danger" onclick="showConfirmationPopup('deleteForm{{ $item->id }}')"><i class='bx bxs-trash me-0'></i>

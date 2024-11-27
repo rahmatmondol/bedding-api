@@ -14,7 +14,7 @@
         <div class="col-xl-8 mx-auto">
             <div class="card">
                 <div class="card-body p-4">
-                    <form class="row g-3" id="categoryForm" method="POST" action="{{ route('category.update', $category->id) }}" enctype="multipart/form-data">
+                    <form class="row g-3" id="categoryForm" method="POST" action="{{ route('admin.category.update', $category->id) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT') <!-- Use the PUT method for updating -->
                         <label for="input1" class="form-label">Category Name</label>
@@ -36,7 +36,7 @@
                         <div class="col-md-12">
                             <div class="d-md-flex d-grid justify-content-end gap-3">
                                 <button type="submit" class="btn btn-primary px-4">Submit</button>
-                                <a href="{{ route('campaign.list') }}" class="btn btn-light px-4">Cancel</a>                            </div>
+                                <a href="{{ route('admin.list.category') }}" class="btn btn-light px-4">Cancel</a>                            </div>
                         </div>
                     </form>
                 </div>

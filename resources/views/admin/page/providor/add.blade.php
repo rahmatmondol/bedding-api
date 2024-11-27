@@ -43,7 +43,7 @@
 @endsection
 
 @section('breadcrumb-items')
-    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="bx bx-home-alt"></i></a></li>
+    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="bx bx-home-alt"></i></a></li>
     <li class="breadcrumb-item active" aria-current="page">Provider Inputs</li>
 @endsection
 
@@ -85,7 +85,7 @@
             </div>
             <div class="card-body">
                 <div class="bs-stepper-content">
-                    <form id="providerForm" method="post" action="{{ route('provider.store') }}" enctype="multipart/form-data">
+                    <form id="providerForm" method="post" action="{{ route('admin.provider.store') }}" enctype="multipart/form-data">
                         @csrf
                         <div id="test-l-1" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger1">
                             <h5 class="mb-1">Your Company Information</h5>

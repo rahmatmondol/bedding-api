@@ -139,7 +139,7 @@
                             <li class="d-flex align-items-center border-bottom pb-2">
                                 <img src="{{$item->provider->image}}" class="rounded-circle p-1 border" width="90" height="90" alt="...">
                                 <div class="flex-grow-1 ms-3">
-                                    <h5  class="mt-0 mb-1"><a href="{{route('add.category')}}" class="caret-black">{{ $item->provider->name }}</a></h5>
+                                    <h5  class="mt-0 mb-1"><a href="{{route('admin.add.category')}}" class="caret-black">{{ $item->provider->name }}</a></h5>
                                     {{$item->additional_details}}</div>
                             </li>
                         @endforeach

@@ -74,8 +74,10 @@ Route::middleware(['auth'])->group(function () {
     // Service Routes
     Route::prefix('auth/service')->name('auth-service-')->group(function () {
         Route::get('/create', [ServicesController::class, 'create'])->name('create');
+        Route::get('/create-auction', [ServicesController::class, 'create_auction'])->name('create-auction');
         Route::post('/store', [ServicesController::class, 'store'])->name('store');
         Route::get('/list', fn() => view('user.service.list'))->name('list');
+        Route::get('/auction-list', fn() => view('user.service.auction-list'))->name('auction-list');
         Route::get('/edit/{id}', [ServicesController::class, 'edit'])->name('edit');
         Route::post('/update/{id}', [ServicesController::class, 'update'])->name('update');
         Route::get('/wishlist', fn() => view('user.service.wishlist'))->name('wishlist');
@@ -117,14 +119,12 @@ Route::get('/get-booking-data', [DashboardController::class, 'getBookingDataForC
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', fn() => view('admin.page.auth.login') )->name('login');
-    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
-    
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 
-    // Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
-    // Route::get('/get-booking-data', [DashboardController::class, 'getBookingDataForChart'])->name('get.booking.data');
+    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/get-booking-data', [DashboardController::class, 'getBookingDataForChart'])->name('get.booking.data');
 
     Route::group(['prefix' => 'admin', 'as' => 'admin', 'controller' => ProfileController::class], function () {
         Route::post('profile/update', 'update')->name('profile-update');

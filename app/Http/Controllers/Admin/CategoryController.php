@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Models\Categories as Category;
+use App\Models\SubCategories;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
@@ -33,7 +34,7 @@ class CategoryController extends Controller
 
             if ($existingCategory) {
                 Session::flash('toaster', ['status' => 'error', 'message' => ' Already exist in  category']);
-                return redirect()->route('list.category');
+                return redirect()->route('admin.list.category');
             }
 
             $validatedData = $request->validate([
@@ -66,7 +67,7 @@ class CategoryController extends Controller
             $message = 'Category added successfully';
             $status = 'success';
 
-            return redirect()->route('list.category')
+            return redirect()->route('admin.list.category')
                 ->with('toaster', ['status' => $status, 'message' => $message]);
         }catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()
@@ -94,10 +95,18 @@ class CategoryController extends Controller
                 unlink(public_path($relativePath)); // Deletes the file
             }
 
+            // Delete associated subcategories images
+            SubCategories::where('category_id', $category->id)
+                ->get()
+                ->each(function ($subcategory) {
+                    $relativePath = parse_url($subcategory->image, PHP_URL_PATH);
+                    if (file_exists(public_path($relativePath))) {
+                        unlink(public_path($relativePath)); // Deletes the file
+                    }
+                });
+
             // Delete the category and its subcategories (if any)
-            DB::transaction(function () use ($category) {
-                $category->delete();
-            });
+            $category->delete();
 
             Session::flash('toaster', ['status' => 'success', 'message' => 'Category deleted successfully!']);
         } catch (\Exception $e) {
@@ -105,7 +114,7 @@ class CategoryController extends Controller
             Session::flash('toaster', ['status' => 'error', 'message' => 'Failed to delete category!']);
         }
 
-        return redirect()->route('list.category');
+        return redirect()->route('admin.list.category');
     }
 
 
@@ -127,7 +136,7 @@ class CategoryController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return redirect()->route('edit.category', $id)
+                return redirect()->route('admin.edit.category', $id)
                     ->withErrors($validator)
                     ->withInput();
             }
@@ -158,13 +167,13 @@ class CategoryController extends Controller
             // Save the category
             $category->save();
 
-            return redirect()->route('list.category')->with('toaster', [
+            return redirect()->route('admin.list.category')->with('toaster', [
                 'status' => 'success',
                 'message' => 'Category updated successfully!',
             ]);
         } catch (\Exception $e) {
             // Handle any exceptions that occur during the update process
-            return redirect()->route('edit.category', $id)->with('toaster', [
+            return redirect()->route('admin.edit.category', $id)->with('toaster', [
                 'status' => 'error',
                 'message' => 'Failed to update category!',
             ]);
