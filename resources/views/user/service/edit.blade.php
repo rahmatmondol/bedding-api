@@ -22,6 +22,7 @@
                         <div id="commentform" class="comment-form" novalidate="novalidate">
                             <fieldset class="name">
                                 <label> {{ $service->postType }} Name *</label>
+                                <input type="hidden" name="postType" value="{{ $service->postType }}">
                                 <input type="text" id="name" placeholder="Service Name" name="title"
                                     tabindex="2" value="{{ $service->title }}" aria-required="true" required="">
                                 @error('name')
@@ -98,20 +99,25 @@
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </fieldset>
-
-                                <fieldset class="Pricetyoe">
-                                    <label>Price type</label>
-                                    <select id="price_type" name="priceType" tabindex="2" aria-required="true"
-                                        required>
-                                        <option @if ($service->priceType == 'Fixed') selected @endif value="Fixed">Fixed
-                                        </option>
-                                        <option @if ($service->priceType == 'Negotiable') selected @endif value="Negotiable">
-                                            Negotiable</option>
-                                    </select>
-                                    @error('priceType')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </fieldset>
+                                @if ($service->postType == 'Service')
+                                    <fieldset class="Pricetyoe">
+                                        <label>Price type</label>
+                                        <select id="price_type" name="priceType" tabindex="2" aria-required="true"
+                                            required>
+                                            <option @if ($service->priceType == 'Fixed') selected @endif value="Fixed">
+                                                Fixed
+                                            </option>
+                                            <option @if ($service->priceType == 'Negotiable') selected @endif
+                                                value="Negotiable">
+                                                Negotiable</option>
+                                        </select>
+                                        @error('priceType')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </fieldset>
+                                @else
+                                    <input type="hidden" name="priceType" value="Negotiable">
+                                @endif
                             </div>
                             <div class="flex gap30">
                                 <fieldset class="price">
@@ -232,8 +238,6 @@
         });
 
         var skills = $('#skills').val();
-
-        console.log(skills);
 
         // submit form
         $('#serviceForm').on('submit', function(e) {

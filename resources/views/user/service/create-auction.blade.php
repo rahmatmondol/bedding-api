@@ -80,21 +80,8 @@
                                         <option @if (old('currency') == 'AED') selected @endif value="AED">AED
                                         </option>
                                     </select>
+                                    <input type="hidden" name="priceType" id="priceType" value="Negotiable">
                                     @error('currency')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </fieldset>
-
-                                <fieldset class="priceType">
-                                    <label>Price type</label>
-                                    <select value="{{ old('priceType') }}" id="priceType" name="priceType"
-                                        tabindex="2" aria-required="true" required>
-                                        <option @if (old('priceType') == 'Fixed') selected @endif value="Fixed">Fixed
-                                        </option>
-                                        <option @if (old('priceType') == 'Negotiable') selected @endif value="Negotiable">
-                                            Negotiable</option>
-                                    </select>
-                                    @error('priceType')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </fieldset>

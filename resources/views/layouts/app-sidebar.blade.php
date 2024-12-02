@@ -146,9 +146,9 @@
                         Create
                     </a>
                 </li>
-                <li class="tablinks {{ request()->routeIs('auth-service-create-auction') ? 'active' : '' }}"
+                <li class="tablinks {{ request()->routeIs('auth-bid-auction-list') ? 'active' : '' }}"
                     data-tabs="market">
-                    <a href="{{ route('auth-service-create-auction') }}">
+                    <a href="{{ route('auth-bid-auction-list') }}">
                         <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g opacity="0.2">
@@ -438,9 +438,8 @@
         <div class="content">
             <h6>Auctions</h6>
             <ul class="menu-tab">
-                <li class="tablinks {{ request()->routeIs('auth-service-list') ? 'active' : '' }}"
-                    data-tabs="market">
-                    <a href="{{ route('auth-service-list') }}" wire:navigate>
+                <li class="tablinks {{ request()->routeIs('auth-service-auction-list') ? 'active' : '' }}" data-tabs="market">
+                    <a href="{{ route('auth-service-auction-list') }}" wire:navigate>
                         <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g opacity="0.2">
@@ -492,9 +491,9 @@
                         Create
                     </a>
                 </li>
-                <li class="tablinks {{ request()->routeIs('auth-service-create-auction') ? 'active' : '' }}"
+                <li class="tablinks {{ request()->routeIs('auth-bid-auction-list') ? 'active' : '' }}"
                     data-tabs="market">
-                    <a href="{{ route('auth-service-create-auction') }}">
+                    <a href="{{ route('auth-bid-auction-list') }}">
                         <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g opacity="0.2">

@@ -86,17 +86,19 @@ class BidsController extends Controller
                 return ResponseHelper::error('Error placing bid', 'You already have a bid for this service', 422);
             }
 
+            $service = Services::find($request->service_id);
+
             // Create bid
             $bid = new Bids;
             $bid->amount = $request->amount;
             $bid->message = $request->message ?? '';
+            $bid->type = $service->postType;
             $bid->save();
-
+            
             $bid->provider()->associate(auth()->user()->id);
             $bid->save();
-
+            
             // attach to customer
-            $service = Services::find($request->service_id);
             $bid->customer()->associate($service->user_id);
             $bid->save();
 
@@ -128,18 +130,19 @@ class BidsController extends Controller
             if (auth()->user()->providerBids()->where('service_id', $request->service_id)->exists()) {
                 return ResponseHelper::error('You already have a bid for this service', 422);
             }
-
+            
+            $service = Services::find($request->service_id);
             // Create bid
             $bid = new Bids;
             $bid->amount = $request->amount;
             $bid->message = $request->message ?? '';
+            $bid->type = $service->postType;
             $bid->save();
 
             $bid->provider()->associate(auth()->user()->id);
             $bid->save();
 
             // attach to customer
-            $service = Services::find($request->service_id);
             $bid->customer()->associate($service->user_id);
             $bid->save();
 

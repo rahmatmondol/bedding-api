@@ -13,28 +13,37 @@ class ServiceList extends Component
     public $type = 'Service';
 
     public function mount()
-    {
+    {   
 
-        //get all services with pagination
-        if (auth()->user()->hasRole('customer')) {
-            $this->services = Services::with(['customer', 'images'])
+        if (auth()->user()->hasRole('provider')) {
+            if ($this->page == 'wishlist') {
+                $wishlist_ids = auth()->user()->wishlists->pluck('service_id')->toArray();
+                $this->services = Services::with(['images', 'customer'])
+                ->whereIn('id', $wishlist_ids)
+                ->orderByDesc('created_at')
+                ->paginate(8)
+                ->toArray();
+            }elseif ($this->type == 'Auction') {
+                $this->services = Services::with(['customer', 'images'])
                 ->where('user_id', auth()->user()->id)
                 ->whereIn('postType', [$this->type])
                 ->orderByDesc('created_at')
                 ->paginate(8)
                 ->toArray();
-        } else {
-            if ($this->page == 'wishlist') {
-                $wishlist_ids = auth()->user()->wishlists->pluck('id')->toArray();
-                $this->services = Services::with(['images', 'customer'])
-                    ->whereIn('id', $wishlist_ids)
-                    ->whereIn('postType', [$this->type])
-                    ->orderByDesc('created_at')
-                    ->paginate(8)
-                    ->toArray();
-            } else {
-                $this->services = Services::with(['customer', 'images'])->paginate(8)->toArray();
+            }else{
+                $this->services = Services::with(['customer', 'images'])
+                ->whereIn('postType', [$this->type])
+                ->orderByDesc('created_at')
+                ->paginate(8)
+                ->toArray();
             }
+        }else{
+            $this->services = Services::with(['customer', 'images'])
+            ->where('user_id', auth()->user()->id)
+            ->whereIn('postType', [$this->type])
+            ->orderByDesc('created_at')
+            ->paginate(8)
+            ->toArray();
         }
 
         // dd($this->services);

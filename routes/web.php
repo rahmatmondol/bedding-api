@@ -86,6 +86,7 @@ Route::middleware(['auth'])->group(function () {
     // Bids Routes
     Route::prefix('auth/bid')->name('auth-bid-')->group(function () {
         Route::get('/list', fn() => view('user.bid.list'))->name('list');
+        Route::get('/auction-list', fn() => view('user.bid.auction'))->name('auction-list');
     });
 
     // booking Routes

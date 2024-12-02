@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->float('amount');
             $table->text('message')->nullable();
+            $table->enum ('type', ['Auction', 'Service',])->default('Service');
             $table->enum ('status', ['pending', 'accepted', 'rejected'])->default('pending');
             
             $table->foreignId('service_id')->nullable()->constrained('services')->onDelete('cascade');

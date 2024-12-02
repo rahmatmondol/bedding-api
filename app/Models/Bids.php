@@ -9,6 +9,7 @@ class Bids extends Model
     protected $fillable = [
         'status', 
         'amount',
+        'type',
         'message',
     ];
 

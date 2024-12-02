@@ -22,8 +22,8 @@
                         <p style="margin: 0;text-align: left;">Total amount the client will seen on your proposal {{ $service->price }}</p>
                     </div>
                     <div class="col">
-                        <input type="number" class="style-1" wire:model="amount" placeholder="price"
-                            value="100" min="1" max="{{ $service->price }}">
+                        <input @if ($service->priceType == 'Fixed') readonly  type="text"  @else  type="number" @endif class="style-1" wire:model="amount" placeholder="price"
+                            value="100" min="1">
                     </div>
                 </div>
                 <div class="row mt-40">

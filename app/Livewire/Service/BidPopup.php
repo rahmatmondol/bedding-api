@@ -42,6 +42,7 @@ class BidPopup extends Component
             $bid = new Bids();
             $bid->amount = $this->amount;
             $bid->message = $this->message ?? '';
+            $bid->type = $this->service->postType;
             $bid->provider()->associate(auth()->user()->id); // Associate provider
             $bid->customer()->associate($this->service->user_id); // Associate customer
             $bid->service()->associate($this->service->id); // Associate service

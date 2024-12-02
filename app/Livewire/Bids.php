@@ -15,27 +15,59 @@ class Bids extends Component
 
     public $pending;
     public $accepted;
+    public $providerId;
+    public $customerId;
     public $rejected;
+    public $type = 'Service';
+
 
     public function mount()
     {
-        $providerId = auth()->user()->hasRole('provider') ? auth()->user()->id : null;
-        $customerId = auth()->user()->hasRole('customer') ? auth()->user()->id : null;
+        $this->providerId = auth()->user()->hasRole('provider') ? auth()->user()->id : null;
+        $this->customerId = auth()->user()->hasRole('customer') ? auth()->user()->id : null;
 
-        $bids = BidList::with(['provider','provider.profile', 'service:id,price'])
-        ->when($providerId, fn($q) => $q->where('provider_id', $providerId))
-        ->when($customerId, fn($q) => $q->where('customer_id', $customerId))
-        ->orderByDesc('created_at')
-        ->get();
-
-        $this->pending = $bids->where('status', 'pending')->values();
-        $this->accepted = $bids->where('status', 'accepted')->values();
-        $this->rejected = $bids->where('status', 'rejected')->values();
+        if($this->type == 'Service'){
+            $this->serviceBid();
+        }else{
+            $this->auctionBid();
+        }
+        
     }
 
     public function render()
     {
         return view('livewire.bids');
+    }
+
+    private function serviceBid(){
+
+        $bids = BidList::with(['provider','provider.profile', 'service:id,price'])
+        ->where('type', $this->type)
+        ->when($this->providerId, fn($q) => $q->where('provider_id', $this->providerId))
+        ->when($this->customerId, fn($q) => $q->where('customer_id', $this->customerId))
+        ->orderByDesc('created_at')
+        ->get();
+      
+        $this->pending = $bids->where('status', 'pending')->values();
+        $this->accepted = $bids->where('status', 'accepted')->values();
+        $this->rejected = $bids->where('status', 'rejected')->values();
+    }
+
+    private function auctionBid(){
+       
+        $bids = BidList::with(['provider','provider.profile', 'service','customer', 'customer.profile'])
+        ->where('type', $this->type)
+        ->whereHas('service', function($query){
+            $query->where('user_id', auth()->user()->id);
+        })
+        ->orderByDesc('created_at')
+        ->get();
+
+        // dd($bids);
+      
+        $this->pending = $bids->where('status', 'pending')->values();
+        $this->accepted = $bids->where('status', 'accepted')->values();
+        $this->rejected = $bids->where('status', 'rejected')->values();
     }
 
     public function acceptbid($id)
@@ -47,26 +79,38 @@ class Bids extends Component
             $bid->status = 'accepted';
             $bid->save();
 
-            // create booking
-            $booking = new Bookings;
-            $booking->save();
+            if($bid->type == 'Service'){
+                // create booking
+                $booking = new Bookings;
+                $booking->save();
 
-            $booking->bid()->associate($bid->id);
-            $booking->provider()->associate($bid->provider_id);
-            $booking->customer()->associate($bid->customer_id);
-            $booking->service()->associate($bid->service_id);
-            $booking->save();
+                $booking->bid()->associate($bid->id);
+                $booking->provider()->associate($bid->provider_id);
+                $booking->customer()->associate($bid->customer_id);
+                $booking->service()->associate($bid->service_id);
+                $booking->save();
 
+                // Send notification to customer
+                $provider = User::find($bid->provider_id);
+                $provider->notify(new BidAccept($booking));
+            }
+            
             // update service status
             $service = Services::find($bid->service_id);
             $service->status = 'Inactive';
             $service->save();
             
-            // Send notification to customer
-            $provider = User::find($bid->provider_id);
-            $provider->notify(new BidAccept($booking));
-
             DB::commit();
+
+            if($bid->type == 'Auction'){
+
+                // Send notification to customer
+                $provider = User::find($bid->provider_id);
+                $provider->notify(new BidAccept($bid));
+
+                session()->flash('success', 'Bid accepted successfully.');
+                return $this->redirect('/auth/bid/auction-list', navigate: true);
+            }
             
             session()->flash('success', 'Bid accepted successfully.');
             return $this->redirect('/auth/bid/list', navigate: true);
@@ -74,9 +118,14 @@ class Bids extends Component
         } catch (\Exception $e) {
             // Rollback the transaction
             DB::rollBack();
+
+            if($bid->type == 'Auction'){
+                session()->flash('error', 'Failed to place bid:'. $e->getMessage());
+                return $this->redirect('/auth/bid/auction-list', navigate: true);
+            }
             // Flash error message and Livewire navigate
-            session()->flash('error', 'Failed to place bid. Please try again.');
-            $this->redirect('/service/'. $this->service->slug, navigate: true);
+            session()->flash('error', 'Failed to place bid:'. $e->getMessage());
+            return $this->redirect('/auth/bid/list', navigate: true);
         }
 
        

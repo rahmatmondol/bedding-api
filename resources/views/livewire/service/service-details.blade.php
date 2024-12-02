@@ -28,7 +28,7 @@
                         <div class="author flex items-center mb-30">
                             <div class="info">
                                 <span>Owned by:</span>
-                                {{-- <h6><a href="author-1.html">{{ $service->customer->name }}</a> </h6> --}}
+                                <h6><a href="author-1.html">{{ $service->customer->name ?? '' }}</a> </h6>
                             </div>
                         </div>
                     </div>
@@ -39,9 +39,17 @@
                             <div class="flex justify-between">
                                 <p>{{ $service->currency == 'usd' ? "$" : $service->currency }}{{ $service->price }}</p>
                                 @if (auth()->check() && auth()->user()->hasRole('provider'))
-                                    <a href="#" data-toggle="modal" data-target="#popup_bid"
-                                        class="tf-button style-1 h50 w216">Place a bid<i
-                                            class="icon-arrow-up-right2"></i></a>
+                                    @if (auth()->user()->id !== $service->user_id)
+                                        <a href="#" data-toggle="modal" data-target="#popup_bid"
+                                            class="tf-button style-1 h50 w216">Place a bid<i
+                                                class="icon-arrow-up-right2"></i></a>
+                                    @endif
+                                @elseif (auth()->check() && auth()->user()->hasRole('customer'))
+                                    @if (auth()->user()->id !== $service->user_id)
+                                        <a href="#" data-toggle="modal" data-target="#popup_bid"
+                                            class="tf-button style-1 h50 w216">Place a bid<i
+                                                class="icon-arrow-up-right2"></i></a>
+                                    @endif
                                 @else
                                     <a href="{{ route('auth-login') }}" wire:navigate
                                         class="tf-button style-1 h50 w216">Login to bid<i
