@@ -29,6 +29,8 @@ Route::group([
 // routes for guest
 // ===============================
 
+// get country routes
+Route::get('get-countries', [AuthController::class, 'getCountry']);
 
 // get all category routes
 Route::get('get-categories', [CategoriesController::class, 'index'])->name('get-categories');
