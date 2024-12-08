@@ -27,7 +27,7 @@ class Bids extends Component
         $this->customerId = auth()->user()->hasRole('customer') ? auth()->user()->id : null;
 
         if($this->type == 'Service'){
-            $this->serviceBid();
+            $this->serviceBid(); 
         }else{
             $this->auctionBid();
         }

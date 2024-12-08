@@ -30,6 +30,7 @@ class BidsController extends Controller
 
         try {
             $query = Bids::when($providerId, fn($q) => $q->where('provider_id', $providerId))
+            ->where('type', 'Service')
             ->when($serviceId, fn($q) => $q->where('service_id', $serviceId))
             ->when($customerId, fn($q) => $q->where('customer_id', $customerId)
             ->with(['provider', 'provider.profile']))
@@ -41,6 +42,24 @@ class BidsController extends Controller
             return ResponseHelper::error('Bids', $e->getMessage(), 404);
         }
     }
+
+    public function auctionBids()
+    {
+        try {
+            $bids = Bids::with(['provider','provider.profile', 'service','customer', 'customer.profile'])
+            ->where('type', 'Auction')
+            ->whereHas('service', function($query){
+                $query->where('user_id', auth()->user()->id);
+            })
+            ->orderByDesc('created_at')
+            ->get();
+
+            return ResponseHelper::success('Bids', $bids);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Bids', $e->getMessage(), 404);
+        }
+    }
+
 
     public function list()
     {
@@ -84,6 +103,50 @@ class BidsController extends Controller
             // Check if the user already has a bid for the service
             if (auth()->user()->providerBids()->where('service_id', $request->service_id)->exists()) {
                 return ResponseHelper::error('Error placing bid', 'You already have a bid for this service', 422);
+            }
+
+            $service = Services::find($request->service_id);
+
+            // Create bid
+            $bid = new Bids;
+            $bid->amount = $request->amount;
+            $bid->message = $request->message ?? '';
+            $bid->type = $service->postType;
+            $bid->save();
+            
+            $bid->provider()->associate(auth()->user()->id);
+            $bid->save();
+            
+            // attach to customer
+            $bid->customer()->associate($service->user_id);
+            $bid->save();
+
+            // attach to service
+            $bid->service()->associate($request->service_id);
+            $bid->save();
+           
+
+            // If everything goes well, commit the transaction
+            DB::commit();
+
+            return ResponseHelper::success('Successfully bid placed', $bid);
+        } catch (\Exception $e) {
+            // If any error occurs, rollback the transaction
+            DB::rollBack();
+
+            return ResponseHelper::error('bid placed failed: ' . $e->getMessage(), 500);
+        }
+    }
+
+
+
+    public function auctionStore(StoreBidsRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            // Check if the user already has a bid for the service
+            if (auth()->user()->providerBids()->where('service_id', $request->service_id)->exists()) {
+                return ResponseHelper::error('Error placing bid', 'You already have a bid for this Auction', 422);
             }
 
             $service = Services::find($request->service_id);

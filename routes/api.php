@@ -46,6 +46,9 @@ Route::get('get-subcategory/{id}', [SubCategoriesController::class, 'show']);
 
 // get service routes
 Route::get('get-services', [ServicesController::class, 'index'])->name('get-services');
+Route::get('get-auctions', [ServicesController::class, 'get_auctions'])->name('get-auctions');
+
+Route::get('get-auction/{id}', [ServicesController::class, 'singleAuction']);
 
 // get single service routes
 Route::get('get-service/{id}', [ServicesController::class, 'showSingle']);
@@ -78,9 +81,11 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
 
     // bidding routes
     Route::get('get-biddings', [BidsController::class, 'index']);
+    Route::get('get-auction-biddings', [BidsController::class, 'auctionBids']);
     Route::get('get-bidding/{id}', [BidsController::class, 'show']);
     Route::get('get-bidding-info', [BidsController::class, 'info']);
     Route::post('create-bidding', [BidsController::class, 'store'])->name('create-bidding');
+    Route::post('create-auction-bidding', [BidsController::class, 'auctionStore']);
     Route::put('update-bidding/{id}', [BidsController::class, 'update']);
     Route::delete('delete-bidding/{id}', [BidsController::class, 'destroy']);
 

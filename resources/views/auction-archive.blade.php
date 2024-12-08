@@ -8,7 +8,7 @@
                             <div class="col-12">
                                 <h1 id="main-heading" data-wow-delay="0s" class="wow fadeInUp heading text-center animated"
                                     style="visibility: visible; animation-delay: 0s; animation-name: fadeInUp;">All
-                                    Services
+                                    Auctions
                                 </h1>
                             </div>
                         </div>
@@ -145,7 +145,7 @@
 
         const getServices = (params = []) => {
             $.ajax({
-                url: "{{ route('get-all-services') }}?" + params,
+                url: "{{ route('get-all-auctions') }}?" + params,
                 type: "GET",
                 success: function(response) {
                     if (response.success) {
@@ -199,7 +199,7 @@
                             html += `
                             <div class="d-flex justify-content-center" style="height: 100vh">
                                 <div class="align-self-center">
-                                    <h5>No services found</h5>
+                                    <h5>No auctions found</h5>
                                 </div>
                             </div>
                         `;

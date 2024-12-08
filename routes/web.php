@@ -39,7 +39,9 @@ Route::get('/auth/singup', function () {
 })->name('auth-signup');
 
 Route::get('/services', [ServicesController::class, 'services_archive'])->name('services');
+Route::get('/auctions', [ServicesController::class, 'auction_archive'])->name('services');
 Route::get('/get-all-services', [ServicesController::class, 'get_services'])->name('get-all-services');
+Route::get('/get-all-auctions', [ServicesController::class, 'get_auctions'])->name('get-all-auctions');
 
 Route::get('/terms-and-conditions', function(){
     $content = TermsAndConditions::first();
