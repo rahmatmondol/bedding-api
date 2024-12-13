@@ -21,15 +21,19 @@ class AuthController extends Controller
     // Register
     public function register(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255',
-            'password' => 'required|string|min:8',
-            'country' => 'required|string|max:255',
-            'mobile' => 'required|string|max:255',
-            'category_id' => 'required|integer',
-            'account_type' => 'required|string',
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8',
+                'country' => 'required|string|max:255',
+                'mobile' => 'required|string|max:255|unique:users',
+                'category_id' => 'required|integer',
+                'account_type' => 'required|string',
+            ]);
+        } catch (ValidationException $e) {
+            return ResponseHelper::error($e->errors(), 422);
+        }
 
         // Start a database transaction
         DB::beginTransaction();
@@ -64,15 +68,14 @@ class AuthController extends Controller
 
             // If everything goes well, commit the transaction
             DB::commit();
-
             return ResponseHelper::success('User Created Successfully', $user);
         } catch (\Exception $e) {
             // If any error occurs, rollback the transaction
             DB::rollBack();
-
-            return ResponseHelper::error('User registration failed: ' . $e->getMessage(), 500);
+            return ResponseHelper::error($e->errors(), 422);
         }
     }
+
 
     // Login
     public function login(Request $request)
