@@ -19,15 +19,12 @@ class StoreBookingsRequest extends FormRequest
         return false;
     }
 
-    /**
-     * Handle a failed authorization attempt.
-     *
-     * @throws \Illuminate\Auth\Access\AuthorizationException
-     */
-    protected function failedAuthorization()
+    // show error message
+    public function failedAuthorization()
     {
-        throw new AuthorizationException('You are not authorized to perform this action. Admin role is required.');
+        return response()->json(['error' => 'You are not authorized bookings.'], 403);
     }
+    
 
     /**
      * Get the validation rules that apply to the request.

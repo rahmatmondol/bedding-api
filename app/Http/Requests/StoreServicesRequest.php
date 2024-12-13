@@ -6,6 +6,11 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreServicesRequest extends FormRequest
 {
+    // show error message
+    public function failedAuthorization()
+    {
+        return response()->json(['error' => 'You are not authorized to create an auction.'], 403);
+    }
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -25,6 +30,7 @@ class StoreServicesRequest extends FormRequest
 
         return false;
     }
+
 
     /**
      * Get the validation rules that apply to the request.

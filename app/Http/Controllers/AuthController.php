@@ -208,7 +208,7 @@ class AuthController extends Controller
     
         } catch (\Exception $e) {
             DB::rollBack();
-            return ResponseHelper::error('account update failed:' . $e->getMessage(), 500);
+            return ResponseHelper::error($e->errors(), 422);
         }
     }
 
