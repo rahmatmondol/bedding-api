@@ -212,6 +212,12 @@ class AuthController extends Controller
         }
     }
 
+    // get user info
+    public function getUserInfo(Request $request)
+    {
+        return response()->json(auth()->user()->load('profile'));
+    }
+
     // Logout
     public function logout()
     {

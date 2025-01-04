@@ -62,6 +62,9 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     // update profile routes
     Route::post('update-profile', [AuthController::class, 'updateProfile']);
 
+    // get user information
+    Route::get('get-user-info', [AuthController::class, 'getUserInfo']);
+
     // password update routes
     Route::post('change-password', [AuthController::class, 'changePassword']);
 
