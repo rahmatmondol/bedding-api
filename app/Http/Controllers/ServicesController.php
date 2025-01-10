@@ -33,13 +33,14 @@ class ServicesController extends Controller
         $longitude = request()->query('longitude');
         $priceType = request()->query('priceType');
         $currency = request()->query('currency');
-        $status = request()->query('status') ?? 'active';
+        $status = request()->query('status');
         $level = request()->query('level');
         $featured = request()->query('featured');
         $search = request()->query('search');
         try {
             // Build the query with optional filters
-            $query = Services::with(['images', 'skills', 'customer'])
+            $query = Services::with(['images','customer'])
+                ->where('postType', 'Service')
                 ->when($customerId, fn($q) => $q->where('user_id', $customerId))
                 ->when($search, fn($q) => $q->where('title', 'LIKE', "%{$search}%"))
                 ->when($subCategoryId, fn($q) => $q->where('sub_category_id', $subCategoryId))
@@ -59,6 +60,26 @@ class ServicesController extends Controller
             return ResponseHelper::error('Failed to retrieve services: ' . $e->getMessage(), 500);
         }
 
+    }
+
+    //get my services
+    public function my_services()
+    {
+        $customerId = auth()->user()->id;
+        $services = Services::where('user_id', $customerId)
+        ->where('postType', 'Service')
+        ->with('images')->get();
+        return ResponseHelper::success('My Services', $services);
+    }
+
+    // get my auctions
+    public function my_auctions()
+    {
+        $customerId = auth()->user()->id;
+        $services = Services::where('user_id', $customerId)
+        ->where('postType', 'Auction')
+        ->with('images')->get();
+        return ResponseHelper::success('My Services', $services);
     }
 
         /**
@@ -134,7 +155,7 @@ class ServicesController extends Controller
             'priceType' => request()->query('priceType'),
             'priceType' => request()->query('priceType'),
             'currency' => request()->query('currency'),
-            'status' => request()->query('status', 'active'),
+            'status' => request()->query('status'),
             'level' => request()->query('level'),
             'featured' => request()->query('featured'),
             'search' => request()->query('search'),
@@ -266,6 +287,7 @@ class ServicesController extends Controller
             $service->postType      = $request->postType ?? 'Service';
             $service->skills        = $request->skills;
             $service->longitude     = $request->longitude;
+            $service->status        = $request->status ?? 'active';
             $service->is_featured   = $request->is_featured ? true : false;
             
             if($request->level){
@@ -405,6 +427,7 @@ class ServicesController extends Controller
 
             // update service
             $service->title         = $request->title;
+            $service->status        = $request->status ?? 'active';
             $service->slug          = Str::slug($request->title);
             $service->description   = $request->description;
             $service->price         = $request->price;

@@ -40,16 +40,15 @@ class StoreServicesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string',
+            'title' => 'required|string|unique:services',
             'description' => 'required|string',
             'price' => 'required|numeric',
             'priceType' => 'required|in:Negotiable,Fixed',
             'currency' => 'in:AED,USD',
             // 'level' => 'required|in:Entry,Intermediate,Expert',
-            // 'skills_ids' => 'required',
             'category_id' => 'required|integer|exists:categories,id',
             'subCategory_id' => 'required|integer|exists:sub_categories,id',
-            'images' => 'required',
+            // 'images' => 'required',
             'location_name' => 'required|string',
             'latitude' => 'required',
             'longitude' => 'required',

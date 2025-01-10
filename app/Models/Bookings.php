@@ -27,6 +27,6 @@ class Bookings extends Model
 
     public function bid()
     {
-        return $this->belongsTo(bids::class);
+        return $this->belongsTo(Bids::class);
     }
 }

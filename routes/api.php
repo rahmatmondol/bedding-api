@@ -59,6 +59,12 @@ Route::get('get-service/{id}', [ServicesController::class, 'showSingle']);
 // ===============================
 Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
 
+    // get my service routes
+    Route::get('get-my-services', [ServicesController::class, 'my_services']);
+    Route::get('get-my-auctions', [ServicesController::class, 'my_auctions']);
+    Route::get('get-my-service/{id}', [ServicesController::class, 'my_service']);
+    Route::get('get-my-auction/{id}', [ServicesController::class, 'my_auction']);
+
     // update profile routes
     Route::post('update-profile', [AuthController::class, 'updateProfile']);
 

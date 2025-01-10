@@ -48,8 +48,9 @@
                                 <fieldset class="message">
                                     <label>Skill and Expertice *</label>
                                     <input type="text" class="form-control" id="skills" name="skill"
-                                        value="{{ implode(',', json_decode($service->skills)) }}"
-                                        placeholder="PHP, Laravel, JavaScript" data-role="tagsinput" />
+                                        value="{{ $service->skills ? implode(',', json_decode($service->skills)) : '' }}"
+                                         data-role="tagsinput" />
+                                         
                                     @error('skills')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
