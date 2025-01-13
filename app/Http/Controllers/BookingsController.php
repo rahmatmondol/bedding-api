@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Bookings;
 use App\Models\Services;
-use App\Models\Users;
+use App\Models\User;
 use App\Models\bokkings;
 use App\Http\Requests\StoreBookingsRequest;
 use App\Http\Requests\UpdateBookingsRequest;
 use App\Helpers\ResponseHelper;
 use Illuminate\Support\Facades\DB;
 use App\Models\Bids;
+use App\Notifications\BidAccept;
+
 
 class BookingsController extends Controller
 {
@@ -71,6 +73,10 @@ class BookingsController extends Controller
             // update bid status
             $bid->status = 'accepted';
             $bid->save();
+
+            // Send notification to provider
+            $provider = User::findOrFail($bid->provider_id);
+            $provider->notify(new BidAccept($bid));
 
             // Create bokking
             $booking = new Bookings;

@@ -8,6 +8,8 @@ use App\Http\Requests\UpdateBidsRequest;
 use App\Helpers\ResponseHelper;
 use Illuminate\Support\Facades\DB;
 use App\Models\Services;
+use App\Notifications\BidPlaced;
+use App\Models\User;
 
 
 class BidsController extends Controller
@@ -113,6 +115,10 @@ class BidsController extends Controller
             $bid->message = $request->message ?? '';
             $bid->type = $service->postType;
             $bid->save();
+
+            // Send notification to customer
+            $user = User::find($service->user_id);
+            $user->notify(new BidPlaced($bid));
             
             $bid->provider()->associate(auth()->user()->id);
             $bid->save();

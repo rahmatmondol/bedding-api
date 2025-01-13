@@ -2535,3 +2535,9 @@ body.background-white .tf-mouse-inner {
 body.background-white .tf-mouse-outer {
     border-color: rgba(22, 22, 22, 1);
 }
+
+.widget-recently {
+    min-height: 303px;
+    overflow: scroll;
+    height: 200px;
+  }
