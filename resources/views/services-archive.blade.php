@@ -157,7 +157,7 @@
                                     <div class="tf-card-box style-1">
                                         <div class="card-media">
                                             <a href="/service/${service.slug}" wire:navigate.hover>
-                                                <img src="${service.images ? service.images[0].path : ''}" alt="">
+                                                <img src="${service.images.length > 0 ? service.images[0].path : 'https://placehold.co/600x400@3x.png'}" alt="">
                                             </a>
                                             <div class="button-place-bid">
                                                 <a href="/service/${service.slug}" wire:navigate.hover
