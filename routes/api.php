@@ -114,4 +114,11 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     Route::get('get-reviews', [ReviewsController::class, 'index']);
     Route::post('create-review', [ReviewsController::class, 'store']);
 
+    // notification routes
+    route::get('get-notifications', [AuthController::class, 'getNotifications']);
+    route::get('get-unread-notifications', [AuthController::class, 'getUnreadNotifications']);
+    route::get('get-read-notifications', [AuthController::class, 'getReadNotifications']);
+    route::get('get-notification/{id}', [AuthController::class, 'getNotification']);
+    route::get('read-notification/{id}', [AuthController::class, 'markNotificationAsRead']);
+
 });

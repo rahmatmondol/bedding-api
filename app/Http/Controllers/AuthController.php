@@ -274,4 +274,46 @@ class AuthController extends Controller
         }
  
     }
+
+    // get notifications
+    public function getNotifications()
+    {
+        $notifications = auth()->user()->notifications;
+        return ResponseHelper::success('Notifications', $notifications);
+    }
+
+    // get unread notifications
+    public function getUnreadNotifications()
+    {
+        $notifications = auth()->user()->unreadNotifications;
+        return ResponseHelper::success('Unread Notifications', $notifications);
+    }
+
+    // get read notifications
+    public function getReadNotifications()
+    {
+        $notifications = auth()->user()->readNotifications;
+        return ResponseHelper::success('Read Notifications', $notifications);
+    }
+
+    // get notification
+    public function getNotification(Request $request)
+    {
+        $notification = auth()->user()->notifications->find($request->id);
+        if ($notification) {
+            return ResponseHelper::success('Notification', $notification);
+        }
+        return ResponseHelper::error('Notification not found', 404);
+    }
+
+    // mark notification as read
+    public function markNotificationAsRead(Request $request)
+    {
+        $notification = auth()->user()->notifications->find($request->id);
+        if ($notification) {
+            $notification->markAsRead();
+            return ResponseHelper::success('Notification marked as read successfully');
+        }
+        return ResponseHelper::error('Notification not found', 404);
+    }
 }
