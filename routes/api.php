@@ -10,7 +10,6 @@ use App\Http\Controllers\BidsController;
 use App\Http\Controllers\BookingsController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\ReviewsController;
-use App\Http\Middleware\FirebaseAuthMiddleware;
 
 Route::group([
     'middleware' => 'api',
@@ -20,29 +19,10 @@ Route::group([
     Route::post('login', [AuthController::class, 'login']);
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
-    Route::post('me', [AuthController::class, 'me']);
     Route::post('register', [AuthController::class, 'register']);
     Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
 });
-Route::post('login', [AuthController::class, 'login']);
-Route::get('get-user-info', [AuthController::class, 'getUserInfo']);
-
-
-Route::group([
-    'middleware' => 'firebase.auth',
-    'namespace' => 'App\Http\Controllers',
-    'prefix' => 'auth',
-], function () {
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('logout', [AuthController::class, 'logout']);
-    Route::post('refresh', [AuthController::class, 'refresh']);
-    Route::post('me', [AuthController::class, 'me']);
-    Route::post('register', [AuthController::class, 'register']);
-    Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
-    Route::post('reset-password', [AuthController::class, 'resetPassword']);
-});
-
 
 // ===============================
 // routes for guest
@@ -88,7 +68,8 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     Route::post('update-profile', [AuthController::class, 'updateProfile']);
 
     // get user information
-    Route::get('get-user-info', [AuthController::class, 'getUserInfo']);
+    Route::get('get-firebase', [AuthController::class, 'getFirebase']);
+    Route::get('me', [AuthController::class, 'me']);
 
     // password update routes
     Route::post('change-password', [AuthController::class, 'changePassword']);

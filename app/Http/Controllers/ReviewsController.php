@@ -55,7 +55,7 @@ class ReviewsController extends Controller
             $reviews->save();
 
             DB::commit();
-            return ResponseHelper::success('Review created successfully', $reviews);
+            return ResponseHelper::success('Review created successfully', $reviews, 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return ResponseHelper::error('Error', 'Something went wrong:'.$e, 500);

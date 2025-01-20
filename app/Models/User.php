@@ -24,8 +24,6 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'mobile',
         'status',
-        'firebase_uid',
-        'firebase_token',
     ];
 
     public function getJWTIdentifier()
@@ -69,6 +67,11 @@ class User extends Authenticatable implements JWTSubject
     public function profile()
     {
         return $this->hasOne(Profile::class);
+    }
+
+    public function firebase()
+    {
+        return $this->hasOne(Firebase::class);
     }
 
     public function providerBids()
@@ -115,4 +118,6 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Wishlist::class, 'provider_id', 'id');
     }
+
+  
 }

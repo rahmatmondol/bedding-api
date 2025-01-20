@@ -16,7 +16,6 @@ use App\Models\Locations;
 use App\Models\Profile;
 use App\Helpers\CountryHelper;
 use App\Services\FirebaseAuthService;
-use App\Http\Middleware\FirebaseAuthMiddleware;
 
 class AuthController extends Controller
 {
@@ -72,8 +71,12 @@ class AuthController extends Controller
                 'email' => $validated['email'],
                 'password' => bcrypt($validated['password']),
                 'mobile' => $validated['mobile'],
-                'firebase_uid' => $firebaseUser['localId'] ?? null, // Store Firebase UID
-                'firebase_token' => $firebaseUser['idToken'] ?? null // Store Firebase token
+            ]);
+
+            $user->firebase()->create([
+                'firebase_uid' => $firebaseUser['localId'] ?? null,
+                'firebase_token' => $firebaseUser['idToken'] ?? null,
+                'firebase_refresh_token' => $firebaseUser['refreshToken'] ?? null
             ]);
 
             // 3. Assign role
@@ -93,20 +96,10 @@ class AuthController extends Controller
             $profile->category()->associate($validated['category_id']);
             $profile->save();
 
-            // 6. Prepare response data
-            $responseData = [
-                'user' => $user->load('profile', 'roles'),
-                'firebase' => [
-                    'token' => $firebaseUser['idToken'],
-                    'refresh_token' => $firebaseUser['refreshToken'],
-                    'expires_in' => $firebaseUser['expiresIn']
-                ]
-            ];
-
             // If everything is successful, commit the transaction
             DB::commit();
 
-            return ResponseHelper::success('User registered successfully', $responseData);
+            return ResponseHelper::success('User registered successfully',  $user->load('profile', 'roles'));
 
         } catch (Exception $e) {
             // Rollback database changes if anything fails
@@ -151,173 +144,29 @@ class AuthController extends Controller
     }
 
 
-    // public function register(Request $request)
-    // {
-    //     try {
-    //         $userData = $this->firebaseAuth->signUp(
-    //             $request->email,
-    //             $request->password
-    //         );
-            
-    //         return response()->json($userData);
-    //     } catch (Exception $e) {
-    //         return response()->json(['error' => $e->getMessage()], 400);
-    //     }
-    // }
 
-    // Register
-    // public function register(Request $request)
-    // {
-    //     try {
-    //         $validated = $request->validate([
-    //             'name' => 'required|string|max:255',
-    //             'email' => 'required|string|email|max:255|unique:users',
-    //             'password' => 'required|string|min:8',
-    //             'country' => 'required|string|max:255',
-    //             'mobile' => 'required|string|max:255|unique:users',
-    //             'category_id' => 'required|integer',
-    //             'account_type' => 'required|string',
-    //         ]);
-    //     } catch (ValidationException $e) {
-    //         return ResponseHelper::error($e->errors(), 422);
-    //     }
-
-    //     // Start a database transaction
-    //     DB::beginTransaction();
-
-    //     try {
-    //         // Create the user
-    //         $user = User::create([
-    //             'name' => $validated['name'],
-    //             'email' => $validated['email'],
-    //             'password' => bcrypt($validated['password']),
-    //             'mobile' => $validated['mobile'],
-    //         ]);
-
-    //         // Assign role to user after registration
-    //         if (isset($validated['account_type'])) {
-    //             $role = $validated['account_type'] === 'provider' ? 'provider' : 'customer';
-    //             $user->assignRole($role);
-    //         }
-
-    //         // Create profile for the user
-    //         $profile = $user->profile()->create([
-    //             'country' => $validated['country'],
-    //             'last_name' => $validated['last_name'] ?? null,
-    //             'bio' => $validated['bio'] ?? null,
-    //             'language' => $validated['language'] ?? 'English',
-    //             'image' => $validated['image'] ?? null,
-    //         ]);
-
-    //         // attach category to profile
-    //         $profile->category()->associate($validated['category_id']);
-    //         $profile->save();
-
-    //         // If everything goes well, commit the transaction
-    //         DB::commit();
-    //         return ResponseHelper::success('User Created Successfully', $user);
-    //     } catch (\Exception $e) {
-    //         // If any error occurs, rollback the transaction
-    //         DB::rollBack();
-    //         return ResponseHelper::error($e->errors(), 422);
-    //     }
-    // }
-
-    /**
-     * Login user with both Firebase and database authentication
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
+    // Login
     public function login(Request $request)
     {
+        $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+
+        $credentials = $request->only('email', 'password');
+
         try {
-            // 1. Validate the request
-            $validated = $request->validate([
-                'email' => 'required|string|email',
-                'password' => 'required|string',
-            ]);
-
-            // 2. Check if user exists in database
-            $user = User::where('email', $validated['email'])->first();
-
-            if (!$user) {
-                return ResponseHelper::error('Invalid credentials', 401);
+            if (! $token = JWTAuth::attempt($credentials)) {
+                return response()->json(['error' => 'Unauthorized'], 401);
             }
-
-            // 3. Verify password
-            if (!Hash::check($validated['password'], $user->password)) {
-                return ResponseHelper::error('Invalid credentials', 401);
-            }
-
-            try {
-                // 4. Authenticate with Firebase
-                $firebaseUser = $this->firebaseAuth->signIn(
-                    $validated['email'],
-                    $validated['password']
-                );
-
-                if (!$firebaseUser) {
-                    return ResponseHelper::error('Invalid credentials', 401);
-                }
-
-                // 5. Update Firebase tokens in database
-                $user->update([
-                    'firebase_uid' => $firebaseUser['localId'] ?? $user->firebase_uid,
-                    'firebase_token' => $firebaseUser['idToken']
-                ]);
-
-                return ResponseHelper::success('Login successful', $user);
-
-                // 6. Get user profile and role data
-                $user->load(['profile', 'roles']);
-
-                // 8. Prepare response data
-                $responseData = [
-                    'user' => $user,
-                    'token' => $firebaseUser['idToken'],
-                    'refresh_token' => $firebaseUser['refreshToken'],
-                    'expires_in' => $firebaseUser['expiresIn']
-                ];
-
-                return ResponseHelper::success('Login successful', $responseData);
-
-            } catch (Exception $firebaseError) {
-                // Handle Firebase authentication failure
-                return ResponseHelper::error('authentication failed', 401);
-            }
-
-        } catch (ValidationException $e) {
-            return ResponseHelper::error($e->errors(), 422);
-        } catch (Exception $e) {
-            logger()->error('Login error: ' . $e->getMessage());
-            return ResponseHelper::error('Login failed: ' . $e->getMessage(), 500);
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Could not create token'], 500);
         }
+
+        $user = auth()->user()->load(['profile']);
+
+        return response()->json(compact('token', 'user'));
     }
-
-
-    // // Login
-    // public function login(Request $request)
-    // {
-    //     $request->validate([
-    //         'email' => 'required|string|email',
-    //         'password' => 'required|string',
-    //     ]);
-        
-    //     $credentials = $request->only('email', 'password');
-
-    //     try {
-    //         if (! $token = JWTAuth::attempt($credentials)) {
-    //             return response()->json(['error' => 'Unauthorized'], 401);
-    //         }
-    //     } catch (JWTException $e) {
-    //         return response()->json(['error' => 'Could not create token'], 500);
-    //     }
-
-    //     $user = auth()->user()->load(['profile']);
-
-    //     return response()->json(compact('token', 'user'));
-    // }
 
     // getCountry
     public function getCountry()
@@ -330,7 +179,7 @@ class AuthController extends Controller
     {
 
         DB::beginTransaction();
-    
+
         try {
             $request->validate([
                 'name' => 'string|max:255',
@@ -343,15 +192,15 @@ class AuthController extends Controller
                 'bio' => 'string',
                 'language' => 'string|max:255',
             ]);
-    
+
             // Check if the user is authenticated
             $user = auth()->user();
-    
+
             if (!$user) {
                 return ResponseHelper::error('User not authenticated', 401);
             }
 
-        
+
             // Get the user's profile
             $user->load('profile');
             if (!$user->profile) {
@@ -373,7 +222,7 @@ class AuthController extends Controller
                     $image = $request->file('image');
                     $originalName = $image->getClientOriginalName();
                     $filename = time() . '_' . $originalName;
-    
+
                     $image->move('uploads/profile/', $filename);
                     $profile->image = url('uploads/profile/' . $filename);
                     $profile->save();
@@ -385,8 +234,8 @@ class AuthController extends Controller
                 DB::commit();
                 return ResponseHelper::success('Profile created successfully', $user->load('profile'));
             }
-            
-        
+
+
             $request->name ? $user->name = $request->name : null;
             $request->email ? $user->email = $request->email : null;
             $request->mobile ? $user->mobile = $request->mobile : null;
@@ -402,8 +251,8 @@ class AuthController extends Controller
             $request->language ? $user->profile->language = $request->language : null;
             $request->category_id ? $user->profile->category_id = $request->category_id : null;
             $user->profile->save();
-    
-    
+
+
             if ($request->hasFile('image')) {
                 // Delete the old image if it exists
                 $relativePath = parse_url($user->profile->image, PHP_URL_PATH);
@@ -420,11 +269,11 @@ class AuthController extends Controller
                 $user->profile->image = url('uploads/profile/' . $filename);
                 $user->profile->save();
             }
-            
+
             // Update the user's profile
             DB::commit();
             return ResponseHelper::success('account updated successfully', $user);
-    
+
         } catch (\Exception $e) {
             DB::rollBack();
             return ResponseHelper::error($e->errors(), 422);
@@ -432,13 +281,10 @@ class AuthController extends Controller
     }
 
     // get user info
-    public function getUserInfo(Request $request)
+    public function getFirebase(Request $request)
     {
 
-        $user = User::where('firebase_uid', $request->firebase_uid)->first();
-        $user->load('profile');
-
-        return response()->json($user);
+        return response()->json(auth()->user()->load('firebase'));
     }
 
     // Logout
@@ -451,8 +297,7 @@ class AuthController extends Controller
     // Get current user (authenticated)
     public function me()
     {
-        $data = auth()->user();
-        return response()->json($data);
+        return response()->json(auth()->user()->load('profile'));
     }
 
     // Refresh token
@@ -481,7 +326,7 @@ class AuthController extends Controller
                 'password' => 'required|string|min:8|confirmed|different:current_password',
                 'current_password' => 'required|string|',
             ]);
-    
+
             // Check if the current password is correct
             if (!Hash::check($request->current_password, auth()->user()->password)) {
                 return ResponseHelper::error('Current password is incorrect', 401);
@@ -496,7 +341,7 @@ class AuthController extends Controller
             // Provide a more descriptive error response if query fails
             return ResponseHelper::error('Failed to change password: ' . $e->getMessage(), 500);
         }
- 
+
     }
 
     // get notifications
