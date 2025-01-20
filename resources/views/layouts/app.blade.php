@@ -45,13 +45,16 @@
             border-radius: 2px;
             background: #1a9175;
         }
-
-    
     </style>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     @livewireStyles
 </head>
 
 <body class="body counter-scroll sticky-scroll1">
+    @include('layouts.firebase')
     <!-- /#page -->
     <div id="wrapper">
         <div id="page" class="market-page">
@@ -90,10 +93,7 @@
 
         </div>
         <!-- /#page -->
-
         <!-- Modal Popup Bid -->
-
-
     </div>
 
     </div>
