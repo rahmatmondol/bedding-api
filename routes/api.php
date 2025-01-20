@@ -43,6 +43,7 @@ Route::group([
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
 });
 
+
 // ===============================
 // routes for guest
 // ===============================
