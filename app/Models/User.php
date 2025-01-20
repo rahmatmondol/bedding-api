@@ -24,6 +24,8 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'mobile',
         'status',
+        'firebase_uid',
+        'firebase_token',
     ];
 
     public function getJWTIdentifier()

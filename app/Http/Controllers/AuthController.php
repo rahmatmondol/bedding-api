@@ -15,12 +15,29 @@ use App\Models\Categories;
 use App\Models\Locations;
 use App\Models\Profile;
 use App\Helpers\CountryHelper;
+use App\Services\FirebaseAuthService;
+use App\Http\Middleware\FirebaseAuthMiddleware;
 
 class AuthController extends Controller
 {
-    // Register
+
+    private $firebaseAuth;
+
+    public function __construct(FirebaseAuthService $firebaseAuth)
+    {
+        $this->firebaseAuth = $firebaseAuth;
+    }
+
+
+    /**
+     * Register user with both Firebase and database
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function register(Request $request)
     {
+        // Validate request
         try {
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
@@ -29,31 +46,41 @@ class AuthController extends Controller
                 'country' => 'required|string|max:255',
                 'mobile' => 'required|string|max:255|unique:users',
                 'category_id' => 'required|integer',
-                'account_type' => 'required|string',
+                'account_type' => 'required|string|in:provider,customer',
+                'last_name' => 'nullable|string|max:255',
+                'bio' => 'nullable|string',
+                'language' => 'nullable|string|max:255',
+                'image' => 'nullable|string'
             ]);
         } catch (ValidationException $e) {
             return ResponseHelper::error($e->errors(), 422);
         }
 
-        // Start a database transaction
+        // Start database transaction
         DB::beginTransaction();
 
         try {
-            // Create the user
+            // 1. Create Firebase user
+            $firebaseUser = $this->firebaseAuth->signUp(
+                $validated['email'],
+                $validated['password']
+            );
+
+            // 2. Create database user
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => bcrypt($validated['password']),
                 'mobile' => $validated['mobile'],
+                'firebase_uid' => $firebaseUser['localId'] ?? null, // Store Firebase UID
+                'firebase_token' => $firebaseUser['idToken'] ?? null // Store Firebase token
             ]);
 
-            // Assign role to user after registration
-            if (isset($validated['account_type'])) {
-                $role = $validated['account_type'] === 'provider' ? 'provider' : 'customer';
-                $user->assignRole($role);
-            }
+            // 3. Assign role
+            $role = $validated['account_type'] === 'provider' ? 'provider' : 'customer';
+            $user->assignRole($role);
 
-            // Create profile for the user
+            // 4. Create user profile
             $profile = $user->profile()->create([
                 'country' => $validated['country'],
                 'last_name' => $validated['last_name'] ?? null,
@@ -62,43 +89,235 @@ class AuthController extends Controller
                 'image' => $validated['image'] ?? null,
             ]);
 
-            // attach category to profile
+            // 5. Attach category to profile
             $profile->category()->associate($validated['category_id']);
             $profile->save();
 
-            // If everything goes well, commit the transaction
+            // 6. Prepare response data
+            $responseData = [
+                'user' => $user->load('profile', 'roles'),
+                'firebase' => [
+                    'token' => $firebaseUser['idToken'],
+                    'refresh_token' => $firebaseUser['refreshToken'],
+                    'expires_in' => $firebaseUser['expiresIn']
+                ]
+            ];
+
+            // If everything is successful, commit the transaction
             DB::commit();
-            return ResponseHelper::success('User Created Successfully', $user);
-        } catch (\Exception $e) {
-            // If any error occurs, rollback the transaction
+
+            return ResponseHelper::success('User registered successfully', $responseData);
+
+        } catch (Exception $e) {
+            // Rollback database changes if anything fails
             DB::rollBack();
-            return ResponseHelper::error($e->errors(), 422);
+
+            // If Firebase user was created but database failed, we should handle cleanup
+            if (isset($firebaseUser['localId'])) {
+                try {
+                    // You would need to add a deleteUser method to your FirebaseAuthService
+                    $this->firebaseAuth->deleteUser($firebaseUser['idToken']);
+                } catch (Exception $deleteException) {
+                    logger()->error('Failed to delete Firebase user after registration rollback: ' . $deleteException->getMessage());
+                }
+            }
+
+            logger()->error('Registration error: ' . $e->getMessage());
+            return ResponseHelper::error('Registration failed: ' . $e->getMessage(), 422);
+        }
+    }
+
+    /**
+     * Delete user method for cleanup in case of failure
+     * Add this to your FirebaseAuthService class
+     */
+    public function deleteUser(string $idToken): array
+    {
+        try {
+            $response = Http::post("{$this->baseUrl}/accounts:delete", [
+                'key' => $this->apiKey,
+                'idToken' => $idToken
+            ]);
+
+            if ($response->failed()) {
+                throw new Exception($response['error']['message'] ?? 'Delete user failed');
+            }
+
+            return $response->json();
+        } catch (Exception $e) {
+            logger()->error('Firebase delete user error: ' . $e->getMessage());
+            throw $e;
         }
     }
 
 
-    // Login
+    // public function register(Request $request)
+    // {
+    //     try {
+    //         $userData = $this->firebaseAuth->signUp(
+    //             $request->email,
+    //             $request->password
+    //         );
+            
+    //         return response()->json($userData);
+    //     } catch (Exception $e) {
+    //         return response()->json(['error' => $e->getMessage()], 400);
+    //     }
+    // }
+
+    // Register
+    // public function register(Request $request)
+    // {
+    //     try {
+    //         $validated = $request->validate([
+    //             'name' => 'required|string|max:255',
+    //             'email' => 'required|string|email|max:255|unique:users',
+    //             'password' => 'required|string|min:8',
+    //             'country' => 'required|string|max:255',
+    //             'mobile' => 'required|string|max:255|unique:users',
+    //             'category_id' => 'required|integer',
+    //             'account_type' => 'required|string',
+    //         ]);
+    //     } catch (ValidationException $e) {
+    //         return ResponseHelper::error($e->errors(), 422);
+    //     }
+
+    //     // Start a database transaction
+    //     DB::beginTransaction();
+
+    //     try {
+    //         // Create the user
+    //         $user = User::create([
+    //             'name' => $validated['name'],
+    //             'email' => $validated['email'],
+    //             'password' => bcrypt($validated['password']),
+    //             'mobile' => $validated['mobile'],
+    //         ]);
+
+    //         // Assign role to user after registration
+    //         if (isset($validated['account_type'])) {
+    //             $role = $validated['account_type'] === 'provider' ? 'provider' : 'customer';
+    //             $user->assignRole($role);
+    //         }
+
+    //         // Create profile for the user
+    //         $profile = $user->profile()->create([
+    //             'country' => $validated['country'],
+    //             'last_name' => $validated['last_name'] ?? null,
+    //             'bio' => $validated['bio'] ?? null,
+    //             'language' => $validated['language'] ?? 'English',
+    //             'image' => $validated['image'] ?? null,
+    //         ]);
+
+    //         // attach category to profile
+    //         $profile->category()->associate($validated['category_id']);
+    //         $profile->save();
+
+    //         // If everything goes well, commit the transaction
+    //         DB::commit();
+    //         return ResponseHelper::success('User Created Successfully', $user);
+    //     } catch (\Exception $e) {
+    //         // If any error occurs, rollback the transaction
+    //         DB::rollBack();
+    //         return ResponseHelper::error($e->errors(), 422);
+    //     }
+    // }
+
+    /**
+     * Login user with both Firebase and database authentication
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
-        
-        $credentials = $request->only('email', 'password');
-
         try {
-            if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+            // 1. Validate the request
+            $validated = $request->validate([
+                'email' => 'required|string|email',
+                'password' => 'required|string',
+            ]);
+
+            // 2. Check if user exists in database
+            $user = User::where('email', $validated['email'])->first();
+
+            if (!$user) {
+                return ResponseHelper::error('Invalid credentials', 401);
             }
-        } catch (JWTException $e) {
-            return response()->json(['error' => 'Could not create token'], 500);
+
+            // 3. Verify password
+            if (!Hash::check($validated['password'], $user->password)) {
+                return ResponseHelper::error('Invalid credentials', 401);
+            }
+
+            try {
+                // 4. Authenticate with Firebase
+                $firebaseUser = $this->firebaseAuth->signIn(
+                    $validated['email'],
+                    $validated['password']
+                );
+
+                if (!$firebaseUser) {
+                    return ResponseHelper::error('Invalid credentials', 401);
+                }
+
+                // 5. Update Firebase tokens in database
+                $user->update([
+                    'firebase_uid' => $firebaseUser['localId'] ?? $user->firebase_uid,
+                    'firebase_token' => $firebaseUser['idToken']
+                ]);
+
+                return ResponseHelper::success('Login successful', $user);
+
+                // 6. Get user profile and role data
+                $user->load(['profile', 'roles']);
+
+                // 8. Prepare response data
+                $responseData = [
+                    'user' => $user,
+                    'token' => $firebaseUser['idToken'],
+                    'refresh_token' => $firebaseUser['refreshToken'],
+                    'expires_in' => $firebaseUser['expiresIn']
+                ];
+
+                return ResponseHelper::success('Login successful', $responseData);
+
+            } catch (Exception $firebaseError) {
+                // Handle Firebase authentication failure
+                return ResponseHelper::error('authentication failed', 401);
+            }
+
+        } catch (ValidationException $e) {
+            return ResponseHelper::error($e->errors(), 422);
+        } catch (Exception $e) {
+            logger()->error('Login error: ' . $e->getMessage());
+            return ResponseHelper::error('Login failed: ' . $e->getMessage(), 500);
         }
-
-        $user = auth()->user()->load(['profile']);
-
-        return response()->json(compact('token', 'user'));
     }
+
+
+    // // Login
+    // public function login(Request $request)
+    // {
+    //     $request->validate([
+    //         'email' => 'required|string|email',
+    //         'password' => 'required|string',
+    //     ]);
+        
+    //     $credentials = $request->only('email', 'password');
+
+    //     try {
+    //         if (! $token = JWTAuth::attempt($credentials)) {
+    //             return response()->json(['error' => 'Unauthorized'], 401);
+    //         }
+    //     } catch (JWTException $e) {
+    //         return response()->json(['error' => 'Could not create token'], 500);
+    //     }
+
+    //     $user = auth()->user()->load(['profile']);
+
+    //     return response()->json(compact('token', 'user'));
+    // }
 
     // getCountry
     public function getCountry()
@@ -215,7 +434,11 @@ class AuthController extends Controller
     // get user info
     public function getUserInfo(Request $request)
     {
-        return response()->json(auth()->user()->load('profile'));
+
+        $user = User::where('firebase_uid', $request->firebase_uid)->first();
+        $user->load('profile');
+
+        return response()->json($user);
     }
 
     // Logout
@@ -228,7 +451,8 @@ class AuthController extends Controller
     // Get current user (authenticated)
     public function me()
     {
-        return response()->json(auth()->user());
+        $data = auth()->user();
+        return response()->json($data);
     }
 
     // Refresh token
