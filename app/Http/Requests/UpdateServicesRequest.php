@@ -43,7 +43,7 @@ class UpdateServicesRequest extends FormRequest
             // 'skills_ids' => 'required',
             'category_id' => 'required|integer',
             'subCategory_id' => 'required|integer',
-            // 'images' => 'required',
+            'images' => 'required|max:2048',
             'location_name' => 'required|string',
             'latitude' => 'required',
             'longitude' => 'required',

@@ -12,10 +12,18 @@ use App\Helpers\ResponseHelper;
 use Illuminate\Support\Facades\DB;
 use App\Models\Bids;
 use App\Notifications\BidAccept;
-
+use App\Services\FirebaseDatabase;
 
 class BookingsController extends Controller
 {
+
+    protected $firebaseDatabase;
+
+    public function __construct(FirebaseDatabase $firebaseDatabase)
+    {
+        $this->firebaseDatabase = $firebaseDatabase;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -92,6 +100,24 @@ class BookingsController extends Controller
 
             // attach to user
             $booking->bid()->associate($request->bid_id);
+
+            $service = User::findOrFail($bid->service_id);
+
+
+            $firebaseDatabase = $this->firebaseDatabase->create('/notifications/user_' . $bid->provider_id, [
+                'created_at' => now()->format('Y-m-d H:i:s'),
+                'read_at' => false,
+                'data' => [
+                    'bid_id' => $bid->id,
+                    'url' => '/auth/booking/list',
+                    'avatar' => auth()->user()->profile->image,
+                    'service_id' => $bid->service_id,
+                    'message' => '( '.$service->title .' ) is accepting your bid.',
+                    'details' => '',
+                ],
+                'title' => 'Your bid has been accepted',
+            ]);
+
 
             $booking->save();
 

@@ -19,7 +19,7 @@ class WishlistController extends Controller
     {
         $providerId = auth()->user()->id;
         try {
-            $wishlists = Wishlist::with(['service','service.customer','service.images','service.skills'])->where('provider_id', $providerId)->get();
+            $wishlists = Wishlist::with(['service','service.customer','service.images'])->where('provider_id', $providerId)->get();
 
             return ResponseHelper::success('Wishlists', $wishlists);
         } catch (\Exception $e) {

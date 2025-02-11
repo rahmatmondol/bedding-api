@@ -44,14 +44,15 @@ class StoreServicesRequest extends FormRequest
             'description' => 'required|string',
             'price' => 'required|numeric',
             'priceType' => 'required|in:Negotiable,Fixed',
-            'currency' => 'in:AED,USD',
-            // 'level' => 'required|in:Entry,Intermediate,Expert',
+            'currency' => 'required|in:AED,USD',
+            'level' => 'required|in:Entry,Intermediate,Expert',
             'category_id' => 'required|integer|exists:categories,id',
             'subCategory_id' => 'required|integer|exists:sub_categories,id',
-            // 'images' => 'required',
-            'location_name' => 'required|string',
-            'latitude' => 'required',
-            'longitude' => 'required',
+            'images' => 'required|max:2048',
+            // 'location_name' => 'required|string',
+            // 'latitude' => 'required',
+            // 'longitude' => 'required',
+            // 'skills' => 'required|json',
             'postType' => 'required|in:Auction,Service', // Add postType validation
         ];
     }

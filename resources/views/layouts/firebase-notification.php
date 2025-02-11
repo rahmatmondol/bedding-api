@@ -26,20 +26,20 @@
             let count = '';
             if (data) {
                 Object.entries(data).forEach(([key, value]) => {
-                    if (!value.status) {
+                    if (value.read_at == false) {
                         count++;
                         notifications += `
                             <div class="card-small">
                                 <div class="author">
+                                     <img src="${value.data?.avatar}" style="width: 40px; height: 40px;" alt="avatar">
                                     <div class="info">
-                                        <p><a href="#">${value.message}</a></p>
+                                       <p><a href="/auth/notification?key=${key}&url=${value.data.url}">${value.title}</a></p>
+                                        <span class="date">${new Date(value.created_at).toLocaleString()}</span>
                                     </div>
                                 </div>
-                                <span class="date">${new Date(value.created_at).toLocaleString()}</span>
                             </div>
                         `
                     }
-                    // console.log(value.massage);
                 });
             }
             if (count == 0) {
@@ -51,10 +51,12 @@
                     </div>
                 </div>`
                 $('.notification-circle').css('visibility', 'hidden');
+                $('#notification_count').text(count);
             } else {
                 $('#notification_count').text(count);
                 $('.notification-circle').css('visibility', 'visible');
             }
+            $('.widget-recently').html('');
             $('.widget-recently').html(notifications);
 
         }).catch((error) => {

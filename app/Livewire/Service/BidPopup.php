@@ -10,12 +10,20 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Services;
 use App\Models\User;
 use App\Notifications\BidPlaced;
+use App\Services\FirebaseDatabase;
 
 class BidPopup extends Component
 {
     public $service;
     public $amount;
     public $message;    
+
+    protected $firebaseDatabase;
+
+    public function __construct()
+    {
+        $this->firebaseDatabase = app(FirebaseDatabase::class);
+    }
 
     public function mount($service)
     {
@@ -47,6 +55,20 @@ class BidPopup extends Component
             $bid->customer()->associate($this->service->user_id); // Associate customer
             $bid->service()->associate($this->service->id); // Associate service
             $bid->save();
+
+            $firebaseDatabase = $this->firebaseDatabase->create('/notifications/user_' . $this->service->user_id, [
+                'created_at' => now()->format('Y-m-d H:i:s'),
+                'read_at' => false,
+               'data' => [
+                    'bid_id' => $bid->id,
+                    'url' => '/auth/bid/list',
+                    'avatar' => auth()->user()->profile->image,
+                    'service_id' => $this->service->id,
+                    'message' => auth()->user()->name . ' has placed a bid on your service.',
+                    'details' => 'bid amount: ' . $bid->amount . ', bid message: '.$bid->message,
+                ],
+                'title' => 'You have a new bid',
+            ]);
     
             // Commit the transaction
             DB::commit();

@@ -79,7 +79,7 @@ class ServicesController extends Controller
         $services = Services::where('user_id', $customerId)
         ->where('postType', 'Auction')
         ->with('images')->get();
-        return ResponseHelper::success('My Services', $services);
+        return ResponseHelper::success('My Auctions', $services);
     }
 
         /**
@@ -144,57 +144,39 @@ class ServicesController extends Controller
 
     public function get_auctions()
     {
-       // Retrieve query parameters with default values
-        $filters = [
-            'customer_id' => request()->query('customer_id'),
-            'subcategory_id' => request()->query('subcategory_id'),
-            'category_id' => request()->query('category_id'),
-            'location' => request()->query('location'),
-            'latitude' => request()->query('latitude'),
-            'longitude' => request()->query('longitude'),
-            'priceType' => request()->query('priceType'),
-            'priceType' => request()->query('priceType'),
-            'currency' => request()->query('currency'),
-            'status' => request()->query('status'),
-            'level' => request()->query('level'),
-            'featured' => request()->query('featured'),
-            'search' => request()->query('search'),
-            'skills' => request()->query('skills'),
-            'category_slug' => request()->query('category_slug'),
-        ];
-
-        // Pagination parameters
-        $perPage = (int) request()->query('per_page', 9); // Items per page, default 10
-
+        $customerId = request()->query('customer_id');
+        $subCategoryId = request()->query('subcategory_id');
+        $categoryId = request()->query('category_id');
+        $location = request()->query('location');
+        $latitude = request()->query('latitude');
+        $longitude = request()->query('longitude');
+        $priceType = request()->query('priceType');
+        $currency = request()->query('currency');
+        $status = request()->query('status');
+        $level = request()->query('level');
+        $featured = request()->query('featured');
+        $search = request()->query('search');
         try {
-            // Build the query
-            $query = Services::with(['images', 'skills', 'customer'])
+            // Build the query with optional filters
+            $query = Services::with(['images','customer'])
                 ->where('postType', 'Auction')
-                ->when($filters['customer_id'], fn($q, $customerId) => $q->where('user_id', $customerId))
-                ->when($filters['location'], fn($q, $location) => $q->where('location', $location))
-                ->when($filters['latitude'], fn($q, $latitude) => $q->where('latitude', $latitude))
-                ->when($filters['longitude'], fn($q, $longitude) => $q->where('longitude', $longitude))
-                ->when($filters['skills'], fn($q, $skills) => $q->whereHas('skills', fn($q) => $q->whereIn('skills.id', explode(',', $skills))))
-                ->when($filters['search'], fn($q, $search) => $q->where('title', 'LIKE', "%{$search}%"))
-                ->when($filters['subcategory_id'], fn($q, $subCategoryId) => $q->where('sub_category_id', $subCategoryId))
-                ->when($filters['category_id'], fn($q, $categoryId) => $q->where('category_id', $categoryId))
-                ->when($filters['priceType'], fn($q, $priceType) => $q->where('priceType', $priceType))
-                ->when($filters['currency'], fn($q, $currency) => $q->where('currency', $currency))
-                ->when($filters['status'], fn($q, $status) => $q->where('status', $status))
-                ->when($filters['level'], fn($q, $level) => $q->where('level', $level))
-                ->when($filters['featured'], fn($q, $featured) => $q->where('is_featured', $featured))
-                ->when($filters['category_slug'], fn($q, $categorySlug) => $q->whereHas('category', fn($q) => $q->where('slug', $categorySlug)));
+                ->when($customerId, fn($q) => $q->where('user_id', $customerId))
+                ->when($search, fn($q) => $q->where('title', 'LIKE', "%{$search}%"))
+                ->when($subCategoryId, fn($q) => $q->where('sub_category_id', $subCategoryId))
+                ->when($categoryId, fn($q) => $q->where('category_id', $categoryId))
+                ->when($priceType, fn($q) => $q->where('priceType', $priceType))
+                ->when($currency, fn($q) => $q->where('currency', $currency))
+                ->when($status, fn($q) => $q->where('status', $status))
+                ->when($level, fn($q) => $q->where('level', $level))
+                ->when($featured, fn($q) => $q->where('is_featured', $featured));
 
-            // Apply pagination
-            $services = $query->orderBy('created_at', 'desc')
-                ->paginate($perPage);
+            // Execute the query and retrieve the services
+            $services = $query->orderBy('created_at', 'desc')->get();
 
-            // Return success response with paginated data
             return ResponseHelper::success('All Auctions', $services);
         } catch (\Exception $e) {
-            // Log error and return a detailed error response
-            \Log::error('Service retrieval failed', ['error' => $e->getMessage()]);
-            return ResponseHelper::error('Failed to retrieve services. Please try again later.', 500);
+            // Provide a more descriptive error response if query fails
+            return ResponseHelper::error('Failed to retrieve Auctions: ' . $e->getMessage(), 500);
         }
 
     }
@@ -286,6 +268,7 @@ class ServicesController extends Controller
             $service->latitude      = $request->latitude;
             $service->postType      = $request->postType ?? 'Service';
             $service->skills        = $request->skills;
+            $service->deadline      = $request->deadline ?? null;
             $service->longitude     = $request->longitude;
             $service->status        = $request->status ?? 'active';
             $service->is_featured   = $request->is_featured ? true : false;
@@ -380,7 +363,7 @@ class ServicesController extends Controller
     public function showSingle($id)
     {
         try {
-            $service = Services::with('images', 'skills', 'category', 'customer')->findOrFail($id);
+            $service = Services::with('images', 'category', 'customer','customer.profile')->findOrFail($id);
             return ResponseHelper::success('Service Details', $service);
         } catch (\Exception $e) {
             // Provide a more descriptive error response if query fails

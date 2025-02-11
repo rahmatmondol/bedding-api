@@ -119,9 +119,9 @@
                                 <fieldset class="Pricetyoe">
                                     <label for="input7" class="form-label">Level</label>
                                     <select id="input7" name="level" class="form-select" required>
-                                        <option selected value="entry">Entry</option>
-                                        <option value="intermediate">Intermediate</option>
-                                        <option value="expert">Expert</option>
+                                        <option selected value="Entry">Entry</option>
+                                        <option value="Intermediate">Intermediate</option>
+                                        <option value="Expert">Expert</option>
                                     </select>
                                     @error('price_type')
                                         <span class="text-danger">{{ $message }}</span>

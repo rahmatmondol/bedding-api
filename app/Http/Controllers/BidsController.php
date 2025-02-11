@@ -10,13 +10,19 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Services;
 use App\Notifications\BidPlaced;
 use App\Models\User;
-
+use App\Services\FirebaseDatabase;
 
 class BidsController extends Controller
 {
 
     public $review_rating;
     public $comment;
+    protected $firebaseDatabase;
+
+    public function __construct(FirebaseDatabase $firebaseDatabase)
+    {
+        $this->firebaseDatabase = $firebaseDatabase;
+    }
 
     /**
      * Display a listing of the resource.
@@ -31,12 +37,13 @@ class BidsController extends Controller
         $customerId = auth()->user()->hasRole('customer') ? auth()->user()->id : null;
 
         try {
-            $query = Bids::when($providerId, fn($q) => $q->where('provider_id', $providerId))
-            ->where('type', 'Service')
-            ->when($serviceId, fn($q) => $q->where('service_id', $serviceId))
-            ->when($customerId, fn($q) => $q->where('customer_id', $customerId)
-            ->with(['provider', 'provider.profile']))
-            ->when($status, fn($q) => $q->where('status', $status));
+            $query = Bids::when($providerId, fn($q) => $q->where('provider_id', $providerId)
+                ->with('service:id,title,skills', 'customer', 'customer.profile'))
+                ->where('type', 'Service')
+                ->when($serviceId, fn($q) => $q->where('service_id', $serviceId))
+                ->when($customerId, fn($q) => $q->where('customer_id', $customerId)
+                    ->with(['provider', 'provider.profile', 'service:id,title,skills']))
+                ->when($status, fn($q) => $q->where('status', $status));
             $bids = $query->get();
 
             return ResponseHelper::success('Bids', $bids);
@@ -48,13 +55,13 @@ class BidsController extends Controller
     public function auctionBids()
     {
         try {
-            $bids = Bids::with(['provider','provider.profile', 'service','customer', 'customer.profile'])
-            ->where('type', 'Auction')
-            ->whereHas('service', function($query){
-                $query->where('user_id', auth()->user()->id);
-            })
-            ->orderByDesc('created_at')
-            ->get();
+            $bids = Bids::with(['provider', 'provider.profile', 'service', 'customer', 'customer.profile'])
+                ->where('type', 'Auction')
+                ->whereHas('service', function ($query) {
+                    $query->where('user_id', auth()->user()->id);
+                })
+                ->orderByDesc('created_at')
+                ->get();
 
             return ResponseHelper::success('Bids', $bids);
         } catch (\Exception $e) {
@@ -68,7 +75,7 @@ class BidsController extends Controller
         return view('user.bid.list');
     }
 
-        /**
+    /**
      * Display a listing of the resource.
      */
     public function info()
@@ -78,14 +85,14 @@ class BidsController extends Controller
 
         try {
             //get provider info by bid id
-            $information = Bids::with(['provider', 'provider.profile','provider.reviews', 'service'])->findOrFail($bidId);
-    
+            $information = Bids::with(['provider', 'provider.profile', 'provider.reviews', 'service'])->findOrFail($bidId);
+
             return ResponseHelper::success('Bid information', $information);
         } catch (\Exception $e) {
             return ResponseHelper::error('Error retrieving bids', 'Internal server error', 500);
         }
     }
-    
+
 
     /**
      * Show the form for creating a new resource.
@@ -116,13 +123,27 @@ class BidsController extends Controller
             $bid->type = $service->postType;
             $bid->save();
 
-            // Send notification to customer
-            $user = User::find($service->user_id);
-            $user->notify(new BidPlaced($bid));
-            
+            // // Send notification to customer
+            // $user = User::find($service->user_id);
+            // $user->notify(new BidPlaced($bid));
+
+            $firebaseDatabase = $this->firebaseDatabase->create('/notifications/user_' . $service->user_id, [
+                'created_at' => now()->format('Y-m-d H:i:s'),
+                'read_at' => false,
+                'data' => [
+                    'bid_id' => $bid->id,
+                    'url' => '/auth/bid/list',
+                    'avatar' => auth()->user()->profile->image,
+                    'service_id' => $service->id,
+                    'message' => auth()->user()->name . ' has placed a bid on your service.',
+                    'details' => 'bid amount: ' . $bid->amount . ', bid message: ' . $bid->message,
+                ],
+                'title' => 'You have a new bid',
+            ]);
+
             $bid->provider()->associate(auth()->user()->id);
             $bid->save();
-            
+
             // attach to customer
             $bid->customer()->associate($service->user_id);
             $bid->save();
@@ -130,7 +151,7 @@ class BidsController extends Controller
             // attach to service
             $bid->service()->associate($request->service_id);
             $bid->save();
-           
+
 
             // If everything goes well, commit the transaction
             DB::commit();
@@ -163,10 +184,10 @@ class BidsController extends Controller
             $bid->message = $request->message ?? '';
             $bid->type = $service->postType;
             $bid->save();
-            
+
             $bid->provider()->associate(auth()->user()->id);
             $bid->save();
-            
+
             // attach to customer
             $bid->customer()->associate($service->user_id);
             $bid->save();
@@ -174,7 +195,20 @@ class BidsController extends Controller
             // attach to service
             $bid->service()->associate($request->service_id);
             $bid->save();
-           
+
+            $firebaseDatabase = $this->firebaseDatabase->create('/notifications/user_' . $service->user_id, [
+                'created_at' => now()->format('Y-m-d H:i:s'),
+                'read_at' => false,
+                'data' => [
+                    'bid_id' => $bid->id,
+                    'url' => '/auth/bid/list',
+                    'avatar' => auth()->user()->profile->image,
+                    'service_id' => $service->id,
+                    'message' => auth()->user()->name . ' has placed a bid on your service.',
+                    'details' => 'bid amount: ' . $bid->amount . ', bid message: ' . $bid->message,
+                ],
+                'title' => 'You have a new bid',
+            ]);
 
             // If everything goes well, commit the transaction
             DB::commit();
@@ -188,7 +222,7 @@ class BidsController extends Controller
         }
     }
 
-       /**
+    /**
      * Store a newly created resource in storage.
      */
     public function localstore(StoreBidsRequest $request)
@@ -199,7 +233,7 @@ class BidsController extends Controller
             if (auth()->user()->providerBids()->where('service_id', $request->service_id)->exists()) {
                 return ResponseHelper::error('You already have a bid for this service', 422);
             }
-            
+
             $service = Services::find($request->service_id);
             // Create bid
             $bid = new Bids;
@@ -218,7 +252,21 @@ class BidsController extends Controller
             // attach to service
             $bid->service()->associate($request->service_id);
             $bid->save();
-           
+
+            $firebaseDatabase = $this->firebaseDatabase->create('/notifications/user_' . $service->user_id, [
+                'created_at' => now()->format('Y-m-d H:i:s'),
+                'read_at' => false,
+                'data' => [
+                    'bid_id' => $bid->id,
+                    'url' => '/auth/bid/list',
+                    'avatar' => auth()->user()->profile->image,
+                    'service_id' => $service->id,
+                    'message' => auth()->user()->name . ' has placed a bid on your service.',
+                    'details' => 'bid amount: ' . $bid->amount . ', bid message: ' . $bid->message,
+                ],
+                'title' => 'You have a new bid',
+            ]);
+
 
             // If everything goes well, commit the transaction
             DB::commit();
@@ -237,7 +285,8 @@ class BidsController extends Controller
      */
     public function show(Bids $bids)
     {
-        //
+        $bid = $bids->with(['provider', 'provider.profile', 'provider.reviews', 'service'])->findOrFail($bids->id);
+        return ResponseHelper::success('Bid information', $bid);
     }
 
     /**
@@ -245,7 +294,8 @@ class BidsController extends Controller
      */
     public function edit(Bids $bids)
     {
-        //
+        $bid = $bids->load(['provider', 'service']);
+        return view('bids.edit', compact('bid'));
     }
 
     /**
@@ -253,7 +303,15 @@ class BidsController extends Controller
      */
     public function update(UpdateBidsRequest $request, Bids $bids)
     {
-        //
+        $bid = $bids->findOrFail($bids->id);
+        $bid->amount = $request->amount;
+        $bid->message = $request->message;
+
+        if ($bid->save()) {
+            return ResponseHelper::success('Bid updated successfully', $bid);
+        }
+
+        return ResponseHelper::error('Error updating bid', 'Something went wrong', 500);
     }
 
     /**
@@ -261,6 +319,11 @@ class BidsController extends Controller
      */
     public function destroy(Bids $bids)
     {
-        //
+        try {
+            $bids->delete();
+            return ResponseHelper::success('Bid deleted successfully');
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Error deleting bid', 'Something went wrong', 500);
+        }
     }
 }

@@ -1,12 +1,12 @@
 <script>
     const firebaseConfig = {
-        apiKey: "AIzaSyCxbBnfcik23XD0EuB8LCjcJpbtPhURUoM",
-        authDomain: "bidding-ee056.firebaseapp.com",
-        databaseURL: "https://bidding-ee056-default-rtdb.firebaseio.com",
-        projectId: "bidding-ee056",
-        storageBucket: "bidding-ee056.firebasestorage.app",
-        messagingSenderId: "255497040130",
-        appId: "1:255497040130:web:997f70d3769f87a174921b"
+        apiKey: "<?php echo config('services.firebase.api_key'); ?>",
+        authDomain: "<?php echo config('services.firebase.auth_domain'); ?>",
+        databaseURL: "<?php echo config('services.firebase.database_url'); ?>",
+        projectId: "<?php echo config('services.firebase.project_id'); ?>",
+        storageBucket: "<?php echo config('services.firebase.storage_bucket'); ?>",
+        messagingSenderId: "<?php echo config('services.firebase.messaging_sender_id'); ?>",
+        appId: "<?php echo config('services.firebase.app_id'); ?>"
     };
 
     // Initialize Firebase

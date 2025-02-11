@@ -9,7 +9,7 @@ use App\Models\User;
 use App\Notifications\BidAccept;
 use App\Models\Bookings;
 use App\Models\Services;
-
+use App\Services\FirebaseDatabase;
 class Bids extends Component
 {
 
@@ -19,6 +19,13 @@ class Bids extends Component
     public $customerId;
     public $rejected;
     public $type = 'Service';
+
+    protected $firebaseDatabase;
+
+    public function __construct()
+    {
+        $this->firebaseDatabase = app(FirebaseDatabase::class);
+    }
 
 
     public function mount()
@@ -99,6 +106,20 @@ class Bids extends Component
             $service = Services::find($bid->service_id);
             $service->status = 'Inactive';
             $service->save();
+
+            $firebaseDatabase = $this->firebaseDatabase->create('/notifications/user_' . $bid->provider_id, [
+                'created_at' => now()->format('Y-m-d H:i:s'),
+                'read_at' => false,
+                'data' => [
+                    'bid_id' => $bid->id,
+                    'url' => '/auth/booking/list',
+                    'avatar' => $service->images->isNotEmpty() ? $service->images->first()->path ?? '' : '',
+                    'service_id' => $bid->service_id,
+                    'message' => '( '.$service->title .' ) is accepting your bid.',
+                    'details' => '',
+                ],
+                'title' => 'Your bid has been accepted',
+            ]);
             
             DB::commit();
 
@@ -106,7 +127,6 @@ class Bids extends Component
 
                 // Send notification to customer
                 $provider = User::find($bid->provider_id);
-                $provider->notify(new BidAccept($bid));
 
                 session()->flash('success', 'Bid accepted successfully.');
                 return $this->redirect('/auth/bid/auction-list', navigate: true);

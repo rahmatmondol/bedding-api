@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\ProviderController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\ZoneController;
+use App\Http\Controllers\Notification;
 
 // ===========================
 // Public Routes
@@ -43,14 +44,14 @@ Route::get('/auctions', [ServicesController::class, 'auction_archive'])->name('s
 Route::get('/get-all-services', [ServicesController::class, 'get_services'])->name('get-all-services');
 Route::get('/get-all-auctions', [ServicesController::class, 'get_auctions'])->name('get-all-auctions');
 
-Route::get('/terms-and-conditions', function(){
+Route::get('/terms-and-conditions', function () {
     $content = TermsAndConditions::first();
-   return view('terms', compact('content'));
+    return view('terms', compact('content'));
 })->name('terms-and-conditions');
 
-Route::get('/privacy-policy', function(){
+Route::get('/privacy-policy', function () {
     $content = PrivacyPolicy::first();
-   return view('privacy', compact('content'));
+    return view('privacy', compact('content'));
 })->name('privacy-policy');
 
 Route::get('/provider-profile/{id}', fn() => view('privacy'))->name('provider-profile');
@@ -104,7 +105,7 @@ Route::middleware(['auth'])->group(function () {
         route::post('/update-profile', [AuthController::class, 'updateProfile'])->name('update');
     });
 
-    
+
     // Wishlist Routes
     Route::prefix('auth')->name('auth-')->group(function () {
         Route::post('/create-wishlist', [WishlistController::class, 'store'])->name('create-wishlist');
@@ -113,6 +114,14 @@ Route::middleware(['auth'])->group(function () {
 
     // Bidding Routes
     Route::post('/create-bidding', [BidsController::class, 'localstore'])->name('create-bidding');
+
+
+    // notification Routes
+
+    Route::prefix('auth')->name('')->group(function () {
+        Route::get('/notification', [Notification::class, 'read'])->name('notification');
+    });
+
 });
 
 // ===========================
@@ -121,7 +130,7 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/get-booking-data', [DashboardController::class, 'getBookingDataForChart'])->name('get.booking.data');
 
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/login', fn() => view('admin.page.auth.login') )->name('login');
+    Route::get('/login', fn() => view('admin.page.auth.login'))->name('login');
 });
 
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
@@ -154,8 +163,8 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         Route::put('/update/{id}', 'update')->name('category.update');
     });
 
-     //Sub Category
-     Route::group(['prefix' => 'sub-category', 'controller' => SubCategoryController::class], function () {
+    //Sub Category
+    Route::group(['prefix' => 'sub-category', 'controller' => SubCategoryController::class], function () {
         Route::get('/add-subcategory', 'subcategoryAdd')->name('add.subcategory');
         Route::get('/list-subcategory', 'subcategoryList')->name('list.subcategory');
         Route::post('/store-subcategories', 'subCategoryStore')->name('subcategories.store');
@@ -177,7 +186,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/api/zones/{zone}/providers', [ServiceController::class, 'getProvidersByZone']);
     //Category
 
-   
+
 
     //service
     Route::group(['prefix' => 'service', 'controller' => ServiceController::class], function () {
@@ -223,4 +232,4 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 });
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

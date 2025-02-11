@@ -53,6 +53,6 @@ class Singup extends Component
         $user->assignRole($role);
         
         session()->flash('message', 'User created successfully.');
-        return $this->redirect('/auth', navigate: true);
+        return $this->redirect('/auth', navigate: false);
     }
 }
