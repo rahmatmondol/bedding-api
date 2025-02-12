@@ -40,7 +40,35 @@ class BidsController extends Controller
             $query = Bids::when($providerId, fn($q) => $q->where('provider_id', $providerId)
                 ->with('service:id,title,skills', 'customer', 'customer.profile'))
                 ->where('type', 'Service')
-                ->when($serviceId, fn($q) => $q->where('service_id', $serviceId))
+                ->when($serviceId, fn($q) => $q->where('service_id', $serviceId)
+                    ->with(['provider', 'provider.profile', 'service:id,title,skills']))
+                ->when($customerId, fn($q) => $q->where('customer_id', $customerId)
+                    ->with(['provider', 'provider.profile', 'service:id,title,skills']))
+                ->when($status, fn($q) => $q->where('status', $status));
+            $bids = $query->get();
+
+            return ResponseHelper::success('Bids', $bids);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Bids', $e->getMessage(), 404);
+        }
+    }
+
+    //get my auction bids
+    public function myAuctionBids()
+    {
+        // send all bids by service id
+        $serviceId = request()->query('service_id');
+        $status = request()->query('status');
+
+        $providerId = auth()->user()->hasRole('provider') ? auth()->user()->id : null;
+        $customerId = auth()->user()->hasRole('customer') ? auth()->user()->id : null;
+
+        try {
+            $query = Bids::when($providerId, fn($q) => $q->where('provider_id', $providerId)
+                ->with('service:id,title,skills', 'customer', 'customer.profile'))
+                ->where('type', 'Auction')
+                ->when($serviceId, fn($q) => $q->where('service_id', $serviceId)
+                    ->with(['provider', 'provider.profile', 'service:id,title,skills']))
                 ->when($customerId, fn($q) => $q->where('customer_id', $customerId)
                     ->with(['provider', 'provider.profile', 'service:id,title,skills']))
                 ->when($status, fn($q) => $q->where('status', $status));
@@ -171,29 +199,40 @@ class BidsController extends Controller
     {
         DB::beginTransaction();
         try {
-            // Check if the user already has a bid for the service
-            if (auth()->user()->providerBids()->where('service_id', $request->service_id)->exists()) {
-                return ResponseHelper::error('Error placing bid', 'You already have a bid for this Auction', 422);
+
+            $provider = auth()->user()->hasRole('provider') ? auth()->user()->id : null;
+            $customer = auth()->user()->hasRole('customer') ? auth()->user()->id : null;
+
+            if ($provider) {
+                // Check if the user already has a bid for the service
+                if (auth()->user()->providerBids()->where('service_id', $request->service_id)->exists()) {
+                    return ResponseHelper::error('Error placing bid', 'You already have a bid for this Auction', 422);
+                }
             }
 
+            if ($customer) {
+                // Check if the user already has a bid for the service
+                if (auth()->user()->customerBids()->where('service_id', $request->service_id)->exists()) {
+                    return ResponseHelper::error('Error placing bid', 'You already have a bid for this Auction', 422);
+                }
+            }
+
+
             $service = Services::find($request->service_id);
+            // check if self bid
+
+            if (auth()->user()->id == $service->user_id) {
+                return ResponseHelper::error('Error placing bid', 'You cannot bid on your own service', 422);
+            }
 
             // Create bid
             $bid = new Bids;
             $bid->amount = $request->amount;
             $bid->message = $request->message ?? '';
             $bid->type = $service->postType;
-            $bid->save();
-
-            $bid->provider()->associate(auth()->user()->id);
-            $bid->save();
-
-            // attach to customer
-            $bid->customer()->associate($service->user_id);
-            $bid->save();
-
-            // attach to service
-            $bid->service()->associate($request->service_id);
+            $bid->provider_id = $provider;
+            $bid->customer_id = $customer;
+            $bid->service_id = $request->service_id;
             $bid->save();
 
             $firebaseDatabase = $this->firebaseDatabase->create('/notifications/user_' . $service->user_id, [

@@ -142,6 +142,7 @@ class ServicesController extends Controller
 
     }
 
+    // get auctions
     public function get_auctions()
     {
         $customerId = request()->query('customer_id');

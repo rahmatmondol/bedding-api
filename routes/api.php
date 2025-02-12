@@ -95,6 +95,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     Route::get('get-bidding-info', [BidsController::class, 'info']);
     Route::post('create-bidding', [BidsController::class, 'store'])->name('create-bidding');
     Route::post('create-auction-bidding', [BidsController::class, 'auctionStore']);
+    Route::get('get-my-auction-bidding', [BidsController::class, 'myAuctionBids']);
     Route::put('update-bidding/{id}', [BidsController::class, 'update']);
     Route::delete('delete-bidding/{id}', [BidsController::class, 'destroy']);
 

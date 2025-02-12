@@ -150,14 +150,14 @@
                 success: function(response) {
                     if (response.success) {
                         let html = '';
-                        if (response.data?.data.length > 0) {
-                            response.data?.data.forEach(service => {
+                        if (response.data?.length > 0) {
+                            response.data?.forEach(service => {
                                 html += `
                                 <div data-wow-delay="0s" class="wow fadeInUp col-lg-4 col-md-6">
                                     <div class="tf-card-box style-1">
                                         <div class="card-media">
                                             <a href="/service/${service.slug}" wire:navigate.hover>
-                                                <img src="${service.images ? service.images[0].path : ''}" alt="">
+                                                <img src="${service.images.length > 0 ? service.images[0].path : ''}" alt="">
                                             </a>
                                             <div class="button-place-bid">
                                                 <a href="/service/${service.slug}" wire:navigate.hover

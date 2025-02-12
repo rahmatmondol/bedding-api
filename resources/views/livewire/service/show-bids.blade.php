@@ -9,7 +9,7 @@
             </div>
             @forelse ($bids as $bid)
                 <div class="table-item">
-                    <div class="column">{{ $bid->provider->name }}</div>
+                    <div class="column">{{ $bid->provider ? $bid->provider->name : $bid->customer->name  }}</div>
                     <div class="column">{{ $bid->amount }}</div>
                     <div class="column">{{ $bid->created_at->diffForHumans() }}</div>
                 </div>
