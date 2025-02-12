@@ -11,7 +11,7 @@ class StoreBidsRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        if (auth()->user()->hasRole('provider')) {
+        if (auth()->user()->hasRole('provider') || auth()->user()->hasRole('customer')) {
             return true;
         }
         return false;

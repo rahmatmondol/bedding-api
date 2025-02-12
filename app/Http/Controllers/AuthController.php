@@ -60,10 +60,10 @@ class AuthController extends Controller
 
         try {
             // 1. Create Firebase user
-            $firebaseUser = $this->firebaseAuth->signUp(
-                $validated['email'],
-                $validated['password']
-            );
+            // $firebaseUser = $this->firebaseAuth->signUp(
+            //     $validated['email'],
+            //     $validated['password']
+            // );
 
             // 2. Create database user
             $user = User::create([
@@ -73,11 +73,11 @@ class AuthController extends Controller
                 'mobile' => $validated['mobile'],
             ]);
 
-            $user->firebase()->create([
-                'firebase_uid' => $firebaseUser['localId'] ?? null,
-                'firebase_token' => $firebaseUser['idToken'] ?? null,
-                'firebase_refresh_token' => $firebaseUser['refreshToken'] ?? null
-            ]);
+            // $user->firebase()->create([
+            //     'firebase_uid' => $firebaseUser['localId'] ?? null,
+            //     'firebase_token' => $firebaseUser['idToken'] ?? null,
+            //     'firebase_refresh_token' => $firebaseUser['refreshToken'] ?? null
+            // ]);
 
             // 3. Assign role
             $role = $validated['account_type'] === 'provider' ? 'provider' : 'customer';
