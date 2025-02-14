@@ -11,6 +11,8 @@ use App\Models\Services;
 use App\Notifications\BidPlaced;
 use App\Models\User;
 use App\Services\FirebaseDatabase;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class BidsController extends Controller
 {
@@ -83,7 +85,7 @@ class BidsController extends Controller
     public function auctionBids()
     {
         try {
-            $bids = Bids::with(['provider', 'provider.profile', 'service', 'customer', 'customer.profile'])
+            $bids = Bids::with(['provider', 'provider.profile', 'service','service.images','customer', 'customer.profile'])
                 ->where('type', 'Auction')
                 ->whereHas('service', function ($query) {
                     $query->where('user_id', auth()->user()->id);
@@ -351,6 +353,54 @@ class BidsController extends Controller
         }
 
         return ResponseHelper::error('Error updating bid', 'Something went wrong', 500);
+    }
+
+
+    //update auction bid
+    public function updateAuction(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'bid_id' => 'required|exists:bids,id',
+            'status' => 'required|in:accepted,rejected,pending,completed',
+        ]);
+
+        if ($validator->fails()) {
+            return ResponseHelper::error('Validation error', $validator->errors(), 422);
+        }
+
+        try {
+            $bid = Bids::with('service')->find($request->bid_id);
+            if (!$bid) {
+                return ResponseHelper::error('Bid not found', 'Bid not found', 404);
+            }
+
+            $user_id = auth()->user()->id;
+
+            if ($bid->service->user_id != $user_id) {
+                return ResponseHelper::error('Unauthorized', 'You are not authorized to update this bid', 403);
+            }
+
+            $bid->status = $request->status;
+            $bid->save();
+
+            // $firebaseDatabase = $this->firebaseDatabase->create('/notifications/user_' . $service->user_id, [
+            //     'created_at' => now()->format('Y-m-d H:i:s'),
+            //     'read_at' => false,
+            //     'data' => [
+            //         'bid_id' => $bid->id,
+            //         'url' => '/auth/bid/list',
+            //         'avatar' => auth()->user()->profile->image,
+            //         'service_id' => $service->id,
+            //         'message' => auth()->user()->name . ' has placed a bid on your service.',
+            //         'details' => 'bid amount: ' . $bid->amount . ', bid message: ' . $bid->message,
+            //     ],
+            //     'title' => 'You have a new bid',
+            // ]);
+
+            return ResponseHelper::success('Bid updated successfully', $bid);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Error updating bid', 'Something went wrong '.$e, 500);
+        }
     }
 
     /**

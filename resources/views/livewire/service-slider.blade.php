@@ -19,7 +19,7 @@
                                 <div class="tf-card-box">
                                     <div class="card-media">
                                         <a href="/service/{{ $service->slug }}" >
-                                            <img src="{{ $service->images()->first()->path }}" alt="">
+                                            <img src="{{ $service->images()->first()->path ?? '' }}" alt="">
                                         </a>
                                         <span class="wishlist-button icon-heart"></span>
                                         <div class="button-place-bid">

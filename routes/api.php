@@ -97,6 +97,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     Route::post('create-auction-bidding', [BidsController::class, 'auctionStore']);
     Route::get('get-my-auction-bidding', [BidsController::class, 'myAuctionBids']);
     Route::put('update-bidding/{id}', [BidsController::class, 'update']);
+    Route::post('auction-update-bidding', [BidsController::class, 'updateAuction']);
     Route::delete('delete-bidding/{id}', [BidsController::class, 'destroy']);
 
     //booking routes
