@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
@@ -20,10 +21,10 @@ Route::group([
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('register', [AuthController::class, 'register']);
-    Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
-    Route::post('reset-password', [AuthController::class, 'resetPassword']);
 });
 
+Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('reset-password', [AuthController::class, 'resetPassword']);
 // ===============================
 // routes for guest
 // ===============================
@@ -122,5 +123,4 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     route::get('get-read-notifications', [AuthController::class, 'getReadNotifications']);
     route::get('get-notification/{id}', [AuthController::class, 'getNotification']);
     route::get('read-notification/{id}', [AuthController::class, 'markNotificationAsRead']);
-
 });

@@ -15,7 +15,9 @@ use App\Models\Categories;
 use App\Models\Locations;
 use App\Models\Profile;
 use App\Helpers\CountryHelper;
+use App\Notifications\ForgetPassword;
 use App\Services\FirebaseAuthService;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -100,7 +102,6 @@ class AuthController extends Controller
             DB::commit();
 
             return ResponseHelper::success('User registered successfully',  $user->load('profile', 'roles'));
-
         } catch (Exception $e) {
             // Rollback database changes if anything fails
             DB::rollBack();
@@ -273,7 +274,6 @@ class AuthController extends Controller
             // Update the user's profile
             DB::commit();
             return ResponseHelper::success('account updated successfully', $user);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return ResponseHelper::error($e->errors(), 422);
@@ -309,13 +309,67 @@ class AuthController extends Controller
     // Forgot password
     public function forgotPassword(Request $request)
     {
-        // Implement password reset logic
+        // Implement forgot password logic
+        $validated = $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        try {
+            $user = User::whereEmail($request->email)->first();
+
+            // Generate a token for the user
+            $token = random_int(100000, 999999);
+
+            $existingToken = DB::table('password_reset_tokens')->where('email', $user->email)->first();
+            if ($existingToken) {
+                DB::table('password_reset_tokens')->where('email', $user->email)->update([
+                    'token' => $token,
+                    'created_at' => Carbon::now(),
+                ]);
+            } else {
+                DB::table('password_reset_tokens')->insert([
+                    'email' => $user->email,
+                    'token' => $token,
+                    'created_at' => Carbon::now(),
+                ]);
+            }
+
+            // Send password reset link
+            $user->notify(new ForgetPassword($token));
+
+            return response()->json(['success' => true, 'message' => 'Password reset link sent on your email.']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     // Reset password
     public function resetPassword(Request $request)
     {
-        // Implement password reset logic
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'code' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $passwordReset = DB::table('password_reset_tokens')->where([
+            'email' => $request->email,
+            'token' => $request->code,
+        ])->first();
+
+        if (!$passwordReset) {
+            return response()->json(['error' => 'Invalid reset code'], 400);
+        }
+
+        $user = User::whereEmail($request->email)->first();
+
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        DB::table('password_reset_tokens')->where(['email' => $request->email])->delete();
+
+        return response()->json(['success' => true, 'message' => 'Password has been reset successfully.']);
     }
 
     // Change password
@@ -341,7 +395,6 @@ class AuthController extends Controller
             // Provide a more descriptive error response if query fails
             return ResponseHelper::error('Failed to change password: ' . $e->getMessage(), 500);
         }
-
     }
 
     // get notifications

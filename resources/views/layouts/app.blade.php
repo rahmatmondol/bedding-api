@@ -99,13 +99,6 @@
     </div>
     <!-- /#wrapper -->
 
-    {{-- <div class="progress-wrap active-progress">
-        <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
-            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"
-                style="transition: stroke-dashoffset 10ms linear 0s; stroke-dasharray: 307.919, 307.919; stroke-dashoffset: 286.138;">
-            </path>
-        </svg>
-    </div> --}}
     @livewireScripts
     <!-- Javascript -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -116,7 +109,7 @@
     <script src="{{ asset('user/assets/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('user/assets/js/swiper-bundle.min.js') }}"></script>
     <script src="{{ asset('user/assets/js/swiper.js') }}"></script>
-    <script src="{{ asset('user/assets/js/countto.js') }}"></script>
+    {{-- <script src="{{ asset('user/assets/js/countto.js') }}"></script> --}}
     <script src="{{ asset('user/assets/js/count-down.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
 
