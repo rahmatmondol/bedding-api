@@ -39,7 +39,7 @@ class ServicesController extends Controller
         $search = request()->query('search');
         try {
             // Build the query with optional filters
-            $query = Services::with(['images','customer'])
+            $query = Services::with(['images','customer','customer.profile'])
                 ->where('postType', 'Service')
                 ->when($customerId, fn($q) => $q->where('user_id', $customerId))
                 ->when($search, fn($q) => $q->where('title', 'LIKE', "%{$search}%"))
@@ -375,7 +375,7 @@ class ServicesController extends Controller
     public function singleAuction($id)
     {
         try {
-            $service = Services::with('images', 'skills', 'category', 'customer')->findOrFail($id);
+            $service = Services::with('images', 'skills', 'category', 'customer', 'customer.profile')->findOrFail($id);
             return ResponseHelper::success('Service Details', $service);
         } catch (\Exception $e) {
             // Provide a more descriptive error response if query fails

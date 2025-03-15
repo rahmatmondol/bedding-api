@@ -45,7 +45,7 @@ class StoreServicesRequest extends FormRequest
             'price' => 'required|numeric',
             'priceType' => 'required|in:Negotiable,Fixed',
             'currency' => 'required|in:AED,USD',
-            'level' => 'required|in:Entry,Intermediate,Expert',
+            'level' => 'in:Entry,Intermediate,Expert',
             'category_id' => 'required|integer|exists:categories,id',
             'subCategory_id' => 'required|integer|exists:sub_categories,id',
             'images' => 'required|max:2048',

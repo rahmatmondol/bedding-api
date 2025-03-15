@@ -258,8 +258,10 @@ class AuthController extends Controller
                 // Delete the old image if it exists
                 $relativePath = parse_url($user->profile->image, PHP_URL_PATH);
 
-                if (file_exists(public_path($relativePath))) {
-                    unlink(public_path($relativePath)); // Deletes the file
+                if ($user->profile->image) {
+                    if (file_exists(public_path($relativePath))) {
+                        unlink(public_path($relativePath));
+                    }
                 }
 
                 $image = $request->file('image');
@@ -276,7 +278,7 @@ class AuthController extends Controller
             return ResponseHelper::success('account updated successfully', $user);
         } catch (\Exception $e) {
             DB::rollBack();
-            return ResponseHelper::error($e->errors(), 422);
+            return ResponseHelper::error($e->getMessage(), 422);
         }
     }
 
