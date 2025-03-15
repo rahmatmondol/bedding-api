@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\ZoneController;
 use App\Http\Controllers\Notification;
+use App\Http\Controllers\StripeController;
 
 // ===========================
 // Public Routes
@@ -122,6 +123,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/notification', [Notification::class, 'read'])->name('notification');
     });
 
+    //payment Routes
+    Route::get('/payment', fn() => view('payment.index'))->name('payment');
+    Route::get('/payment/confirm', [StripeController::class, 'showConfirmation'])->name('payment.confirmation');
+    Route::post('/payment/process', [StripeController::class, 'processPayment'])->name('stripe.process');
 });
 
 // ===========================

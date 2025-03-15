@@ -44,4 +44,9 @@ return [
         'storage_bucket' => env('FIREBASE_STORAGE_BUCKET'),
         'messaging_sender_id' => env('FIREBASE_MESSAGING_SENDER_ID'),
     ],
+
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+    ],
 ];
