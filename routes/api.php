@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
@@ -74,6 +75,19 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
 
     // password update routes
     Route::post('change-password', [AuthController::class, 'changePassword']);
+
+
+    // Account settings
+    Route::get('/account/settings', [AccountController::class, 'settings'])
+        ->name('account.settings');
+
+    // Delete account page
+    Route::get('/account/delete', [AccountController::class, 'showDeleteAccount'])
+        ->name('account.delete');
+
+    // Process account deletion (AJAX)
+    Route::post('/account/delete', [AccountController::class, 'deleteAccount'])
+        ->name('account.delete.process');
 
 
     // create category routes

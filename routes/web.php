@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\BidsController;
@@ -43,9 +44,6 @@ Route::get('/faq', function () {
     return view('faqs');
 })->name('faq');
 
-Route::get('/account-delete', function () {
-    return view('account-delete');
-})->name('account-delete');
 
 // Authentication Routes
 Route::get('/auth', function () {
@@ -143,6 +141,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/payment', fn() => view('payment.index'))->name('payment');
     Route::get('/payment/confirm', [StripeController::class, 'showConfirmation'])->name('payment.confirmation');
     Route::post('/payment/process', [StripeController::class, 'processPayment'])->name('stripe.process');
+
+    Route::get('/account-delete', [AccountController::class, 'showDeleteAccount'])->name('account-delete');
+    Route::post('/account/delete', [AccountController::class, 'deleteAccount'])
+        ->name('account.delete.process');
 });
 
 // ===========================

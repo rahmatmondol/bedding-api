@@ -49,4 +49,9 @@ return [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
     ],
+
+    'mail' => [
+        'admin_address' => env('ADMIN_EMAIL'),
+    ],
+
 ];

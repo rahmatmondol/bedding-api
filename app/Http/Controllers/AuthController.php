@@ -101,7 +101,15 @@ class AuthController extends Controller
             // If everything is successful, commit the transaction
             DB::commit();
 
-            return ResponseHelper::success('User registered successfully',  $user->load('profile', 'roles'));
+            // Generate JWT token
+            $token = JWTAuth::fromUser($user);
+
+            $data = [
+                'token' => $token,
+                'user' => $user->load('profile', 'roles')
+            ];
+
+            return ResponseHelper::success('User registered successfully', $data);
         } catch (Exception $e) {
             // Rollback database changes if anything fails
             DB::rollBack();
@@ -440,4 +448,7 @@ class AuthController extends Controller
         }
         return ResponseHelper::error('Notification not found', 404);
     }
+
+    // account delete
+    public function accountDelete(Request $request) {}
 }
